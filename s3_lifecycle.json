@@ -1,0 +1,25 @@
+{
+  "Rules": [
+    {
+      "ID": "ExpireTempUploadsAfter7Days",
+      "Status": "Enabled",
+      "Filter": {
+        "And": {
+          "Prefix": "users/",
+          "Tags": [
+            { "Key": "temp", "Value": "true" }
+          ]
+        }
+      },
+      "Expiration": { "Days": 7 }
+    },
+    {
+      "ID": "TransitionUsersAfter90Days",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "users/" },
+      "Transitions": [
+        { "Days": 90, "StorageClass": "STANDARD_IA" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+// Prisma schema for club website
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  name      String?
+  role      String        @default("member") // member | admin
+  profile   MemberProfile?
+  posts     StudyPost[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model MemberProfile {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  displayName String
+  oneLiner    String?
+  major       String?
+  classYear   Int?
+  links       Json?
+  avatarKey   String?
+  isPublic    Boolean  @default(true)
+}
+
+model Study {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  visibility  String     @default("public") // public | members
+  createdBy   String
+  createdAt   DateTime   @default(now())
+  posts       StudyPost[]
+}
+
+model StudyPost {
+  id           String        @id @default(cuid())
+  study        Study         @relation(fields: [studyId], references: [id])
+  studyId      String
+  author       User          @relation(fields: [authorId], references: [id])
+  authorId     String
+  title        String
+  contentMd    String        // markdown
+  coverKey     String?
+  status       String        @default("draft") // draft | published
+  tags         StudyPostTag[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model Tag {
+  id    String        @id @default(cuid())
+  name  String        @unique
+  posts StudyPostTag[]
+}
+
+model StudyPostTag {
+  post   StudyPost  @relation(fields: [postId], references: [id])
+  postId String
+  tag    Tag        @relation(fields: [tagId], references: [id])
+  tagId  String
+
+  @@id([postId, tagId])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  date        DateTime
+  description String?
+  galleryKeys Json?
+}
+
+model Award {
+  id          String   @id @default(cuid())
+  title       String
+  issuer      String?
+  date        DateTime
+  team        Json?    // [{userId,name,role}]
+  description String?
+  link        String?
+}
+
+model HistoryEvent {
+  id          String   @id @default(cuid())
+  year        Int
+  month       Int?
+  title       String
+  description String?
+}
+
+model RecruitNotice {
+  id        String   @id @default(cuid())
+  title     String
+  bodyMd    String
+  startAt   DateTime
+  endAt     DateTime
+  isOpen    Boolean  @default(false)
+  externalFormUrl String?
+}
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  ownerUserId String
+  postId      String?
+  s3Key       String
+  mime        String
+  width       Int?
+  height      Int?
+  bytes       Int?
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([ownerUserId, postId])
+}
+
+model ExternalArticleCache {
+  url        String   @id
+  title      String?
+  excerpt    String?
+  contentMd  String?
+  images     Json?
+  etag       String?
+  updatedAt  DateTime @updatedAt
+}

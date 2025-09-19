@@ -1,0 +1,63 @@
+{
+  "policies": {
+    "cachePolicies": {
+      "ImagesLongTTL": {
+        "Name": "club-images-long-ttl",
+        "DefaultTTL": 2592000,
+        "MaxTTL": 31536000,
+        "MinTTL": 86400,
+        "ParametersInCacheKeyAndForwardedToOrigin": {
+          "EnableAcceptEncodingBrotli": true,
+          "EnableAcceptEncodingGzip": true,
+          "HeadersConfig": {"HeaderBehavior": "none"},
+          "CookiesConfig": {"CookieBehavior": "none"},
+          "QueryStringsConfig": {"QueryStringBehavior": "none"}
+        }
+      },
+      "APINoCache": {
+        "Name": "club-api-nocache",
+        "DefaultTTL": 0,
+        "MaxTTL": 0,
+        "MinTTL": 0,
+        "ParametersInCacheKeyAndForwardedToOrigin": {
+          "EnableAcceptEncodingBrotli": true,
+          "EnableAcceptEncodingGzip": true,
+          "HeadersConfig": {"HeaderBehavior": "whitelist", "Headers": {"Quantity": 2, "Items": ["Authorization", "Content-Type"]}},
+          "CookiesConfig": {"CookieBehavior": "all"},
+          "QueryStringsConfig": {"QueryStringBehavior": "all"}
+        }
+      }
+    },
+    "originRequestPolicies": {
+      "ImagesS3": {
+        "Name": "club-images-s3-origin-req",
+        "HeadersConfig": {"HeaderBehavior": "none"},
+        "CookiesConfig": {"CookieBehavior": "none"},
+        "QueryStringsConfig": {"QueryStringBehavior": "none"}
+      },
+      "APIForwardAuth": {
+        "Name": "club-api-forward-auth",
+        "HeadersConfig": {"HeaderBehavior": "whitelist", "Headers": {"Quantity": 2, "Items": ["Authorization", "Content-Type"]}},
+        "CookiesConfig": {"CookieBehavior": "all"},
+        "QueryStringsConfig": {"QueryStringBehavior": "all"}
+      }
+    }
+  },
+  "behaviorsExamples": [
+    {
+      "PathPattern": "/_next/*",
+      "CachePolicy": "Managed-CachingOptimized",
+      "OriginRequestPolicy": "Managed-AllViewer"
+    },
+    {
+      "PathPattern": "/images/*",
+      "CachePolicy": "club-images-long-ttl",
+      "OriginRequestPolicy": "club-images-s3-origin-req"
+    },
+    {
+      "PathPattern": "/api/*",
+      "CachePolicy": "club-api-nocache",
+      "OriginRequestPolicy": "club-api-forward-auth"
+    }
+  ]
+}
