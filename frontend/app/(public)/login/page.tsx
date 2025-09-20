@@ -12,14 +12,32 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: 실제 로그인 API 호출
     try {
-      console.log('로그인 시도:', { email, password })
-      // 임시로 3초 후 성공으로 처리
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('로그인 성공! (임시)')
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // 토큰을 localStorage에 저장
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        
+        alert(`로그인 성공! ${data.user.name}님 환영합니다.`)
+        
+        // 메인 페이지로 리다이렉트
+        window.location.href = '/'
+      } else {
+        alert(data.error || '로그인에 실패했습니다.')
+      }
     } catch (error) {
-      alert('로그인 실패')
+      console.error('로그인 오류:', error)
+      alert('로그인 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }

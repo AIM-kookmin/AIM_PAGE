@@ -62,9 +62,14 @@ model MemberProfile {
   id          String  @id @default(cuid())
   userId      String  @unique
   displayName String
+  studentId   String? // 학번
+  position    String? // 회장, 부회장, 기획팀장, 개발팀장, 홍보팀장, 부원
+  department  String? // 학과
+  year        String? // 학년
+  bio         String? // 소개
   oneLiner    String?
   avatarKey   String?
-  links       Json?
+  links       Json?   // {github: "", linkedin: "", instagram: ""}
   isPublic    Boolean @default(true)
   user        User    @relation(fields: [userId], references: [id])
 }

@@ -12,9 +12,32 @@ export default function RegisterPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
 
+  const validateEmailDomain = (email: string): boolean => {
+    // 테스트/운영자 계정 예외 처리
+    const allowedTestEmails = [
+      'aim2024@aim.com',
+      'test@example.com',
+      'admin@aim.com'
+    ];
+    
+    if (allowedTestEmails.includes(email.toLowerCase())) {
+      return true;
+    }
+    
+    // 일반 사용자는 @kookmin.ac.kr 도메인만 허용
+    return email.toLowerCase().endsWith('@kookmin.ac.kr');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+
+    // 이메일 도메인 검증
+    if (!validateEmailDomain(formData.email)) {
+      alert('국민대학교 이메일(@kookmin.ac.kr)을 사용해주세요.')
+      setIsLoading(false)
+      return
+    }
 
     if (formData.password !== formData.confirmPassword) {
       alert('비밀번호가 일치하지 않습니다.')
@@ -22,14 +45,36 @@ export default function RegisterPage() {
       return
     }
 
-    // TODO: 실제 회원가입 API 호출
     try {
-      console.log('회원가입 시도:', formData)
-      // 임시로 2초 후 성공으로 처리
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      alert('회원가입 성공! (임시)')
+      const response = await fetch('http://localhost:3001/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // 토큰을 localStorage에 저장
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        
+        alert(`회원가입 성공! ${data.user.name}님 환영합니다.`)
+        
+        // 메인 페이지로 리다이렉트
+        window.location.href = '/'
+      } else {
+        alert(data.error || '회원가입에 실패했습니다.')
+      }
     } catch (error) {
-      alert('회원가입 실패')
+      console.error('회원가입 오류:', error)
+      alert('회원가입 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
     }
@@ -92,8 +137,18 @@ export default function RegisterPage() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className={`appearance-none block w-full px-3 py-2 border rounded-md placeholder-gray-400 focus:outline-none sm:text-sm ${
+                    formData.email && !validateEmailDomain(formData.email) 
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
+                  placeholder="예: student@kookmin.ac.kr"
                 />
+                {formData.email && !validateEmailDomain(formData.email) && (
+                  <p className="mt-1 text-sm text-red-600">
+                    국민대학교 이메일(@kookmin.ac.kr)을 사용해주세요.
+                  </p>
+                )}
               </div>
             </div>
 

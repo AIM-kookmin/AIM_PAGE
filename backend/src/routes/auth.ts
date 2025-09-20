@@ -5,6 +5,23 @@ import { db } from '../utils/db';
 
 const router = express.Router();
 
+// 이메일 도메인 검증 함수
+const validateEmailDomain = (email: string): boolean => {
+  // 테스트/운영자 계정 예외 처리
+  const allowedTestEmails = [
+    'aim2024@aim.com',
+    'test@example.com',
+    'admin@aim.com'
+  ];
+  
+  if (allowedTestEmails.includes(email.toLowerCase())) {
+    return true;
+  }
+  
+  // 일반 사용자는 @kookmin.ac.kr 도메인만 허용
+  return email.toLowerCase().endsWith('@kookmin.ac.kr');
+};
+
 // 회원가입
 router.post('/register', async (req, res) => {
   try {
@@ -12,6 +29,13 @@ router.post('/register', async (req, res) => {
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // 이메일 도메인 검증
+    if (!validateEmailDomain(email)) {
+      return res.status(400).json({ 
+        error: '국민대학교 이메일(@kookmin.ac.kr)을 사용해주세요.' 
+      });
     }
 
     // 사용자 중복 확인
