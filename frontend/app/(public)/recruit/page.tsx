@@ -134,19 +134,19 @@ export default function RecruitPage() {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/about" className="text-gray-300 hover:text-cyan-400 transition-colors">
+              <Link href="/about" className="aim-nav-link">
                 소개
               </Link>
-              <Link href="/members" className="text-gray-300 hover:text-cyan-400 transition-colors">
+              <Link href="/members" className="aim-nav-link">
                 부원
               </Link>
-              <Link href="/activities" className="text-gray-300 hover:text-cyan-400 transition-colors">
+              <Link href="/activities" className="aim-nav-link">
                 활동
               </Link>
-              <Link href="/studies" className="text-gray-300 hover:text-cyan-400 transition-colors">
+              <Link href="/studies" className="aim-nav-link">
                 스터디
               </Link>
-              <Link href="/recruit" className="text-cyan-400 font-medium">
+              <Link href="/recruit" className="aim-nav-link-active">
                 모집
               </Link>
               {user ? (
@@ -154,7 +154,7 @@ export default function RecruitPage() {
                   {user.role === 'admin' && (
                     <Link
                       href="/admin"
-                      className="bg-pink-600 text-white px-3 py-2 rounded-md hover:bg-pink-700 text-sm"
+                      className="aim-btn-secondary text-sm"
                     >
                       🛠️ 관리자
                     </Link>
@@ -162,20 +162,20 @@ export default function RecruitPage() {
                   <span className="text-white">
                     안녕하세요, {user.name}님
                     {user.role === 'admin' && (
-                      <span className="ml-1 text-xs bg-pink-600 text-white px-2 py-1 rounded">
+                      <span className="ml-1 aim-badge-admin">
                         관리자
                       </span>
                     )}
                   </span>
                   <button
                     onClick={handleLogout}
-                    className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 border border-gray-600"
+                    className="aim-btn-ghost"
                   >
                     로그아웃
                   </button>
                 </div>
               ) : (
-                <Link href="/login" className="bg-cyan-500 text-black px-4 py-2 rounded-md hover:bg-cyan-400 font-semibold">
+                <Link href="/login" className="aim-btn-primary">
                   로그인
                 </Link>
               )}
@@ -188,15 +188,15 @@ export default function RecruitPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
           <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
-            <span className="ml-3 text-gray-400">모집 공고를 불러오는 중...</span>
+            <div className="aim-spinner h-12 w-12"></div>
+            <span className="ml-3 aim-text-secondary">모집 공고를 불러오는 중...</span>
           </div>
         ) : recruitNotice ? (
           <>
             {/* 헤더 섹션 */}
             <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+              <h1 className="aim-hero-title">
+                <span className="aim-gradient-text">
                   AI Monsters
                 </span>{' '}
                 {recruitNotice.title}
@@ -204,13 +204,13 @@ export default function RecruitPage() {
               <div className="flex justify-center items-center space-x-4 mb-6">
                 <span className={`px-4 py-2 rounded-full text-lg font-medium ${
                   recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date()
-                    ? 'bg-green-600 text-white' 
-                    : 'bg-red-600 text-white'
+                    ? 'aim-badge-success' 
+                    : 'aim-badge-warning'
                 }`}>
                   {recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date() ? '🔥 모집중' : '📝 모집마감'}
                 </span>
               </div>
-              <p className="text-lg text-gray-300 mb-4">
+              <p className="text-lg aim-text-secondary mb-4">
                 모집 기간: {new Date(recruitNotice.startAt).toLocaleDateString()} ~ {new Date(recruitNotice.endAt).toLocaleDateString()}
               </p>
             </div>
@@ -226,25 +226,25 @@ export default function RecruitPage() {
                       <div className="flex items-center space-x-3 mb-6">
                         <div className={`px-4 py-2 rounded-full text-sm font-bold ${
                           recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date() 
-                            ? 'bg-green-500 text-white animate-pulse' 
-                            : 'bg-red-500 text-white'
+                            ? 'aim-badge-success animate-pulse' 
+                            : 'aim-badge-warning'
                         }`}>
                           {recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date() ? '🔥 모집중' : '📝 모집마감'}
                         </div>
-                        <span className="text-gray-400 text-sm">
+                        <span className="aim-text-secondary text-sm">
                           {new Date(recruitNotice.endAt).toLocaleDateString()}까지
                         </span>
                       </div>
                       
-                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                      <h2 className="text-3xl md:text-4xl font-bold aim-text-primary mb-4">
                         {recruitNotice.title}
                       </h2>
                       
-                      <p className="text-xl text-gray-300 mb-6 leading-relaxed">
+                      <p className="text-xl aim-text-secondary mb-6 leading-relaxed">
                         {recruitNotice.shortDescription || (
                           <>
-                            <span className="text-pink-400">AI Monsters</span>와 함께 인공지능의 세계로 빠져보세요! 
-                            경험과 전공에 상관없이 <span className="text-cyan-400">열정</span>만 있다면 누구나 환영합니다.
+                            <span className="aim-icon-pink">AI Monsters</span>와 함께 인공지능의 세계로 빠져보세요! 
+                            경험과 전공에 상관없이 <span className="aim-icon-cyan">열정</span>만 있다면 누구나 환영합니다.
                           </>
                         )}
                       </p>
@@ -261,7 +261,7 @@ export default function RecruitPage() {
                           </a>
                           <a
                             href="/about"
-                            className="border-2 border-gray-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300 text-center"
+                            className="border-2 border-gray-600 aim-text-primary px-8 py-4 rounded-xl font-bold text-lg hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300 text-center"
                           >
                             동아리 더 알아보기
                           </a>
@@ -271,42 +271,42 @@ export default function RecruitPage() {
                     
                     {/* 오른쪽: 핵심 정보 카드 */}
                     <div className="space-y-4">
-                      <div className="bg-gray-800/80 backdrop-blur rounded-xl p-6 border border-gray-600">
+                      <div className="aim-card-dark backdrop-blur p-6">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">📅</span>
                           </div>
                           <div>
-                            <h3 className="text-white font-semibold">모집 기간</h3>
-                            <p className="text-gray-300 text-sm">
+                            <h3 className="aim-text-primary font-semibold">모집 기간</h3>
+                            <p className="aim-text-secondary text-sm">
                               {new Date(recruitNotice.startAt).toLocaleDateString()} ~ {new Date(recruitNotice.endAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="bg-gray-800/80 backdrop-blur rounded-xl p-6 border border-gray-600">
+                      <div className="aim-card-dark backdrop-blur p-6">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">🎯</span>
                           </div>
                           <div>
-                            <h3 className="text-white font-semibold">모집 대상</h3>
-                            <p className="text-gray-300 text-sm">
+                            <h3 className="aim-text-primary font-semibold">모집 대상</h3>
+                            <p className="aim-text-secondary text-sm">
                               {recruitNotice.targetAudience || "국민대학교 재학생 (전 학과/학년)"}
                             </p>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="bg-gray-800/80 backdrop-blur rounded-xl p-6 border border-gray-600">
+                      <div className="aim-card-dark backdrop-blur p-6">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">👥</span>
                           </div>
                           <div>
-                            <h3 className="text-white font-semibold">모집 인원</h3>
-                            <p className="text-gray-300 text-sm">
+                            <h3 className="aim-text-primary font-semibold">모집 인원</h3>
+                            <p className="aim-text-secondary text-sm">
                               {recruitNotice.recruitCount ? 
                                 `${recruitNotice.recruitCount}${recruitNotice.recruitMethod ? ` (${recruitNotice.recruitMethod})` : ''}` :
                                 "15명 내외 (서류 + 면접)"
@@ -477,25 +477,25 @@ export default function RecruitPage() {
             <div className="relative mb-16">
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
                 <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-1">
-                  <div className="bg-gray-800 rounded-xl p-8 md:p-12">
+                  <div className="aim-card rounded-xl p-8 md:p-12">
                     <div className="flex items-center space-x-3 mb-8">
                       <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
                         <span className="text-white font-bold text-xl">💡</span>
                       </div>
-                      <h2 className="text-3xl font-bold text-white">자주 묻는 질문</h2>
+                      <h2 className="text-3xl font-bold aim-text-primary">자주 묻는 질문</h2>
                     </div>
                     
                     <div className="space-y-4">
                       {faqData.map((faq, index) => (
-                        <div key={index} className="bg-gray-700/50 backdrop-blur rounded-xl border border-gray-600 overflow-hidden">
+                        <div key={index} className="aim-faq-item">
                           <button
                             onClick={() => toggleFaq(index)}
-                            className="w-full p-6 text-left hover:bg-gray-700/70 transition-colors duration-200 flex items-center justify-between"
+                            className="aim-faq-button"
                           >
-                            <h3 className="text-lg font-semibold text-white pr-4">
+                            <h3 className="text-lg font-semibold aim-text-primary pr-4">
                               {faq.question}
                             </h3>
-                            <div className={`text-2xl text-cyan-400 transition-transform duration-300 ${
+                            <div className={`text-2xl aim-icon-cyan transition-transform duration-300 ${
                               openFaqIndex === index ? 'rotate-180' : ''
                             }`}>
                               ▼
@@ -505,8 +505,8 @@ export default function RecruitPage() {
                           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
                             openFaqIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                           }`}>
-                            <div className="px-6 pb-6 border-t border-gray-600/50">
-                              <p className="text-gray-300 leading-relaxed pt-4 text-lg">
+                            <div className="aim-faq-content">
+                              <p className="aim-text-primary leading-relaxed pt-4 text-lg">
                                 {faq.answer}
                               </p>
                             </div>
@@ -516,9 +516,9 @@ export default function RecruitPage() {
                     </div>
                     
                     <div className="mt-8 text-center">
-                      <p className="text-gray-400">
+                      <p className="aim-text-secondary">
                         더 궁금한 점이 있으시면{' '}
-                        <a href="mailto:aim@kookmin.ac.kr" className="text-cyan-400 hover:text-cyan-300 font-medium">
+                        <a href="mailto:aim@kookmin.ac.kr" className="aim-icon-cyan hover:text-cyan-300 font-medium">
                           aim@kookmin.ac.kr
                         </a>
                         {' '}로 문의해주세요!
@@ -533,13 +533,13 @@ export default function RecruitPage() {
           <>
             {/* 기본 헤더 섹션 (모집 공고가 없을 때) */}
             <div className="text-center mb-16">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+              <h1 className="aim-hero-title">
+                <span className="aim-gradient-text">
                   AI Monsters
                 </span>{' '}
                 모집 안내
               </h1>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+              <p className="aim-hero-subtitle mb-8">
                 현재 진행중인 모집이 없습니다.<br />
                 추후 모집 공고를 확인해주세요.
               </p>
@@ -548,7 +548,7 @@ export default function RecruitPage() {
               <div className="flex justify-center">
                 <button
                   onClick={handleShowPastRecruits}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+                  className="aim-btn-ghost px-6 py-3 rounded-lg font-medium flex items-center gap-2"
                 >
                   {showPastRecruits ? '지난 모집 숨기기' : '지난 모집 보기'}
                   <span className="text-lg">
@@ -567,20 +567,20 @@ export default function RecruitPage() {
                 
                 {loadingPast ? (
                   <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500 mx-auto"></div>
-                    <p className="text-gray-400 mt-4">지난 모집 공고를 불러오는 중...</p>
+                    <div className="aim-spinner h-8 w-8 mx-auto"></div>
+                    <p className="aim-text-secondary mt-4">지난 모집 공고를 불러오는 중...</p>
                   </div>
                 ) : pastRecruits.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-400">지난 모집 공고가 없습니다.</p>
+                    <p className="aim-text-secondary">지난 모집 공고가 없습니다.</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {pastRecruits.map((notice) => (
-                      <div key={notice.id} className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+                      <div key={notice.id} className="aim-card p-6">
                         <div className="flex justify-between items-start mb-4">
                           <h3 className="text-xl font-bold text-white">{notice.title}</h3>
-                          <span className="bg-gray-600 text-gray-300 px-3 py-1 rounded-full text-sm">
+                          <span className="aim-badge-muted">
                             마감됨
                           </span>
                         </div>
@@ -588,25 +588,25 @@ export default function RecruitPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           {notice.targetAudience && (
                             <div className="text-center">
-                              <p className="text-gray-400 text-sm mb-1">모집 대상</p>
-                              <p className="text-white font-medium">{notice.targetAudience}</p>
+                              <p className="aim-text-secondary text-sm mb-1">모집 대상</p>
+                              <p className="aim-text-primary font-medium">{notice.targetAudience}</p>
                             </div>
                           )}
                           {notice.recruitCount && (
                             <div className="text-center">
-                              <p className="text-gray-400 text-sm mb-1">모집 인원</p>
-                              <p className="text-white font-medium">{notice.recruitCount}</p>
+                              <p className="aim-text-secondary text-sm mb-1">모집 인원</p>
+                              <p className="aim-text-primary font-medium">{notice.recruitCount}</p>
                             </div>
                           )}
                           {notice.recruitMethod && (
                             <div className="text-center">
-                              <p className="text-gray-400 text-sm mb-1">모집 방법</p>
-                              <p className="text-white font-medium">{notice.recruitMethod}</p>
+                              <p className="aim-text-secondary text-sm mb-1">모집 방법</p>
+                              <p className="aim-text-primary font-medium">{notice.recruitMethod}</p>
                             </div>
                           )}
                         </div>
                         
-                        <div className="flex justify-between items-center text-sm text-gray-400">
+                        <div className="flex justify-between items-center text-sm aim-text-secondary">
                           <span>
                             모집 기간: {new Date(notice.startAt).toLocaleDateString()} ~ {new Date(notice.endAt).toLocaleDateString()}
                           </span>
@@ -628,36 +628,36 @@ export default function RecruitPage() {
           <>
             {/* 자주 묻는 질문 */}
             <div className="max-w-4xl mx-auto mt-16">
-              <div className="bg-gray-800 rounded-xl p-8 md:p-12">
+              <div className="aim-card p-8 md:p-12 rounded-xl">
                 <div className="flex items-center space-x-3 mb-8">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
                     <span className="text-white font-bold text-xl">💡</span>
                   </div>
-                  <h2 className="text-3xl font-bold text-white">자주 묻는 질문</h2>
+                  <h2 className="text-3xl font-bold aim-text-primary">자주 묻는 질문</h2>
                 </div>
                 
                 <div className="space-y-4">
                   {faqData.map((faq, index) => (
-                    <div key={index} className="bg-gray-700/50 backdrop-blur rounded-xl border border-gray-600 overflow-hidden">
+                    <div key={index} className="aim-faq-item">
                       <button
                         onClick={() => toggleFaq(index)}
-                        className="w-full p-6 text-left hover:bg-gray-700/70 transition-colors duration-200 flex items-center justify-between"
+                        className="aim-faq-button"
                       >
-                        <h3 className="text-lg font-semibold text-white pr-4">
+                        <h3 className="text-lg font-semibold aim-text-primary pr-4">
                           {faq.question}
                         </h3>
                         <div className={`transform transition-transform duration-200 ${
                           openFaqIndex === index ? 'rotate-180' : ''
                         }`}>
-                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-6 h-6 aim-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </div>
                       </button>
                       
                       {openFaqIndex === index && (
-                        <div className="px-6 pb-6 border-t border-gray-600/50">
-                          <p className="text-gray-300 pt-4 leading-relaxed">
+                        <div className="aim-faq-content">
+                          <p className="aim-text-primary pt-4 leading-relaxed">
                             {faq.answer}
                           </p>
                         </div>
