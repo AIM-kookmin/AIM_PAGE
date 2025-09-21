@@ -5,6 +5,26 @@ import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
+// UI Components
+import { Button, Card, Badge, Text, Title, Subtitle, Loading, FAQ } from '@/components/ui'
+
+// Navigation Link Component
+const NavLink: React.FC<{ href: string; active?: boolean; children: React.ReactNode }> = ({ 
+  href, 
+  active = false, 
+  children 
+}) => {
+  const linkClasses = active 
+    ? 'text-cyan-400 font-medium' 
+    : 'text-gray-300 hover:text-cyan-400 transition-colors'
+    
+  return (
+    <Link href={href} className={linkClasses}>
+      {children}
+    </Link>
+  )
+}
+
 interface RecruitNotice {
   id: string
   title: string
@@ -134,50 +154,42 @@ export default function RecruitPage() {
               </Link>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/about" className="aim-nav-link">
-                소개
-              </Link>
-              <Link href="/members" className="aim-nav-link">
-                부원
-              </Link>
-              <Link href="/activities" className="aim-nav-link">
-                활동
-              </Link>
-              <Link href="/studies" className="aim-nav-link">
-                스터디
-              </Link>
-              <Link href="/recruit" className="aim-nav-link-active">
-                모집
-              </Link>
+              <NavLink href="/about">소개</NavLink>
+              <NavLink href="/members">부원</NavLink>
+              <NavLink href="/activities">활동</NavLink>
+              <NavLink href="/studies">스터디</NavLink>
+              <NavLink href="/recruit" active>모집</NavLink>
               {user ? (
                 <div className="flex items-center space-x-3">
                   {user.role === 'admin' && (
-                    <Link
+                    <Button 
+                      as={Link}
                       href="/admin"
-                      className="aim-btn-secondary text-sm"
+                      variant="secondary"
+                      size="sm"
                     >
                       🛠️ 관리자
-                    </Link>
+                    </Button>
                   )}
                   <span className="text-white">
                     안녕하세요, {user.name}님
                     {user.role === 'admin' && (
-                      <span className="ml-1 aim-badge-admin">
+                      <Badge variant="admin" size="sm" className="ml-1">
                         관리자
-                      </span>
+                      </Badge>
                     )}
                   </span>
-                  <button
+                  <Button 
                     onClick={handleLogout}
-                    className="aim-btn-ghost"
+                    variant="ghost"
                   >
                     로그아웃
-                  </button>
+                  </Button>
                 </div>
               ) : (
-                <Link href="/login" className="aim-btn-primary">
+                <Button as={Link} href="/login" variant="primary">
                   로그인
-                </Link>
+                </Button>
               )}
             </div>
           </div>
@@ -187,32 +199,30 @@ export default function RecruitPage() {
       {/* 메인 컨텐츠 */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
-          <div className="flex justify-center items-center min-h-[50vh]">
-            <div className="aim-spinner h-12 w-12"></div>
-            <span className="ml-3 aim-text-secondary">모집 공고를 불러오는 중...</span>
+          <div className="min-h-[50vh]">
+            <Loading text="모집 공고를 불러오는 중..." size="lg" />
           </div>
         ) : recruitNotice ? (
           <>
             {/* 헤더 섹션 */}
             <div className="text-center mb-16">
-              <h1 className="aim-hero-title">
-                <span className="aim-gradient-text">
-                  AI Monsters
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+                  AIM
                 </span>{' '}
                 {recruitNotice.title}
               </h1>
               <div className="flex justify-center items-center space-x-4 mb-6">
-                <span className={`px-4 py-2 rounded-full text-lg font-medium ${
-                  recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date()
-                    ? 'aim-badge-success' 
-                    : 'aim-badge-warning'
-                }`}>
+                <Badge 
+                  variant={recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date() ? 'success' : 'warning'}
+                  size="lg"
+                >
                   {recruitNotice.isOpen && new Date(recruitNotice.endAt) > new Date() ? '🔥 모집중' : '📝 모집마감'}
-                </span>
+                </Badge>
               </div>
-              <p className="text-lg aim-text-secondary mb-4">
+              <Text variant="secondary" size="lg" className="mb-4">
                 모집 기간: {new Date(recruitNotice.startAt).toLocaleDateString()} ~ {new Date(recruitNotice.endAt).toLocaleDateString()}
-              </p>
+              </Text>
             </div>
 
             {/* 히어로 배너 섹션 */}
@@ -271,50 +281,50 @@ export default function RecruitPage() {
                     
                     {/* 오른쪽: 핵심 정보 카드 */}
                     <div className="space-y-4">
-                      <div className="aim-card-dark backdrop-blur p-6">
+                      <Card variant="dark" padding="md" className="backdrop-blur">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">📅</span>
                           </div>
                           <div>
-                            <h3 className="aim-text-primary font-semibold">모집 기간</h3>
-                            <p className="aim-text-secondary text-sm">
+                            <Text as="h3" weight="semibold" variant="primary">모집 기간</Text>
+                            <Text variant="secondary" size="sm">
                               {new Date(recruitNotice.startAt).toLocaleDateString()} ~ {new Date(recruitNotice.endAt).toLocaleDateString()}
-                            </p>
+                            </Text>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                       
-                      <div className="aim-card-dark backdrop-blur p-6">
+                      <Card variant="dark" padding="md" className="backdrop-blur">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">🎯</span>
                           </div>
                           <div>
-                            <h3 className="aim-text-primary font-semibold">모집 대상</h3>
-                            <p className="aim-text-secondary text-sm">
+                            <Text as="h3" weight="semibold" variant="primary">모집 대상</Text>
+                            <Text variant="secondary" size="sm">
                               {recruitNotice.targetAudience || "국민대학교 재학생 (전 학과/학년)"}
-                            </p>
+                            </Text>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                       
-                      <div className="aim-card-dark backdrop-blur p-6">
+                      <Card variant="dark" padding="md" className="backdrop-blur">
                         <div className="flex items-center space-x-3 mb-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold">👥</span>
                           </div>
                           <div>
-                            <h3 className="aim-text-primary font-semibold">모집 인원</h3>
-                            <p className="aim-text-secondary text-sm">
+                            <Text as="h3" weight="semibold" variant="primary">모집 인원</Text>
+                            <Text variant="secondary" size="sm">
                               {recruitNotice.recruitCount ? 
                                 `${recruitNotice.recruitCount}${recruitNotice.recruitMethod ? ` (${recruitNotice.recruitMethod})` : ''}` :
                                 "15명 내외 (서류 + 면접)"
                               }
-                            </p>
+                            </Text>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                     </div>
                   </div>
                 </div>
@@ -477,53 +487,19 @@ export default function RecruitPage() {
             <div className="relative mb-16">
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
                 <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-1">
-                  <div className="aim-card rounded-xl p-8 md:p-12">
-                    <div className="flex items-center space-x-3 mb-8">
-                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                        <span className="text-white font-bold text-xl">💡</span>
-                      </div>
-                      <h2 className="text-3xl font-bold aim-text-primary">자주 묻는 질문</h2>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {faqData.map((faq, index) => (
-                        <div key={index} className="aim-faq-item">
-                          <button
-                            onClick={() => toggleFaq(index)}
-                            className="aim-faq-button"
-                          >
-                            <h3 className="text-lg font-semibold aim-text-primary pr-4">
-                              {faq.question}
-                            </h3>
-                            <div className={`text-2xl aim-icon-cyan transition-transform duration-300 ${
-                              openFaqIndex === index ? 'rotate-180' : ''
-                            }`}>
-                              ▼
-                            </div>
-                          </button>
-                          
-                          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                            openFaqIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                          }`}>
-                            <div className="aim-faq-content">
-                              <p className="aim-text-primary leading-relaxed pt-4 text-lg">
-                                {faq.answer}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="mt-8 text-center">
-                      <p className="aim-text-secondary">
-                        더 궁금한 점이 있으시면{' '}
-                        <a href="mailto:aim@kookmin.ac.kr" className="aim-icon-cyan hover:text-cyan-300 font-medium">
-                          aim@kookmin.ac.kr
-                        </a>
-                        {' '}로 문의해주세요!
-                      </p>
-                    </div>
+                  <FAQ 
+                    items={faqData}
+                    title="자주 묻는 질문"
+                    icon="💡"
+                  />
+                  <div className="mt-8 text-center px-8 pb-8">
+                    <Text variant="secondary">
+                      더 궁금한 점이 있으시면{' '}
+                      <a href="mailto:aim@kookmin.ac.kr" className="text-cyan-400 hover:text-cyan-300 font-medium">
+                        aim@kookmin.ac.kr
+                      </a>
+                      {' '}로 문의해주세요!
+                    </Text>
                   </div>
                 </div>
               </div>
@@ -533,88 +509,88 @@ export default function RecruitPage() {
           <>
             {/* 기본 헤더 섹션 (모집 공고가 없을 때) */}
             <div className="text-center mb-16">
-              <h1 className="aim-hero-title">
-                <span className="aim-gradient-text">
-                  AI Monsters
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+                  AIM
                 </span>{' '}
                 모집 안내
               </h1>
-              <p className="aim-hero-subtitle mb-8">
+              <Subtitle className="mb-8">
                 현재 진행중인 모집이 없습니다.<br />
                 추후 모집 공고를 확인해주세요.
-              </p>
+              </Subtitle>
               
               {/* 지난 모집 보기 버튼 */}
               <div className="flex justify-center">
-                <button
+                <Button
                   onClick={handleShowPastRecruits}
-                  className="aim-btn-ghost px-6 py-3 rounded-lg font-medium flex items-center gap-2"
+                  variant="ghost"
+                  className="px-6 py-3 rounded-lg font-medium flex items-center gap-2"
                 >
                   {showPastRecruits ? '지난 모집 숨기기' : '지난 모집 보기'}
                   <span className="text-lg">
                     {showPastRecruits ? '↑' : '↓'}
                   </span>
-                </button>
+                </Button>
               </div>
             </div>
             
             {/* 지난 모집 공고 목록 */}
             {showPastRecruits && (
               <div className="mt-16 max-w-4xl mx-auto">
-                <h2 className="text-2xl font-bold text-white mb-8 text-center">
+                <Title level={2} align="center" className="mb-8">
                   지난 모집 공고
-                </h2>
+                </Title>
                 
                 {loadingPast ? (
-                  <div className="text-center py-8">
-                    <div className="aim-spinner h-8 w-8 mx-auto"></div>
-                    <p className="aim-text-secondary mt-4">지난 모집 공고를 불러오는 중...</p>
+                  <div className="py-8">
+                    <Loading text="지난 모집 공고를 불러오는 중..." />
                   </div>
                 ) : pastRecruits.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="aim-text-secondary">지난 모집 공고가 없습니다.</p>
+                    <Text variant="secondary">지난 모집 공고가 없습니다.</Text>
                   </div>
                 ) : (
                   <div className="space-y-6">
                     {pastRecruits.map((notice) => (
-                      <div key={notice.id} className="aim-card p-6">
+                      <Card key={notice.id} padding="md">
                         <div className="flex justify-between items-start mb-4">
-                          <h3 className="text-xl font-bold text-white">{notice.title}</h3>
-                          <span className="aim-badge-muted">
+                          <Text as="h3" size="xl" weight="bold" variant="primary">{notice.title}</Text>
+                          <Badge variant="muted">
                             마감됨
-                          </span>
+                          </Badge>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           {notice.targetAudience && (
                             <div className="text-center">
-                              <p className="aim-text-secondary text-sm mb-1">모집 대상</p>
-                              <p className="aim-text-primary font-medium">{notice.targetAudience}</p>
+                              <Text variant="secondary" size="sm" className="mb-1">모집 대상</Text>
+                              <Text variant="primary" weight="medium">{notice.targetAudience}</Text>
                             </div>
                           )}
                           {notice.recruitCount && (
                             <div className="text-center">
-                              <p className="aim-text-secondary text-sm mb-1">모집 인원</p>
-                              <p className="aim-text-primary font-medium">{notice.recruitCount}</p>
+                              <Text variant="secondary" size="sm" className="mb-1">모집 인원</Text>
+                              <Text variant="primary" weight="medium">{notice.recruitCount}</Text>
                             </div>
                           )}
                           {notice.recruitMethod && (
                             <div className="text-center">
-                              <p className="aim-text-secondary text-sm mb-1">모집 방법</p>
-                              <p className="aim-text-primary font-medium">{notice.recruitMethod}</p>
+                              <Text variant="secondary" size="sm" className="mb-1">모집 방법</Text>
+                              <Text variant="primary" weight="medium">{notice.recruitMethod}</Text>
                             </div>
                           )}
                         </div>
                         
-                        <div className="flex justify-between items-center text-sm aim-text-secondary">
-                          <span>
+                        <div className="flex justify-between items-center">
+                          <Text variant="secondary" size="sm">
                             모집 기간: {new Date(notice.startAt).toLocaleDateString()} ~ {new Date(notice.endAt).toLocaleDateString()}
-                          </span>
+                          </Text>
                           {notice.shortDescription && (
-                            <span className="max-w-md truncate">{notice.shortDescription}</span>
+                            <Text variant="secondary" size="sm" className="max-w-md truncate">{notice.shortDescription}</Text>
                           )}
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 )}
@@ -628,44 +604,11 @@ export default function RecruitPage() {
           <>
             {/* 자주 묻는 질문 */}
             <div className="max-w-4xl mx-auto mt-16">
-              <div className="aim-card p-8 md:p-12 rounded-xl">
-                <div className="flex items-center space-x-3 mb-8">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
-                    <span className="text-white font-bold text-xl">💡</span>
-                  </div>
-                  <h2 className="text-3xl font-bold aim-text-primary">자주 묻는 질문</h2>
-                </div>
-                
-                <div className="space-y-4">
-                  {faqData.map((faq, index) => (
-                    <div key={index} className="aim-faq-item">
-                      <button
-                        onClick={() => toggleFaq(index)}
-                        className="aim-faq-button"
-                      >
-                        <h3 className="text-lg font-semibold aim-text-primary pr-4">
-                          {faq.question}
-                        </h3>
-                        <div className={`transform transition-transform duration-200 ${
-                          openFaqIndex === index ? 'rotate-180' : ''
-                        }`}>
-                          <svg className="w-6 h-6 aim-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </button>
-                      
-                      {openFaqIndex === index && (
-                        <div className="aim-faq-content">
-                          <p className="aim-text-primary pt-4 leading-relaxed">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <FAQ 
+                items={faqData}
+                title="자주 묻는 질문"
+                icon="💡"
+              />
             </div>
           </>
         )}
