@@ -623,8 +623,55 @@ export default function RecruitPage() {
           </>
         )}
 
-        {/* 모집 공고가 없을 때만 기본 정보 표시 */}
+        {/* 모집 공고가 없을 때는 FAQ만 표시 */}
         {!loading && !recruitNotice && (
+          <>
+            {/* 자주 묻는 질문 */}
+            <div className="max-w-4xl mx-auto mt-16">
+              <div className="bg-gray-800 rounded-xl p-8 md:p-12">
+                <div className="flex items-center space-x-3 mb-8">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold text-xl">💡</span>
+                  </div>
+                  <h2 className="text-3xl font-bold text-white">자주 묻는 질문</h2>
+                </div>
+                
+                <div className="space-y-4">
+                  {faqData.map((faq, index) => (
+                    <div key={index} className="bg-gray-700/50 backdrop-blur rounded-xl border border-gray-600 overflow-hidden">
+                      <button
+                        onClick={() => toggleFaq(index)}
+                        className="w-full p-6 text-left hover:bg-gray-700/70 transition-colors duration-200 flex items-center justify-between"
+                      >
+                        <h3 className="text-lg font-semibold text-white pr-4">
+                          {faq.question}
+                        </h3>
+                        <div className={`transform transition-transform duration-200 ${
+                          openFaqIndex === index ? 'rotate-180' : ''
+                        }`}>
+                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </button>
+                      
+                      {openFaqIndex === index && (
+                        <div className="px-6 pb-6 border-t border-gray-600/50">
+                          <p className="text-gray-300 pt-4 leading-relaxed">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* 모집 공고가 없을 때는 기본 정보 숨김 - 현재 비활성화 */}
+        {false && (
           <>
         {/* 모집 정보 카드 */}
         <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-8 mb-12">
