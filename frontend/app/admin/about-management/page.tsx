@@ -337,11 +337,11 @@ export default function AboutManagementPage() {
         {activeTab === 'sections' && (
           <>
             <div>
-              <label className="block text-sm font-medium text-white mb-2">타입</label>
+              <label className="block text-white font-medium mb-2">타입 *</label>
               <select
                 value={formData.type || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 required
               >
                 <option value="">타입을 선택하세요</option>
@@ -350,68 +350,78 @@ export default function AboutManagementPage() {
                 <option value="vision">비전</option>
               </select>
             </div>
-              <div>
-              <label className="block text-sm font-medium text-white mb-2">제목</label>
-                <input
-                  type="text"
+            
+            <div>
+              <label className="block text-white font-medium mb-2">제목 *</label>
+              <input
+                type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                  required
-                />
-              </div>
-                  <div>
-              <label className="block text-sm font-medium text-white mb-2">내용</label>
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="섹션 제목을 입력하세요"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white font-medium mb-2">내용 *</label>
               <textarea
                 value={formData.content || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 rows={6}
+                placeholder="섹션 내용을 입력하세요"
                 required
-                    />
-                  </div>
+              />
+            </div>
           </>
         )}
                   
         {activeTab === 'activities' && (
           <>
-                  <div>
-              <label className="block text-sm font-medium text-white mb-2">제목</label>
-                    <input
-                      type="text"
+            <div>
+              <label className="block text-white font-medium mb-2">제목 *</label>
+              <input
+                type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="활동 제목을 입력하세요"
                 required
-                    />
-                  </div>
-                  <div>
-              <label className="block text-sm font-medium text-white mb-2">설명</label>
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white font-medium mb-2">설명 *</label>
               <textarea
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 rows={4}
+                placeholder="활동 설명을 입력하세요"
                 required
-                    />
-                  </div>
+              />
+            </div>
+            
             <div className="grid grid-cols-2 gap-4">
-                  <div>
-                <label className="block text-sm font-medium text-white mb-2">아이콘</label>
-                    <input
-                      type="text"
+              <div>
+                <label className="block text-white font-medium mb-2">아이콘 *</label>
+                <input
+                  type="text"
                   value={formData.icon || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   placeholder="🚀"
+                  required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">색상</label>
+                <label className="block text-white font-medium mb-2">색상 *</label>
                 <select
                   value={formData.color || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  required
                 >
                   <option value="">색상을 선택하세요</option>
                   <option value="cyan">Cyan</option>
@@ -420,53 +430,58 @@ export default function AboutManagementPage() {
                   <option value="purple">Purple</option>
                 </select>
               </div>
-                    </div>
+            </div>
           </>
         )}
 
         {activeTab === 'history' && (
           <>
             <div>
-              <label className="block text-sm font-medium text-white mb-2">연도</label>
+              <label className="block text-white font-medium mb-2">연도 *</label>
               <input
                 type="number"
                 value={formData.year || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                      required
-                    />
-                  </div>
-                  <div>
-              <label className="block text-sm font-medium text-white mb-2">제목</label>
-                  <input
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="예: 2024"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white font-medium mb-2">제목 *</label>
+              <input
                 type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                    required
-                  />
-                </div>
-                <div>
-              <label className="block text-sm font-medium text-white mb-2">설명</label>
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="연혁 제목을 입력하세요"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-white font-medium mb-2">설명 *</label>
               <textarea
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 rows={4}
-                    required
-                  />
-                </div>
+                placeholder="연혁 설명을 입력하세요"
+                required
+              />
+            </div>
           </>
         )}
 
         {activeTab === 'contact' && (
           <>
             <div>
-              <label className="block text-sm font-medium text-white mb-2">타입</label>
+              <label className="block text-white font-medium mb-2">타입 *</label>
               <select
                 value={formData.type || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 required
               >
                 <option value="">타입을 선택하세요</option>
@@ -475,24 +490,28 @@ export default function AboutManagementPage() {
                 <option value="instagram">Instagram</option>
                 <option value="discord">Discord</option>
               </select>
-              </div>
-              <div>
-              <label className="block text-sm font-medium text-white mb-2">라벨</label>
-                <input
+            </div>
+            
+            <div>
+              <label className="block text-white font-medium mb-2">라벨 *</label>
+              <input
                 type="text"
                 value={formData.label || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="연락처 라벨을 입력하세요"
                 required
-                />
-              </div>
+              />
+            </div>
+            
             <div>
-              <label className="block text-sm font-medium text-white mb-2">값</label>
-                <input
+              <label className="block text-white font-medium mb-2">값 *</label>
+              <input
                 type="text"
                 value={formData.value || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="연락처 값을 입력하세요"
                 required
               />
             </div>
@@ -500,12 +519,13 @@ export default function AboutManagementPage() {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">순서</label>
+          <label className="block text-white font-medium mb-2">순서</label>
           <input
             type="number"
             value={formData.order || 0}
             onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-            className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+            className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            placeholder="0"
           />
         </div>
       </Modal>

@@ -14,24 +14,47 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter()
 
   useEffect(() => {
-    const checkAdminAuth = () => {
+    const checkAdminAuth = async () => {
       const storedUser = localStorage.getItem('user')
       const token = localStorage.getItem('token')
 
       if (!storedUser || !token) {
+        console.log('토큰 또는 사용자 정보가 없습니다.')
         router.push('/login')
         return
       }
 
-      const userData = JSON.parse(storedUser)
-      if (userData.role !== 'admin') {
-        alert('관리자 권한이 필요합니다.')
-        router.push('/')
-        return
-      }
+      try {
+        const userData = JSON.parse(storedUser)
+        if (userData.role !== 'admin') {
+          alert('관리자 권한이 필요합니다.')
+          router.push('/')
+          return
+        }
 
-      setUser(userData)
-      setLoading(false)
+        // 토큰 유효성 검증을 위해 간단한 API 호출
+        const response = await fetch('/api/members/admin/all', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.status === 401) {
+          console.log('토큰이 만료되었거나 유효하지 않습니다.')
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          router.push('/login')
+          return
+        }
+
+        setUser(userData)
+        setLoading(false)
+      } catch (error) {
+        console.error('인증 확인 중 오류:', error)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        router.push('/login')
+      }
     }
 
     checkAdminAuth()

@@ -125,7 +125,7 @@ export default function MemberManagement() {
   const fetchMembers = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3001/api/members/admin/all', {
+      const response = await fetch('/api/members/admin/all', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -134,6 +134,12 @@ export default function MemberManagement() {
       if (response.ok) {
         const data = await response.json()
         setMembers(data)
+      } else if (response.status === 401) {
+        showNotification('error', '인증 오류', '로그인이 만료되었습니다. 다시 로그인해주세요.')
+        // 토큰 제거하고 로그인 페이지로 리다이렉트
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        window.location.href = '/login'
       } else {
         showNotification('error', '조회 실패', '멤버 목록을 불러올 수 없습니다.')
       }
@@ -172,7 +178,7 @@ export default function MemberManagement() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3001/api/members/admin/${editingMember.id}`, {
+      const response = await fetch(`/api/members/admin/${editingMember.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +210,7 @@ export default function MemberManagement() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3001/api/members/admin/${member.id}`, {
+      const response = await fetch(`/api/members/admin/${member.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -233,7 +239,7 @@ export default function MemberManagement() {
 
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3001/api/members/admin', {
+      const response = await fetch('/api/members/admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
