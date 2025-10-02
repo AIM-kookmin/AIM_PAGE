@@ -4,13 +4,41 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://aim-page-backend:3001'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Next.js API Route: 모든 모집 공고 조회 시작')
+    console.log('Next.js API Route: 모든 모집 공고 조회 시작 (관리자용)')
     console.log('백엔드 URL:', BACKEND_URL)
     
-    const response = await fetch(`${BACKEND_URL}/api/content/recruit/all-public`, {
+    // 관리자 인증 토큰 확인
+    const token = request.headers.get('authorization')
+    if (!token) {
+      console.log('인증 토큰 없음 - 공개 API로 폴백')
+      // 토큰이 없으면 공개 API 사용
+      const response = await fetch(`${BACKEND_URL}/api/content/recruit/all-public`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('백엔드 API 호출 실패:', response.status, response.statusText, errorText)
+        return NextResponse.json(
+          { error: `백엔드 API 호출 실패: ${response.status} ${response.statusText}` }, 
+          { status: response.status }
+        )
+      }
+      
+      const data = await response.json()
+      return NextResponse.json(data)
+    }
+    
+    // 토큰이 있으면 관리자 API 사용
+    console.log('인증 토큰 있음 - 관리자 API 사용')
+    const response = await fetch(`${BACKEND_URL}/api/content/recruit/all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': token,
       },
     })
     
