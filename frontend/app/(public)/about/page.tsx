@@ -1,12 +1,10 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Card, Text, Title, Subtitle, Loading } from '@/components/ui'
 
 interface AboutSection {
   id: string
-  type: string
   title: string
   content: string
   order: number
@@ -38,7 +36,6 @@ interface AboutContact {
 }
 
 export default function AboutPage() {
-  const [user, setUser] = useState<any>(null)
   const [sections, setSections] = useState<AboutSection[]>([])
   const [activities, setActivities] = useState<AboutActivity[]>([])
   const [history, setHistory] = useState<AboutHistory[]>([])
@@ -47,12 +44,6 @@ export default function AboutPage() {
 
   useEffect(() => {
     document.title = 'About - AIM: AI Monsters'
-    
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-
     fetchAboutData()
   }, [])
 
@@ -89,13 +80,6 @@ export default function AboutPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
-    alert('로그아웃되었습니다.')
   }
 
   const getColorClasses = (color: string) => {

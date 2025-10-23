@@ -331,11 +331,10 @@ router.get('/about/sections/admin', authenticateToken, requireAdmin, async (req,
 // 소개 섹션 생성/수정 (관리자용)
 router.post('/about/sections', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { type, title, content, order } = req.body
+    const { title, content, order } = req.body
     
     const section = await prisma.aboutSection.create({
       data: {
-        type,
         title,
         content,
         order: order || 0
@@ -352,12 +351,11 @@ router.post('/about/sections', authenticateToken, requireAdmin, async (req, res)
 router.put('/about/sections/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params
-    const { type, title, content, order } = req.body
+    const { title, content, order } = req.body
     
     const section = await prisma.aboutSection.update({
       where: { id },
       data: {
-        type,
         title,
         content,
         order: order || 0

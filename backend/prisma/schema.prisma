@@ -201,7 +201,6 @@ model AboutContent {
 
 model AboutSection {
   id        String   @id @default(cuid())
-  type      String   // 'intro', 'activity', 'history', 'contact'
   title     String
   content   String
   order     Int      @default(0)

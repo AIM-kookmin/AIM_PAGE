@@ -1,98 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export default function HomePage() {
-  const [user, setUser] = useState<any>(null)
-
   useEffect(() => {
-    // 페이지 제목 설정
     document.title = 'AIM: AI Monsters - 국민대학교 AI 동아리'
-    
-    // 로그인 상태 확인
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
   }, [])
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
-    alert('로그아웃되었습니다.')
-  }
   return (
-    <div className="min-h-screen bg-black">
-      {/* 네비게이션 */}
-      <nav className="sticky top-0 z-50 bg-black border-b border-gray-800 backdrop-blur-sm bg-opacity-95">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-3">
-                <img 
-                  src="/images/aim_logo.png" 
-                  alt="AIM 로고" 
-                  className="h-8 w-auto object-contain"
-                />
-                <span className="text-xl font-bold text-white">AIM</span>
-                <span className="text-sm text-gray-400 ml-1">AI Monsters</span>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/about" className="text-gray-300 hover:text-cyan-400 transition-colors">
-                소개
-              </Link>
-              <Link href="/members" className="text-gray-300 hover:text-cyan-400 transition-colors">
-                부원
-              </Link>
-              <Link href="/activities" className="text-gray-300 hover:text-cyan-400 transition-colors">
-                활동
-              </Link>
-              <Link href="/studies" className="text-gray-300 hover:text-cyan-400 transition-colors">
-                스터디
-              </Link>
-              <Link href="/recruit" className="text-gray-300 hover:text-cyan-400 transition-colors">
-                모집
-              </Link>
-              {user ? (
-                <div className="flex items-center space-x-3">
-                  {user.role === 'admin' && (
-                    <Link 
-                      href="/admin" 
-                      className="bg-pink-600 text-white px-3 py-2 rounded-md hover:bg-pink-700 text-sm"
-                    >
-                      🛠️ 관리자
-                    </Link>
-                  )}
-                  <span className="text-white">
-                    안녕하세요, {user.name}님
-                    {user.role === 'admin' && (
-                      <span className="ml-1 text-xs bg-pink-600 text-white px-2 py-1 rounded">
-                        관리자
-                      </span>
-                    )}
-                  </span>
-                  <button 
-                    onClick={handleLogout}
-                    className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 border border-gray-600"
-                  >
-                    로그아웃
-                  </button>
-                </div>
-              ) : (
-                <Link href="/login" className="bg-cyan-500 text-black px-4 py-2 rounded-md hover:bg-cyan-400 font-semibold">
-                  로그인
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      {/* 메인 컨텐츠 */}
-      <main>
+    <>
         {/* 히어로 섹션 */}
         <section className="min-h-screen flex items-center justify-center bg-black px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
@@ -215,7 +132,6 @@ export default function HomePage() {
                    </div>
           </div>
         </section>
-      </main>
 
       {/* 푸터 */}
       <footer className="bg-black border-t border-gray-800 py-8">
@@ -223,6 +139,6 @@ export default function HomePage() {
           <p className="text-gray-400">&copy; 2024 AIM (AI Monsters). All rights reserved.</p>
         </div>
       </footer>
-    </div>
+    </>
   )
 }

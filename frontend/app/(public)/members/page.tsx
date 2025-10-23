@@ -22,18 +22,11 @@ interface Member {
 
 
 export default function MembersPage() {
-  const [user, setUser] = useState<any>(null)
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     document.title = 'Members - AIM: AI Monsters'
-    
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-
     fetchMembers()
   }, [])
 
@@ -47,13 +40,6 @@ export default function MembersPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
-    alert('로그아웃되었습니다.')
   }
 
   // 역할별로 멤버 분류 - 운영진과 부원만

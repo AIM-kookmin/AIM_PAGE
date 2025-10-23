@@ -5,7 +5,6 @@ import { Button, Card, Text, Title, Subtitle, Loading, Modal } from '@/component
 
 interface AboutSection {
   id: string
-  type: string
   title: string
   content: string
   order: number
@@ -52,7 +51,6 @@ export default function AboutManagementPage() {
   const [deletingItem, setDeletingItem] = useState<any>(null)
   const [editingItem, setEditingItem] = useState<any>(null)
   const [formData, setFormData] = useState<{
-    type?: string
     title?: string
     content?: string
     description?: string
@@ -383,21 +381,6 @@ export default function AboutManagementPage() {
       >
         {activeTab === 'sections' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white font-medium mb-2">타입 *</label>
-              <select
-                value={formData.type || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                required
-              >
-                <option value="">타입을 선택하세요</option>
-                <option value="intro">소개</option>
-                <option value="mission">미션</option>
-                <option value="vision">비전</option>
-              </select>
-            </div>
-            
               <div>
                 <label className="block text-white font-medium mb-2">제목 *</label>
                 <input
@@ -410,6 +393,17 @@ export default function AboutManagementPage() {
                 />
               </div>
 
+            <div>
+              <label className="block text-white font-medium mb-2">순서</label>
+              <input
+                type="number"
+                value={formData.order || 0}
+                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="0"
+              />
+            </div>
+
             <div className="md:col-span-2">
               <label className="block text-white font-medium mb-2">내용 *</label>
               <textarea
@@ -419,17 +413,6 @@ export default function AboutManagementPage() {
                 rows={6}
                 placeholder="섹션 내용을 입력하세요"
                 required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-white font-medium mb-2">순서</label>
-              <input
-                type="number"
-                value={formData.order || 0}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="0"
               />
             </div>
           </div>
@@ -663,7 +646,7 @@ export default function AboutManagementPage() {
                 <Text variant="secondary" size="sm">
                   {notification.message}
                 </Text>
-              </div>
+                </div>
               <Button onClick={hideNotification} variant="ghost" size="sm" className="hover:bg-gray-700 -mt-1">
                 ✕
               </Button>
@@ -673,7 +656,7 @@ export default function AboutManagementPage() {
               <div className={`h-full ${
                 notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
               } animate-progress`}></div>
-            </div>
+          </div>
         </div>
       )}
     </div>

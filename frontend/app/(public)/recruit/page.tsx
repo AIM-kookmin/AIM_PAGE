@@ -40,7 +40,6 @@ interface RecruitNotice {
 }
 
 export default function RecruitPage() {
-  const [user, setUser] = useState<any>(null)
   const [recruitNotice, setRecruitNotice] = useState<RecruitNotice | null>(null)
   const [loading, setLoading] = useState(true)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
@@ -103,15 +102,7 @@ export default function RecruitPage() {
   }
 
   useEffect(() => {
-    // 페이지 제목 설정
     document.title = 'Recruit - AIM: AI Monsters'
-    
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-
-    // 활성 모집 공고 조회
     fetchActiveRecruitNotice()
   }, [])
 
