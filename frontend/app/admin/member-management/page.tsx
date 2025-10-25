@@ -41,8 +41,11 @@ export default function MemberManagement() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showCsvModal, setShowCsvModal] = useState(false)
   const [deletingMember, setDeletingMember] = useState<Member | null>(null)
   const [editingMember, setEditingMember] = useState<Member | null>(null)
+  const [csvFile, setCsvFile] = useState<File | null>(null)
+  const [csvUploading, setCsvUploading] = useState(false)
   const [formData, setFormData] = useState<EditMemberData>({
     name: '',
     email: '',
@@ -292,6 +295,261 @@ export default function MemberManagement() {
     }
   }
 
+  const openCsvModal = () => {
+    setCsvFile(null)
+    setShowCsvModal(true)
+  }
+
+  const closeCsvModal = () => {
+    setShowCsvModal(false)
+    setCsvFile(null)
+    // 파일 입력 필드 초기화
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+    if (fileInput) {
+      fileInput.value = ''
+    }
+  }
+
+  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      
+      // 파일 유효성 검사
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        showNotification('warning', '파일 형식 오류', 'CSV 파일만 업로드 가능합니다.')
+        return
+      }
+      
+      if (file.size > 5 * 1024 * 1024) { // 5MB 제한
+        showNotification('warning', '파일 크기 초과', '파일 크기는 5MB 이하여야 합니다.')
+        return
+      }
+      
+      console.log('선택된 파일 정보:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: new Date(file.lastModified)
+      })
+      
+      setCsvFile(file)
+    }
+  }
+
+  const parseCsvFile = async (file: File): Promise<any[]> => {
+    // 먼저 EUC-KR로 시도
+    const tryParseWithEncoding = (encoding: string): Promise<any[]> => {
+      return new Promise((resolve, reject) => {
+        // 파일 상태 확인
+        if (!file || !(file instanceof File)) {
+          reject(new Error('유효하지 않은 파일입니다.'))
+          return
+        }
+
+        if (file.size === 0) {
+          reject(new Error('빈 파일입니다.'))
+          return
+        }
+
+        const reader = new FileReader()
+        
+        reader.onload = (e) => {
+          try {
+            const text = e.target?.result as string
+            
+            if (!text || text.trim().length === 0) {
+              reject(new Error('CSV 파일이 비어있습니다.'))
+              return
+            }
+
+            console.log(`[${encoding}] CSV 파일 내용 미리보기:`, text.substring(0, 200))
+
+            // 한글이 깨졌는지 확인
+            const hasGarbledKorean = /[\uFFFD�]/.test(text.substring(0, 500))
+            if (hasGarbledKorean && encoding === 'UTF-8') {
+              reject(new Error('ENCODING_ERROR'))
+              return
+            }
+
+            // 줄바꿈 처리 (Windows, Unix, Mac 모두 지원)
+            const lines = text.split(/\r?\n/).filter(line => line.trim())
+            
+            if (lines.length < 2) {
+              reject(new Error('CSV 파일에 데이터가 없습니다. (헤더만 있거나 비어있음)'))
+              return
+            }
+
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''))
+            console.log('CSV 헤더:', headers)
+            
+            const members = []
+
+            for (let i = 1; i < lines.length; i++) {
+              // 간단한 split으로 먼저 시도
+              const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+              
+              const member: any = {}
+
+              headers.forEach((header, index) => {
+                const value = values[index]
+                if (value) {
+                  // 특정 필드 타입 변환
+                  if (header === 'generation') {
+                    member[header] = value ? parseInt(value) : null
+                  } else if (header === 'isPublic') {
+                    member[header] = value.toLowerCase() === 'true'
+                  } else {
+                    member[header] = value
+                  }
+                }
+              })
+
+              if (member.email && member.name) {
+                members.push(member)
+              }
+            }
+
+            console.log('파싱된 멤버 수:', members.length)
+
+            if (members.length === 0) {
+              reject(new Error('유효한 멤버 데이터가 없습니다. email과 name은 필수입니다.'))
+              return
+            }
+
+            resolve(members)
+          } catch (error) {
+            console.error('CSV 파싱 오류:', error)
+            reject(new Error(`CSV 파싱 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`))
+          }
+        }
+        
+        reader.onloadstart = () => {
+          console.log(`[${encoding}] 파일 읽기 시작:`, file.name)
+        }
+        
+        reader.onerror = (e) => {
+          console.error('파일 읽기 오류 상세:', {
+            error: e,
+            readyState: reader.readyState,
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type
+          })
+          reject(new Error('파일을 읽는 중 오류가 발생했습니다.'))
+        }
+        
+        reader.onabort = () => {
+          reject(new Error('파일 읽기가 중단되었습니다.'))
+        }
+        
+        // 파일 읽기 시작
+        try {
+          console.log(`[${encoding}] FileReader로 파일 읽기 시작`)
+          reader.readAsText(file, encoding)
+        } catch (error) {
+          console.error('readAsText 호출 오류:', error)
+          reject(new Error(`파일 읽기를 시작할 수 없습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`))
+        }
+      })
+    }
+
+    // UTF-8로 먼저 시도
+    try {
+      return await tryParseWithEncoding('UTF-8')
+    } catch (error) {
+      // UTF-8 실패 시 EUC-KR로 재시도
+      if (error instanceof Error && error.message === 'ENCODING_ERROR') {
+        console.log('UTF-8 인코딩 실패, EUC-KR로 재시도...')
+        try {
+          return await tryParseWithEncoding('EUC-KR')
+        } catch (eucError) {
+          // EUC-KR도 실패하면 CP949 시도
+          console.log('EUC-KR 인코딩 실패, CP949로 재시도...')
+          return await tryParseWithEncoding('CP949')
+        }
+      }
+      throw error
+    }
+  }
+
+  const handleCsvUpload = async () => {
+    if (!csvFile) {
+      showNotification('warning', '파일 선택', 'CSV 파일을 선택해주세요.')
+      return
+    }
+
+    try {
+      setCsvUploading(true)
+      const members = await parseCsvFile(csvFile)
+
+      if (members.length === 0) {
+        showNotification('warning', '데이터 없음', '유효한 멤버 데이터가 없습니다.')
+        return
+      }
+
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:3001/api/members/admin/bulk-upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ members })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        const successCount = data.results.success.length
+        const failedCount = data.results.failed.length
+        const skippedCount = data.results.failed.filter((f: any) => f.reason.includes('이미 등록된')).length
+        
+        let message = `${successCount}명의 계정이 생성되었습니다.`
+        if (skippedCount > 0) {
+          message += `\n${skippedCount}명은 이미 존재하여 건너뛰었습니다.`
+        }
+        if (failedCount - skippedCount > 0) {
+          message += `\n${failedCount - skippedCount}명 실패 (오류)`
+        }
+        
+        if (failedCount > 0) {
+          console.log('건너뛴/실패 목록:', data.results.failed)
+        }
+
+        showNotification('success', 'CSV 업로드 완료', message)
+        closeCsvModal()
+        fetchMembers()
+
+        // 성공한 계정의 초기 비밀번호 정보 표시
+        if (data.results.success.length > 0) {
+          console.log('=== 생성된 계정 목록 ===')
+          data.results.success.forEach((s: any) => {
+            console.log(`📧 ${s.email} - 초기 비밀번호: ${s.initialPassword}`)
+          })
+        }
+      } else {
+        showNotification('error', '업로드 실패', data.error || 'CSV 업로드에 실패했습니다.')
+      }
+    } catch (error) {
+      console.error('CSV 업로드 오류:', error)
+      showNotification('error', '오류 발생', error instanceof Error ? error.message : 'CSV 파일 처리 중 오류가 발생했습니다.')
+    } finally {
+      setCsvUploading(false)
+    }
+  }
+
+  const downloadCsvTemplate = () => {
+    const template = `email,name,displayName,studentId,position,department,year,generation,role,isPublic
+kim123@kookmin.ac.kr,김철수,철수,20241234,부원,소프트웨어학부,2,3,member,true
+lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,member,true`
+    
+    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = 'member_template.csv'
+    link.click()
+  }
+
 
   if (loading) {
     return (
@@ -316,9 +574,14 @@ export default function MemberManagement() {
             동아리 멤버들의 정보를 관리합니다.
           </Subtitle>
         </div>
-        <Button onClick={openAddModal} variant="primary">
+        <div className="flex gap-3">
+          <Button onClick={openCsvModal} variant="secondary">
+            📄 .csv로 추가
+          </Button>
+          <Button onClick={openAddModal} variant="primary">
           + 새 멤버 추가
-        </Button>
+          </Button>
+        </div>
       </div>
 
       {/* 멤버 카드 목록 */}
@@ -384,12 +647,12 @@ export default function MemberManagement() {
                   member.role === 'admin' 
                     ? 'bg-pink-600 text-white' 
                     : 'bg-gray-600 text-gray-300'
-                }`}>
-                  {member.role === 'admin' ? '관리자' : '일반 멤버'}
-                </span>
+                  }`}>
+                    {member.role === 'admin' ? '관리자' : '일반 멤버'}
+                  </span>
                 <span className="text-xs text-gray-500">
                   {new Date(member.createdAt).toLocaleDateString()}
-                </span>
+                  </span>
               </div>
             </div>
           </Card>
@@ -405,23 +668,23 @@ export default function MemberManagement() {
         submitText={editingMember ? '수정' : '추가'}
         maxWidth="4xl"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
             <label className="block text-white font-medium mb-2">이름 *</label>
-            <input
-              type="text"
+                <input
+                  type="text"
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="이름을 입력하세요"
               required
-            />
-          </div>
+                />
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">이메일 *</label>
-            <input
-              type="email"
+                <input
+                  type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               className={`w-full bg-gray-700 border text-white px-4 py-2 rounded-lg focus:ring-2 ${
@@ -437,58 +700,58 @@ export default function MemberManagement() {
                 국민대학교 이메일(@kookmin.ac.kr)을 사용해주세요.
               </p>
             )}
-          </div>
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">표시명</label>
-            <input
-              type="text"
+                <input
+                  type="text"
               value={formData.displayName}
               onChange={(e) => setFormData({...formData, displayName: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="표시할 이름을 입력하세요"
-            />
-          </div>
+                />
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">학번</label>
-            <input
-              type="text"
+                <input
+                  type="text"
               value={formData.studentId}
               onChange={(e) => setFormData({...formData, studentId: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="학번을 입력하세요"
-            />
-          </div>
+                />
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">학과</label>
-            <input
-              type="text"
+                <input
+                  type="text"
               value={formData.department}
               onChange={(e) => setFormData({...formData, department: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="학과를 입력하세요"
-            />
-          </div>
+                />
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">학년</label>
-            <select
+                <select
               value={formData.year}
               onChange={(e) => setFormData({...formData, year: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            >
-              <option value="">선택해주세요</option>
-              <option value="1학년">1학년</option>
-              <option value="2학년">2학년</option>
-              <option value="3학년">3학년</option>
-              <option value="4학년">4학년</option>
-              <option value="대학원생">대학원생</option>
-            </select>
-          </div>
+                >
+                  <option value="">선택해주세요</option>
+                  <option value="1학년">1학년</option>
+                  <option value="2학년">2학년</option>
+                  <option value="3학년">3학년</option>
+                  <option value="4학년">4학년</option>
+                  <option value="대학원생">대학원생</option>
+                </select>
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">기수</label>
             <input
               type="number"
@@ -509,43 +772,133 @@ export default function MemberManagement() {
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               placeholder="직책을 입력하세요"
             />
-          </div>
+              </div>
 
-          <div>
+              <div>
             <label className="block text-white font-medium mb-2">역할 *</label>
-            <select
+                <select
               value={formData.role}
               onChange={(e) => setFormData({...formData, role: e.target.value})}
               className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
               required
-            >
-              <option value="member">일반 멤버</option>
-              <option value="admin">관리자</option>
-            </select>
-          </div>
-        </div>
+                >
+                  <option value="member">일반 멤버</option>
+                  <option value="admin">관리자</option>
+                </select>
+              </div>
+            </div>
 
-        <div className="mt-4">
+            <div className="mt-4">
           <label className="block text-white font-medium mb-2">자기소개</label>
-          <textarea
+              <textarea
             value={formData.bio}
             onChange={(e) => setFormData({...formData, bio: e.target.value})}
-            rows={3}
+                rows={3}
             className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             placeholder="간단한 자기소개를 작성해주세요"
-          />
-        </div>
+              />
+            </div>
 
-        <div className="mt-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
+            <div className="mt-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
               checked={formData.isPublic}
               onChange={(e) => setFormData({...formData, isPublic: e.target.checked})}
               className="mr-2"
             />
             <span className="text-sm text-white">프로필 공개</span>
-          </label>
+              </label>
+            </div>
+      </Modal>
+
+      {/* CSV 업로드 모달 */}
+      <Modal
+        isOpen={showCsvModal}
+        onClose={closeCsvModal}
+        title="CSV로 멤버 추가"
+        onSubmit={handleCsvUpload}
+        submitText={csvUploading ? "업로드 중..." : "업로드"}
+        cancelText="취소"
+        submitDisabled={!csvFile || csvUploading}
+      >
+        <div className="space-y-6">
+          {/* 안내 문구 */}
+          <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
+            <Title level={5} className="text-cyan-400 mb-2">
+              📋 CSV 파일 형식
+            </Title>
+            <Text variant="secondary" size="sm" className="mb-3">
+              다음 필드를 포함한 CSV 파일을 업로드하세요:
+            </Text>
+            <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
+              <li><strong>필수:</strong> email, name</li>
+              <li><strong>선택:</strong> displayName, studentId, position, department, year, generation, role, isPublic</li>
+            </ul>
+            <Text variant="muted" size="sm" className="mt-3">
+              💡 초기 비밀번호는 이메일 주소의 @ 앞부분으로 자동 설정됩니다.
+            </Text>
+            <Text variant="muted" size="sm" className="mt-2">
+              📝 엑셀에서 저장 시 "CSV UTF-8(쉼표로 분리)"을 권장합니다.
+            </Text>
+          </div>
+
+          {/* 템플릿 다운로드 */}
+          <div>
+            <Button 
+              onClick={downloadCsvTemplate} 
+              variant="secondary"
+              className="w-full"
+            >
+              📥 템플릿 다운로드
+            </Button>
+          </div>
+
+          {/* 파일 선택 */}
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              CSV 파일 선택
+            </label>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleCsvFileChange}
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white
+                       file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                       file:text-sm file:font-semibold file:bg-cyan-500 file:text-black
+                       hover:file:bg-cyan-400 cursor-pointer"
+            />
+            {csvFile && (
+              <div className="mt-2 p-3 bg-gray-700 border border-gray-600 rounded-lg">
+                <Text variant="secondary" size="sm" className="font-semibold text-cyan-400">
+                  ✓ 선택된 파일
+                </Text>
+                <Text variant="muted" size="sm" className="mt-1">
+                  📄 {csvFile.name}
+                </Text>
+                <Text variant="muted" size="sm">
+                  💾 {(csvFile.size / 1024).toFixed(2)} KB
+                </Text>
+              </div>
+            )}
+          </div>
+
+          {/* 주의사항 */}
+          <div className="bg-yellow-900/20 border border-yellow-600/50 rounded-lg p-4">
+            <div className="flex items-start">
+              <span className="text-yellow-500 mr-2 mt-0.5">⚠️</span>
+              <div>
+                <Title level={6} className="text-yellow-400 mb-1">
+                  주의사항
+                </Title>
+                <ul className="text-sm text-yellow-200/80 space-y-1 list-disc list-inside">
+                  <li>중복된 이메일은 건너뜁니다</li>
+                  <li>이메일은 @kookmin.ac.kr 도메인만 허용됩니다</li>
+                  <li>업로드 후 콘솔에서 초기 비밀번호를 확인하세요</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </Modal>
 

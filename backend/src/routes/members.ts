@@ -534,4 +534,110 @@ router.delete('/admin/:userId', authenticateAdmin, async (req, res) => {
   }
 });
 
+// CSV 대량 업로드로 멤버 생성 (관리자용)
+router.post('/admin/bulk-upload', authenticateAdmin, async (req, res) => {
+  try {
+    const { members } = req.body;
+
+    if (!Array.isArray(members) || members.length === 0) {
+      return res.status(400).json({ error: 'Invalid members data' });
+    }
+
+    const results = {
+      success: [] as any[],
+      failed: [] as any[]
+    };
+
+    for (const memberData of members) {
+      try {
+        const { email, name, displayName, studentId, position, department, year, generation, role, isPublic } = memberData;
+
+        // 필수 필드 검증
+        if (!email || !name) {
+          results.failed.push({
+            email: email || 'N/A',
+            name: name || 'N/A',
+            reason: '이메일과 이름은 필수입니다.'
+          });
+          continue;
+        }
+
+        // 이메일 도메인 검증
+        if (!validateEmailDomain(email)) {
+          results.failed.push({
+            email,
+            name,
+            reason: '국민대학교 이메일(@kookmin.ac.kr)을 사용해주세요.'
+          });
+          continue;
+        }
+
+        // 중복 이메일 체크 - 이미 있으면 건너뛰기
+        const existingUser = await db.user.findUnique({
+          where: { email }
+        });
+
+        if (existingUser) {
+          results.failed.push({
+            email,
+            name,
+            reason: '이미 등록된 계정입니다. (건너뜀)'
+          });
+          continue;
+        }
+
+        // 초기 비밀번호: 이메일의 로컬 부분
+        const initialPassword = email.split('@')[0];
+        const hashedPassword = await bcrypt.hash(initialPassword, 12);
+
+        // 사용자 생성
+        const newUser = await db.user.create({
+          data: {
+            email,
+            name,
+            password: hashedPassword,
+            role: role === 'admin' ? 'admin' : 'member'
+          }
+        });
+
+        // 프로필 생성
+        await db.memberProfile.create({
+          data: {
+            userId: newUser.id,
+            displayName: displayName || name,
+            studentId: studentId || null,
+            position: position || null,
+            department: department || null,
+            year: year || null,
+            generation: generation ? parseInt(generation) : null,
+            bio: null,
+            isPublic: isPublic !== undefined ? isPublic : true
+          }
+        });
+
+        results.success.push({
+          email,
+          name,
+          initialPassword
+        });
+      } catch (error) {
+        console.error(`Error creating member ${memberData.email}:`, error);
+        results.failed.push({
+          email: memberData.email || 'N/A',
+          name: memberData.name || 'N/A',
+          reason: '생성 중 오류가 발생했습니다.'
+        });
+      }
+    }
+
+    res.json({
+      message: `${results.success.length}명 생성 성공, ${results.failed.length}명 실패`,
+      results
+    });
+  } catch (error) {
+    console.error('Error bulk uploading members:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
