@@ -1,40 +1,36 @@
-# 백엔드 Dockerfile
-FROM node:18-alpine AS base
+# 백엔드 Dockerfile (프로덕션용)
+FROM node:18-alpine AS builder
 
 # OpenSSL 설치 (Prisma 용)
 RUN apk add --no-cache openssl-dev openssl
 
-# 작업 디렉토리 설정
 WORKDIR /app
 
-# package.json과 package-lock.json 복사
+# 의존성 설치
 COPY package*.json ./
+RUN npm ci
 
-# 의존성 설치 (개발 환경용)
-RUN npm install
-
-# 소스 코드 복사
+# 소스 코드 복사 및 Prisma 클라이언트 생성
 COPY . .
+RUN npx prisma generate
+RUN npm run build
 
-# Prisma 클라이언트 생성
+# 프로덕션 이미지
+FROM node:18-alpine AS production
+
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# 프로덕션 의존성만 설치
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# 빌드 결과물 복사
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
 RUN npx prisma generate
 
-# TypeScript 컴파일 (프로덕션용)
-# RUN npm run build
-
-# 포트 노출
 EXPOSE 3001
 
-# 개발 서버 실행 (개발 환경)
-CMD ["npm", "run", "dev"]
-
-# 프로덕션 환경용 (주석 해제하여 사용)
-# FROM node:18-alpine AS production
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm ci --only=production && npm cache clean --force
-# COPY --from=base /app/dist ./dist
-# COPY --from=base /app/prisma ./prisma
-# RUN npx prisma generate
-# EXPOSE 3001
-# CMD ["npm", "start"]
+CMD ["node", "dist/backend/src/index.js"]

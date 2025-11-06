@@ -40,6 +40,24 @@ app.use('/api/activities', activitiesRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/content', contentRoutes);
 
+// 루트 경로 (서비스 확인용)
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'AIM Page Backend API',
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      upload: '/api/upload',
+      studies: '/api/studies',
+      activities: '/api/activities',
+      members: '/api/members',
+      content: '/api/content'
+    }
+  });
+});
+
 // 헬스체크
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
