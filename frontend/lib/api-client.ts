@@ -41,8 +41,12 @@ export async function apiClient(
     }
   }
 
-  // API 호출
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  // API 호출 (endpoint가 /로 시작하면 그대로 사용, 아니면 / 추가)
+  const url = endpoint.startsWith('/') 
+    ? `${API_BASE_URL}${endpoint}`
+    : `${API_BASE_URL}/${endpoint}`
+  
+  const response = await fetch(url, {
     ...restOptions,
     headers: defaultHeaders,
   })
