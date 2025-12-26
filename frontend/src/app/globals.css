@@ -1,0 +1,431 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* AIM 디자인 시스템 색상 변수 */
+    --aim-primary: #00BFFF;        /* Primary (메인) */
+    --aim-secondary: #FF4081;      /* Secondary */
+    --aim-accent: #FFD700;         /* Accent */
+    --aim-background: #000000;     /* Background */
+    --aim-surface: #111111;        /* Surface */
+    --aim-surface-dark: #374151;   /* Surface Dark (gray-700) */
+    --aim-border: #333333;         /* Border/Line */
+    --aim-border-medium: #4B5563;  /* Border Medium (gray-600) */
+    --aim-text-primary: #FFFFFF;   /* Text - 기본 */
+    --aim-text-secondary: #AAAAAA; /* Text - 보조 */
+    
+    /* 확장 색상 */
+    --aim-blue-neon: #00FFFF;      /* Blue Neon */
+    --aim-purple-glow: #9D4EDD;    /* Purple Glow */
+    --aim-orange: #FF9800;         /* Orange */
+    --aim-light-pink: #FFB6C1;     /* Light Pink */
+    
+    /* 관리자 페이지 전용 */
+    --aim-icon-cyan: #22D3EE;      /* Icon Cyan (cyan-400) */
+    --aim-icon-pink: #F472B6;      /* Icon Pink (pink-400) */
+    --aim-icon-yellow: #FACC15;    /* Icon Yellow (yellow-400) */
+    --aim-primary-button: #0891B2; /* Primary Button (cyan-600) */
+    --aim-success-badge: #059669;  /* Success Badge (green-600) */
+    --aim-warning-badge: #DC2626;  /* Warning Badge (red-600) */
+    --aim-admin-badge: #DB2777;    /* Admin Badge (pink-600) */
+    
+    /* 기존 shadcn/ui 변수들 (호환성 유지) */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    @apply bg-black;
+    /* 부드러운 스크롤 */
+    scroll-behavior: smooth;
+    /* 전체 뷰포트 높이를 검은색으로 채움 */
+    min-height: 100vh;
+    /* iOS Safari에서 주소표시줄 고려한 높이 */
+    min-height: 100dvh;
+  }
+  
+  body {
+    @apply bg-black text-white;
+    /* iOS Safari에서 배경색 고정 */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 오버스크롤 영역도 검은색으로 설정 */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: black;
+    z-index: -1;
+  }
+  
+  body::before {
+    top: -100vh;
+  }
+  
+  body::after {
+    bottom: -100vh;
+  }
+  
+  /* 웹킷 기반 브라우저에서 스크롤바 스타일링 */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+  }
+  
+  /* Sticky 네비게이션에 그림자 효과 */
+  .sticky {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@layer components {
+  /* AIM 디자인 시스템 컴포넌트 클래스 */
+  
+  /* 기본 카드 스타일 */
+  .aim-card {
+    @apply bg-gray-800 border border-gray-700 rounded-lg shadow-lg;
+  }
+  
+  .aim-card-dark {
+    @apply bg-gray-700 border border-gray-600 rounded-lg;
+  }
+  
+  /* 버튼 스타일 */
+  .aim-btn-primary {
+    @apply bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .aim-btn-secondary {
+    @apply bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .aim-btn-ghost {
+    @apply bg-gray-700 hover:bg-gray-600 text-white border border-gray-600 px-4 py-2 rounded-md transition-colors;
+  }
+  
+  /* 텍스트 스타일 */
+  .aim-text-primary {
+    @apply text-white;
+  }
+  
+  .aim-text-secondary {
+    @apply text-gray-400;
+  }
+  
+  .aim-text-muted {
+    @apply text-gray-500;
+  }
+  
+  /* 그라데이션 텍스트 */
+  .aim-gradient-text {
+    @apply bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent;
+  }
+  
+  /* 네비게이션 링크 */
+  .aim-nav-link {
+    @apply text-gray-300 hover:text-cyan-400 transition-colors;
+  }
+  
+  .aim-nav-link-active {
+    @apply text-cyan-400 font-medium;
+  }
+  
+  /* 로딩 스피너 */
+  .aim-spinner {
+    @apply animate-spin rounded-full border-b-2 border-cyan-500;
+  }
+  
+  /* 배지 스타일 */
+  .aim-badge-success {
+    @apply bg-green-600 text-white px-3 py-1 rounded-full text-sm;
+  }
+  
+  .aim-badge-warning {
+    @apply bg-red-600 text-white px-3 py-1 rounded-full text-sm;
+  }
+  
+  .aim-badge-admin {
+    @apply bg-pink-600 text-white px-2 py-1 rounded text-xs;
+  }
+  
+  .aim-badge-muted {
+    @apply bg-gray-600 text-gray-300 px-3 py-1 rounded-full text-sm;
+  }
+  
+  /* 단계 표시 원형 배지 */
+  .aim-step-badge {
+    @apply w-8 h-8 rounded-full flex items-center justify-center text-white font-bold;
+  }
+  
+  .aim-step-badge-cyan {
+    @apply aim-step-badge bg-cyan-500;
+  }
+  
+  .aim-step-badge-pink {
+    @apply aim-step-badge bg-pink-500;
+  }
+  
+  .aim-step-badge-yellow {
+    @apply aim-step-badge bg-yellow-500;
+  }
+  
+  .aim-step-badge-purple {
+    @apply aim-step-badge bg-purple-500;
+  }
+  
+  /* FAQ 아코디언 */
+  .aim-faq-item {
+    @apply bg-gray-700/50 backdrop-blur rounded-xl border border-gray-600 overflow-hidden;
+  }
+  
+  .aim-faq-button {
+    @apply w-full p-6 text-left hover:bg-gray-700/70 transition-colors duration-200 flex items-center justify-between;
+  }
+  
+  .aim-faq-content {
+    @apply px-6 pb-6 border-t border-gray-600/50;
+  }
+  
+  /* 히어로 섹션 */
+  .aim-hero-title {
+    @apply text-4xl md:text-5xl font-bold text-white mb-6;
+  }
+  
+  .aim-hero-subtitle {
+    @apply text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed;
+  }
+  
+  /* 아이콘 색상 */
+  .aim-icon-cyan {
+    @apply text-cyan-400;
+  }
+  
+  .aim-icon-pink {
+    @apply text-pink-400;
+  }
+  
+  .aim-icon-yellow {
+    @apply text-yellow-400;
+  }
+  
+  .aim-icon-purple {
+    @apply text-purple-400;
+  }
+  
+  /* 호버 효과 */
+  .aim-hover-card {
+    @apply hover:border-cyan-500 transition-colors;
+  }
+  
+  .aim-hover-card-pink {
+    @apply hover:border-pink-500 transition-colors;
+  }
+  
+  .aim-hover-card-yellow {
+    @apply hover:border-yellow-500 transition-colors;
+  }
+  
+  .aim-hover-card-purple {
+    @apply hover:border-purple-500 transition-colors;
+  }
+  
+  /* 알림 애니메이션 */
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-out-right {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes progress {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  /* New Animations for Redesign */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      filter: brightness(1);
+    }
+    50% {
+      opacity: 0.8;
+      filter: brightness(1.2);
+    }
+  }
+
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  
+  .animate-slide-in-right {
+    animation: slide-in-right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  .animate-slide-out-right {
+    animation: slide-out-right 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+  }
+  
+  .animate-progress {
+    animation: progress 3s linear;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  /* Glassmorphism Utilities */
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+  }
+
+  .glass-hover {
+    @apply hover:bg-white/10 transition-all duration-300;
+  }
+}
