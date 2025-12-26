@@ -38,7 +38,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-black">
       {/* 로그인 안내 */}
-      <div className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-4">
+      <div className="bg-gradient-to-r from-violet-600 to-indigo-700 text-white py-4 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="text-xl">🔑</span>
@@ -52,7 +52,7 @@ export default function LoginPage() {
       <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <Link href="/" className="flex justify-center text-2xl font-bold text-white mb-8">
-            <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
               AIM
             </span>
             <span className="ml-2 text-gray-400">AI Monsters</span>
@@ -62,14 +62,14 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-400">
             또는{' '}
-            <Link href="/register" className="font-medium text-cyan-400 hover:text-cyan-300">
+            <Link href="/register" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
               새로운 계정 만들기
             </Link>
           </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-gray-800 py-8 px-4 shadow-lg border border-gray-700 sm:rounded-lg sm:px-10">
+          <div className="bg-white/5 backdrop-blur-xl py-8 px-4 border border-white/10 sm:rounded-2xl sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-white">
@@ -84,7 +84,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-600 rounded-md placeholder-gray-400 bg-gray-700 text-white focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                    className="appearance-none block w-full px-4 py-3 border border-white/10 rounded-xl placeholder-white/40 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 focus:bg-white/[0.08] sm:text-sm transition-all duration-200"
                     placeholder="your.email@kookmin.ac.kr"
                   />
                 </div>
@@ -103,7 +103,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2 border border-gray-600 rounded-md placeholder-gray-400 bg-gray-700 text-white focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                    className="appearance-none block w-full px-4 py-3 border border-white/10 rounded-xl placeholder-white/40 bg-white/5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 focus:bg-white/[0.08] sm:text-sm transition-all duration-200"
                     placeholder="비밀번호를 입력하세요"
                   />
                 </div>
@@ -113,7 +113,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-cyan-500 hover:bg-cyan-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-primary-500 hover:bg-primary-400 hover:shadow-glow-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 >
                   {isLoading ? '로그인 중...' : '로그인'}
                 </button>
@@ -127,7 +127,7 @@ export default function LoginPage() {
                   <div className="flex justify-center">
                     <Link 
                       href="/recruit"
-                      className="bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-md text-sm font-medium transition-colors text-center"
+                      className="bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 border border-primary-500/30 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 text-center hover:shadow-glow-sm"
                     >
                       📋 모집 안내 보기
                     </Link>

@@ -5,9 +5,9 @@
 @layer base {
   :root {
     /* AIM 디자인 시스템 색상 변수 */
-    --aim-primary: #00BFFF;        /* Primary (메인) */
-    --aim-secondary: #FF4081;      /* Secondary */
-    --aim-accent: #FFD700;         /* Accent */
+    --aim-primary: #8b5cf6;        /* Violet */
+    --aim-secondary: #64748b;      /* Slate */
+    --aim-accent: #f59e0b;         /* Amber */
     --aim-background: #000000;     /* Background */
     --aim-surface: #111111;        /* Surface */
     --aim-surface-dark: #374151;   /* Surface Dark (gray-700) */
@@ -17,8 +17,8 @@
     --aim-text-secondary: #AAAAAA; /* Text - 보조 */
     
     /* 확장 색상 */
-    --aim-blue-neon: #00FFFF;      /* Blue Neon */
-    --aim-purple-glow: #9D4EDD;    /* Purple Glow */
+    --aim-blue-neon: #818cf8;      /* Indigo */
+    --aim-purple-glow: #a78bfa;    /* Violet glow */
     --aim-orange: #FF9800;         /* Orange */
     --aim-light-pink: #FFB6C1;     /* Light Pink */
     

@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'dark' | 'gradient'
+  variant?: 'default' | 'dark' | 'gradient' | 'glass'
   padding?: 'sm' | 'md' | 'lg'
   children: React.ReactNode
 }
@@ -13,12 +13,13 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   ...props
 }) => {
-  const baseClasses = 'rounded-lg shadow-lg'
+  const baseClasses = 'rounded-2xl'
   
   const variants = {
-    default: 'bg-gray-800 border border-gray-700',
-    dark: 'bg-gray-700 border border-gray-600',
-    gradient: 'bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700'
+    default: 'bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300',
+    dark: 'bg-white/[0.03] backdrop-blur-lg border border-white/5 hover:bg-white/[0.06] transition-all duration-300',
+    gradient: 'bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 hover:shadow-glow-sm transition-all duration-300',
+    glass: 'bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300'
   }
   
   const paddings = {
