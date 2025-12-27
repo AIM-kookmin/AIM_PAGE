@@ -1,224 +1,100 @@
-# 동아리 웹사이트 (모노레포)
+# AIM: AI Monsters - 동아리 웹사이트
 
-동아리 외부 홍보 및 내부 부원 관리/활동 공유를 위한 웹사이트입니다.
+국민대학교 AI 동아리 AIM의 공식 웹사이트입니다.
 
 ## 기술 스택
 
 - **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
-- **Backend**: Express.js + TypeScript
-- **Database**: PostgreSQL (AWS RDS 또는 로컬)
-- **Authentication**: JWT (with React Context API)
-- **Storage**: AWS S3 + CloudFront
-- **ORM**: Prisma
-- **State Management**: React Context API
-- **API Client**: Centralized API client with environment-based URLs
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Architecture**: Feature-Sliced Design (FSD)
+- **Deployment**: Vercel
+- **Design System**: Modern Violet Theme
 
 ## 프로젝트 구조
 
 ```
-├── frontend/              # Next.js 프론트엔드
-│   ├── app/              # Next.js App Router
-│   ├── lib/              # 클라이언트 유틸리티
-│   ├── components/       # React 컴포넌트
-│   └── types/           # 프론트엔드 타입 정의
-├── backend/              # Express.js 백엔드
-│   ├── src/
-│   │   ├── routes/      # API 라우트
-│   │   ├── controllers/ # 컨트롤러
-│   │   ├── services/    # 비즈니스 로직
-│   │   ├── middleware/  # 미들웨어
-│   │   └── utils/       # 유틸리티 함수
-│   └── prisma/          # 데이터베이스 스키마
-├── shared/               # 공유 타입 및 유틸리티
+├── frontend/                 # Next.js 프론트엔드
 │   └── src/
-│       └── types.ts     # 공통 타입 정의
-├── docker/               # Docker 설정 관리
-│   ├── dev/             # 개발 환경 설정
-│   ├── prod/            # 프로덕션 환경 설정
-│   └── nginx/           # Nginx 설정
-├── Makefile             # 편리한 명령어 모음
-└── package.json         # 모노레포 설정
+│       ├── app/             # Next.js App Router
+│       │   ├── (public)/    # 공개 페이지
+│       │   ├── admin/       # 관리자 페이지
+│       │   └── providers/   # Context Providers
+│       ├── shared/          # 공용 모듈
+│       │   ├── api/         # Supabase 클라이언트
+│       │   └── ui/          # 공용 컴포넌트
+│       ├── entities/        # 엔티티 (멤버 등)
+│       ├── widgets/         # 위젯 (네비게이션 등)
+│       └── types/           # TypeScript 타입
+├── supabase/
+│   └── migrations/          # DB 마이그레이션
+└── docs/                    # 문서
+    ├── guides/              # 가이드 문서
+    ├── plans/               # 계획 문서
+    └── design/              # 디자인 시스템
 ```
 
 ## 시작하기
 
-### 🐳 Docker로 시작하기 (권장)
-
-#### 1. 프로젝트 초기 설정
+### 1. 의존성 설치
 ```bash
-make setup
+cd frontend
+npm install
 ```
 
-#### 2. 환경 변수 설정
-`docker/dev/.env` 파일을 열어 AWS S3 설정을 입력하세요:
+### 2. 환경 변수 설정
+`frontend/.env.local` 생성:
 ```bash
-AWS_REGION=ap-northeast-2
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_S3_BUCKET=your-bucket-name
+NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_ID].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[ANON_KEY]
 ```
 
-#### 3. 개발 서버 실행
-```bash
-# Docker로 전체 스택 실행
-make dev-docker
-
-# 또는 백그라운드에서 실행
-make dev-docker-bg
-```
-
-#### 4. 데이터베이스 설정
-```bash
-# 컨테이너가 실행된 후
-make db-setup
-```
-
-#### 5. 접속
-- 프론트엔드: [http://localhost:3000](http://localhost:3000)
-- 백엔드 API: [http://localhost:3001](http://localhost:3001)
-- Prisma Studio: `make db-studio`
-
-### 📋 주요 명령어
-
-```bash
-make help          # 모든 명령어 보기
-make dev-docker     # Docker 개발 환경 실행
-make logs           # 로그 보기
-make stop           # 개발 환경 중지
-make clean          # Docker 리소스 정리
-make db-setup       # 데이터베이스 설정
-make db-studio      # Prisma Studio 실행
-```
-
-### 💻 로컬 개발 (Docker 없이)
-
-#### 1. 의존성 설치
-```bash
-npm run install:all
-```
-
-#### 2. PostgreSQL 설치 및 실행
-로컬에 PostgreSQL을 설치하고 데이터베이스를 생성하세요.
-
-#### 3. 환경 변수 설정
-각 폴더의 `env.example` 파일을 참고하여 환경 변수를 설정하세요:
-- `frontend/.env.local`
-- `backend/.env`
-
-#### 4. 데이터베이스 설정
-```bash
-cd backend
-npm run db:generate
-npm run db:push
-```
-
-#### 5. 개발 서버 실행
+### 3. 개발 서버 실행
 ```bash
 npm run dev
 ```
 
+### 4. 접속
+- http://localhost:3000
+
 ## 주요 기능
 
-### 게스트 (비로그인 사용자)
+### 공개 페이지
 - 메인 페이지 및 동아리 소개
-- 동아리 역사 및 활동 기록 조회
-- 공개 스터디 글 조회
+- 부원 목록
+- 활동 및 스터디 기록
+- 모집 공고
 
-### 로그인 사용자 (동아리 부원)
+### 회원 기능
+- Google OAuth 로그인
+- 승인제 회원가입
 - 프로필 관리
-- 스터디 글 작성/수정/삭제
-- 외부 블로그 글 링크 연동
 
-### 운영진
-- 동아리 활동/수상 경력 관리
+### 관리자 기능
+- 회원 승인/거절
+- 소개 페이지 관리
 - 모집 공고 관리
-- 전체 콘텐츠 관리
+- 활동/스터디 관리
 
-## 아키텍처 개선 사항
+## 배포 워크플로우
 
-### ✅ 최근 개선 완료 (2025년 10월)
-
-#### 1. **중앙화된 API 클라이언트**
-- ❌ Before: 하드코딩된 `http://localhost:3001` URL 34개 파일에 분산
-- ✅ After: `lib/api-client.ts`로 모든 API 호출 통합
-- **혜택**: 
-  - 환경 변수로 API URL 관리
-  - 자동 인증 토큰 추가
-  - 일관된 에러 처리
-  - 배포 환경별 URL 자동 전환
-
-```typescript
-// Before
-fetch('http://localhost:3001/api/members', {
-  headers: { 'Authorization': `Bearer ${token}` }
-})
-
-// After
-import { authGet } from '@/lib/api-client'
-authGet('/api/members')
+```
+origin/dev → fork/dev → fork/prod
+   (개발)      (Preview)   (Production)
 ```
 
-#### 2. **전역 인증 상태 관리 (Auth Context)**
-- ❌ Before: 27개 파일에서 `localStorage` 직접 접근
-- ✅ After: React Context API로 전역 인증 상태 관리
-- **혜택**:
-  - 단일 진실 공급원 (Single Source of Truth)
-  - 자동 로그인/로그아웃 처리
-  - 인증 상태 동기화
-  - 코드 중복 제거
+| 환경 | 브랜치 | Supabase | 도메인 |
+|------|--------|----------|--------|
+| Dev | `dev` | aim-dev | Preview URL |
+| Prod | `prod` | aim-prod | aim-kookmin.com |
 
-```typescript
-// Before
-const token = localStorage.getItem('token')
-const user = JSON.parse(localStorage.getItem('user'))
+자세한 내용은 [배포 가이드](./docs/guides/DEPLOYMENT_WORKFLOW.md) 참고.
 
-// After
-import { useAuth } from '@/contexts/AuthContext'
-const { user, token, isAuthenticated, isAdmin, login, logout } = useAuth()
-```
+## 문서
 
-#### 3. **백업 파일 정리**
-- 7개 불필요한 백업 파일 제거 (`.bak`, `_old`, `_backup`)
-- 프로젝트 구조 정리 및 혼란 방지
-
-### 🎯 다음 단계 개선 권장사항
-
-1. **Metadata API 적용** - SEO 개선 (Server Components 전환 필요)
-2. **Image 최적화** - `next/image` 사용으로 성능 향상
-3. **Error Boundary** - 전역 에러 처리
-4. **Loading States** - Suspense Boundary 적용
-
-## 배포
-
-### 🚀 빠른 시작
-
-배포와 기능 개발을 병행하려면 [빠른 시작 가이드](./QUICK_START_DEPLOYMENT.md)를 참고하세요.
-
-### 📚 배포 가이드
-
-- **[빠른 시작 가이드](./help/QUICK_START_DEPLOYMENT.md)** - 배포 + 기능 개발 병행 전략
-- **[배포 워크플로우](./help/DEPLOYMENT_WORKFLOW.md)** - Git 브랜치 전략 및 개발 프로세스
-- **[배포 가이드](./help/DEPLOYMENT.md)** - 상세 배포 절차
-
-### 배포 구조 (권장)
-
-- **Frontend**: Vercel (Next.js) ✅
-  - Next.js 최적화, 무료 티어, 자동 배포
-- **Backend**: AWS (EC2 또는 ECS) ✅
-  - 안정적이고 확장 가능한 인프라
-- **Database**: AWS RDS (PostgreSQL) ✅
-  - 관리형 데이터베이스, 자동 백업
-- **Storage**: AWS S3 + CloudFront ✅
-  - 확장 가능한 파일 스토리지 + CDN
-
-**배포 옵션 비교**:
-- **EC2**: 중소규모 프로젝트에 적합 (Docker 사용 가능)
-- **ECS**: 대규모 프로젝트에 적합 (자동 스케일링)
-
-**환경 변수 설정:**
-```bash
-NEXT_PUBLIC_API_URL=https://[your-backend-api].com
-```
+- [FSD 구조](./docs/architecture/FSD_STRUCTURE.md)
+- [디자인 시스템](./docs/design/DESIGN_SYSTEM.md)
+- [배포 워크플로우](./docs/guides/DEPLOYMENT_WORKFLOW.md)
+- [Supabase 마이그레이션](./docs/plans/SUPABASE_MIGRATION.md)
 
 ## 라이센스
 
