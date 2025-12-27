@@ -6,7 +6,7 @@ import { DataTable } from '@/shared/ui/DataTable'
 import { CardGrid } from '@/shared/ui/CardGrid'
 import { ViewToggle } from '@/shared/ui/ViewToggle'
 import { MemberCard } from '@/entities/member'
-import { getAllMembersAdmin, adminUpdateMember, uploadMemberAvatar } from '@/shared/api/supabase'
+import { getAllMembersAdmin, adminUpdateMember, uploadMemberAvatar, getPendingMembers, approveMember, rejectMember, getActiveMembers } from '@/shared/api/supabase'
 import type { MemberProfile } from '@/types/supabase'
 
 interface EditMemberData {
@@ -23,7 +23,9 @@ interface EditMemberData {
 }
 
 export default function MemberManagement() {
+  const [activeTab, setActiveTab] = useState<'active' | 'pending'>('active')
   const [members, setMembers] = useState<MemberProfile[]>([])
+  const [pendingMembers, setPendingMembers] = useState<MemberProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -121,13 +123,39 @@ export default function MemberManagement() {
 
   const fetchMembers = async () => {
     try {
-      const data = await getAllMembersAdmin()
-      setMembers(data)
+      const [activeData, pendingData] = await Promise.all([
+        getActiveMembers(),
+        getPendingMembers()
+      ])
+      setMembers(activeData)
+      setPendingMembers(pendingData)
     } catch (error) {
       console.error('멤버 목록 로딩 실패:', error)
       showNotification('error', '오류 발생', '멤버 목록을 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleApproveMember = async (member: MemberProfile) => {
+    try {
+      await approveMember(member.id)
+      showNotification('success', '승인 완료', `${member.display_name}님의 가입이 승인되었습니다.`)
+      fetchMembers()
+    } catch (error) {
+      console.error('멤버 승인 실패:', error)
+      showNotification('error', '오류 발생', '멤버 승인 중 오류가 발생했습니다.')
+    }
+  }
+
+  const handleRejectMember = async (member: MemberProfile) => {
+    try {
+      await rejectMember(member.id)
+      showNotification('success', '거절 완료', `${member.display_name}님의 가입이 거절되었습니다.`)
+      fetchMembers()
+    } catch (error) {
+      console.error('멤버 거절 실패:', error)
+      showNotification('error', '오류 발생', '멤버 거절 중 오류가 발생했습니다.')
     }
   }
 
@@ -556,7 +584,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       width: '200px',
       render: (member: any) => (
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-pink-500 rounded-full flex items-center justify-center mr-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-violet-400 to-indigo-500 rounded-full flex items-center justify-center mr-3">
             <span className="text-white font-bold text-sm">
               {member.display_name.charAt(0)}
             </span>
@@ -626,7 +654,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
         <div className="flex gap-2">
           <button
             onClick={() => openEditModal(member)}
-            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600 rounded-lg transition-colors"
+            className="p-2 text-gray-400 hover:text-violet-400 hover:bg-gray-600 rounded-lg transition-colors"
             title="수정"
           >
             ✏️
@@ -669,10 +697,10 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
   return (
     <div>
       {/* 헤더 */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
           <Title level={1} className="text-white mb-2">
-            <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
               AIM
             </span>{' '}
             멤버 관리
@@ -682,23 +710,114 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
           </Subtitle>
         </div>
         <div className="flex gap-3">
-          <ViewToggle
-            currentView={viewMode}
-            views={viewOptions}
-            onViewChange={(view) => setViewMode(view as 'card' | 'list')}
-          />
-          
-          <Button onClick={openCsvModal} variant="secondary">
-            📄 .csv로 추가
-          </Button>
-          <Button onClick={openAddModal} variant="primary">
-          + 새 멤버 추가
-          </Button>
+          {activeTab === 'active' && (
+            <>
+              <ViewToggle
+                currentView={viewMode}
+                views={viewOptions}
+                onViewChange={(view) => setViewMode(view as 'card' | 'list')}
+              />
+              <Button onClick={openCsvModal} variant="secondary">
+                📄 .csv로 추가
+              </Button>
+              <Button onClick={openAddModal} variant="primary">
+                + 새 멤버 추가
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* 멤버 목록 */}
-      {viewMode === 'card' ? (
+      {/* 탭 네비게이션 */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('active')}
+          className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+            activeTab === 'active'
+              ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+              : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+          }`}
+        >
+          활동 멤버 ({members.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('pending')}
+          className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 relative ${
+            activeTab === 'pending'
+              ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+              : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+          }`}
+        >
+          가입 요청 ({pendingMembers.length})
+          {pendingMembers.length > 0 && activeTab !== 'pending' && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+              {pendingMembers.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {activeTab === 'pending' && (
+        <div className="space-y-4">
+          {pendingMembers.length === 0 ? (
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-12 text-center">
+              <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">✓</span>
+              </div>
+              <Text className="text-gray-400">대기 중인 가입 요청이 없습니다.</Text>
+            </div>
+          ) : (
+            pendingMembers.map((member) => (
+              <div
+                key={member.id}
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:border-amber-500/50 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xl font-bold">
+                        {member.display_name.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">{member.display_name}</h3>
+                      <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
+                        {member.student_id && <span>{member.student_id}</span>}
+                        {member.department && <span>• {member.department}</span>}
+                        {member.generation && <span>• {member.generation}기</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-500">
+                      {new Date(member.created_at).toLocaleDateString('ko-KR')} 요청
+                    </span>
+                    <button
+                      onClick={() => handleRejectMember(member)}
+                      className="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl font-medium hover:bg-red-500/30 transition-colors"
+                    >
+                      거절
+                    </button>
+                    <button
+                      onClick={() => handleApproveMember(member)}
+                      className="px-4 py-2 bg-emerald-500 text-white rounded-xl font-medium hover:bg-emerald-400 transition-colors"
+                    >
+                      승인
+                    </button>
+                  </div>
+                </div>
+                {member.bio && (
+                  <p className="mt-4 text-gray-400 text-sm border-t border-white/10 pt-4">
+                    {member.bio}
+                  </p>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {activeTab === 'active' && viewMode === 'card' ? (
         <CardGrid
           data={members}
           keyField="id"
@@ -716,7 +835,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
             lg: 3
           }}
         />
-      ) : (
+      ) : activeTab === 'active' ? (
             <DataTable
               data={flattenedMembers}
               columns={tableColumns}
@@ -727,7 +846,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               bulkActions={bulkActions}
               emptyMessage="등록된 멤버가 없습니다."
             />
-      )}
+      ) : null}
 
       {/* 멤버 모달 */}
       <Modal
@@ -744,7 +863,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               <img
                 src={avatarPreview}
                 alt="Avatar preview"
-                className="w-full h-full rounded-full object-cover border-2 border-cyan-500"
+                className="w-full h-full rounded-full object-cover border-2 border-violet-500"
               />
             ) : (
               <div className="w-full h-full rounded-full bg-gray-700 flex items-center justify-center border-2 border-gray-600">
@@ -753,7 +872,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
             )}
             <label
               htmlFor="avatar-upload"
-              className="absolute bottom-0 right-0 bg-cyan-600 p-2 rounded-full cursor-pointer hover:bg-cyan-500 transition-colors shadow-lg"
+              className="absolute bottom-0 right-0 bg-violet-600 p-2 rounded-full cursor-pointer hover:bg-violet-500 transition-colors shadow-lg"
             >
               <span className="text-white text-xs">📷</span>
             </label>
@@ -778,7 +897,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                   type="email"
                   value={createEmail}
                   onChange={(e) => setCreateEmail(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   placeholder="email@example.com"
                 />
               </div>
@@ -788,7 +907,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                   type="password"
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   placeholder="최소 6자 이상"
                 />
               </div>
@@ -801,7 +920,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                   type="text"
               value={formData.display_name}
               onChange={(e) => setFormData({...formData, display_name: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="표시할 이름을 입력하세요"
                 />
               </div>
@@ -812,7 +931,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                   type="text"
               value={formData.student_id}
               onChange={(e) => setFormData({...formData, student_id: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="학번을 입력하세요"
                 />
               </div>
@@ -823,7 +942,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                   type="text"
               value={formData.department}
               onChange={(e) => setFormData({...formData, department: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="학과를 입력하세요"
                 />
               </div>
@@ -833,7 +952,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                 <select
               value={formData.year}
               onChange={(e) => setFormData({...formData, year: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 >
                   <option value="">선택해주세요</option>
                   <option value="1학년">1학년</option>
@@ -850,7 +969,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               type="number"
               value={formData.generation || ""}
               onChange={(e) => setFormData({...formData, generation: parseInt(e.target.value) || 0})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="기수를 입력하세요 (예: 1, 2, 3...)"
               min="0"
             />
@@ -862,7 +981,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               type="text"
               value={formData.position}
               onChange={(e) => setFormData({...formData, position: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="직책을 입력하세요"
             />
               </div>
@@ -875,7 +994,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
             value={formData.bio}
             onChange={(e) => setFormData({...formData, bio: e.target.value})}
                 rows={3}
-            className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             placeholder="간단한 자기소개를 작성해주세요"
               />
             </div>
@@ -886,7 +1005,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
             type="text"
             value={formData.one_liner}
             onChange={(e) => setFormData({...formData, one_liner: e.target.value})}
-            className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             placeholder="한줄 소개를 입력하세요"
               />
             </div>
@@ -917,7 +1036,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
         <div className="space-y-6">
           {/* 안내 문구 */}
           <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
-            <Title level={5} className="text-cyan-400 mb-2">
+            <Title level={5} className="text-violet-400 mb-2">
               📋 CSV 파일 형식
             </Title>
             <Text variant="secondary" size="sm" className="mb-3">
@@ -957,12 +1076,12 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               onChange={handleCsvFileChange}
               className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white
                        file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                       file:text-sm file:font-semibold file:bg-cyan-500 file:text-black
-                       hover:file:bg-cyan-400 cursor-pointer"
+                       file:text-sm file:font-semibold file:bg-violet-500 file:text-white
+                       hover:file:bg-violet-400 cursor-pointer"
             />
             {csvFile && (
               <div className="mt-2 p-3 bg-gray-700 border border-gray-600 rounded-lg">
-                <Text variant="secondary" size="sm" className="font-semibold text-cyan-400">
+                <Text variant="secondary" size="sm" className="font-semibold text-violet-400">
                   ✓ 선택된 파일
                 </Text>
                 <Text variant="muted" size="sm" className="mt-1">
@@ -1070,7 +1189,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
                       notification.type === 'error' ? 'bg-red-600 hover:bg-red-700' :
                       notification.type === 'warning' ? 'bg-yellow-600 hover:bg-yellow-700' :
                       notification.type === 'success' ? 'bg-green-600 hover:bg-green-700' :
-                      'bg-cyan-600 hover:bg-cyan-700'
+                      'bg-violet-600 hover:bg-violet-700'
                     }`}
                   >
                     {notification.confirmText}

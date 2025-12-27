@@ -204,6 +204,7 @@ export interface Database {
           avatar_url: string | null
           links: Json | null
           is_public: boolean
+          status: 'pending' | 'active' | 'rejected'
           created_at: string
           updated_at: string
         }
@@ -221,6 +222,7 @@ export interface Database {
           avatar_url?: string | null
           links?: Json | null
           is_public?: boolean
+          status?: 'pending' | 'active' | 'rejected'
           created_at?: string
           updated_at?: string
         }
@@ -238,6 +240,7 @@ export interface Database {
           avatar_url?: string | null
           links?: Json | null
           is_public?: boolean
+          status?: 'pending' | 'active' | 'rejected'
           created_at?: string
           updated_at?: string
         }
@@ -373,10 +376,14 @@ export interface Database {
         Returns: boolean
       }
     }
-    Enums: Record<string, never>
+    Enums: {
+      member_status: 'pending' | 'active' | 'rejected'
+    }
     CompositeTypes: Record<string, never>
   }
 }
+
+export type MemberStatus = 'pending' | 'active' | 'rejected'
 
 export type AboutSection = Database['public']['Tables']['about_sections']['Row']
 export type AboutActivity = Database['public']['Tables']['about_activities']['Row']

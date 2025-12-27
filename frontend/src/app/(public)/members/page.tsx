@@ -84,27 +84,27 @@ export default function MembersPage() {
   })
 
   const MemberCard = ({ member }: { member: MemberProfile }) => (
-    <div className="group glass p-6 rounded-xl hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(6,182,212,0.3)] hover:border-cyan-500/50">
+    <div className="group glass p-6 rounded-xl hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] hover:border-violet-500/50">
       <div className="flex flex-col items-center text-center">
         {/* 프로필 이미지 */}
-        <div className="w-24 h-24 bg-gradient-to-br from-cyan-400 to-pink-500 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+        <div className="w-24 h-24 bg-gradient-to-br from-violet-400 to-indigo-400 rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
           <span className="text-white text-3xl font-bold">
             {member.display_name.charAt(0)}
           </span>
         </div>
 
         {/* 기본 정보 */}
-        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">
+        <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary-400 transition-colors">
           {member.display_name}
         </h3>
-        <p className="text-cyan-400 font-semibold mb-3 bg-cyan-500/10 px-3 py-1 rounded-full text-sm">
+        <p className="text-primary-400 font-semibold mb-3 bg-primary-500/10 px-3 py-1 rounded-full text-sm">
           {member.position || '부원'}
         </p>
 
         {/* 세부 정보 */}
         <div className="space-y-1 text-sm text-gray-400 mb-4">
           {member.generation && (
-            <p className="font-semibold text-pink-400">{member.generation}기</p>
+            <p className="font-semibold text-purple-400">{member.generation}기</p>
           )}
           {member.department && <p>{member.department}</p>}
           {member.year && <p>{member.year}</p>}
@@ -136,7 +136,7 @@ export default function MembersPage() {
               href={`https://linkedin.com/in/${(member.links as any).linkedin}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-cyan-400 transition-colors transform hover:scale-110"
+              className="text-gray-400 hover:text-primary-400 transition-colors transform hover:scale-110"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd"></path>
@@ -149,11 +149,11 @@ export default function MembersPage() {
   )
 
   return (
-    <div className="min-h-screen bg-black overflow-hidden selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-black">
       {/* 배경 효과 */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-900/20 rounded-full blur-[120px] animate-blob" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-900/20 rounded-full blur-[120px] animate-blob animation-delay-2000" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[60px]" />
       </div>
 
       {/* 메인 컨텐츠 */}
@@ -161,7 +161,7 @@ export default function MembersPage() {
         {/* 헤더 */}
         <div className="text-center mb-16 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent animate-pulse-glow">
+            <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-pulse-glow">
               AI Monsters
             </span>{' '}
             부원 소개
@@ -175,7 +175,7 @@ export default function MembersPage() {
         {/* 로딩 상태 */}
         {loading && (
           <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-500 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-violet-500 mx-auto mb-4"></div>
             <p className="text-gray-400 animate-pulse">부원 정보를 불러오는 중...</p>
           </div>
         )}
@@ -195,7 +195,7 @@ export default function MembersPage() {
               <section className="mb-20 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <div className="text-center mb-10">
                   <h2 className="text-3xl font-bold text-white mb-3">운영진</h2>
-                  <div className="w-24 h-1 bg-cyan-500 mx-auto rounded-full"></div>
+                  <div className="w-24 h-1 bg-violet-500 mx-auto rounded-full"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {sortedExecutives.map(member => (
@@ -210,7 +210,7 @@ export default function MembersPage() {
               <section className="mb-20 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <div className="text-center mb-10">
                   <h2 className="text-3xl font-bold text-white mb-3">부원</h2>
-                  <div className="w-24 h-1 bg-pink-500 mx-auto rounded-full"></div>
+                  <div className="w-24 h-1 bg-purple-500 mx-auto rounded-full"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {sortedRegularMembers.map(member => (
@@ -222,7 +222,7 @@ export default function MembersPage() {
 
             {/* 가입 안내 */}
             <section className="relative overflow-hidden rounded-2xl p-12 text-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-pink-600 opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 opacity-90" />
               <div className="absolute inset-0 bg-[url('/images/grid.svg')] opacity-20" />
               <div className="relative z-10">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">AI Monsters에 합류하세요!</h2>

@@ -322,7 +322,7 @@ export default function AboutManagementPage() {
               onClick={() => setActiveTab(tab.key as any)}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-cyan-500 text-black'
+                  ? 'bg-violet-500 text-white'
                   : 'text-gray-400 hover:text-white hover:bg-gray-700'
               }`}
             >
@@ -362,15 +362,15 @@ export default function AboutManagementPage() {
                     <div className="flex items-center space-x-2">
                       <span className="text-2xl">{item.icon}</span>
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        item.color === 'cyan' ? 'bg-cyan-500 text-black' :
-                        item.color === 'pink' ? 'bg-pink-500 text-white' :
+                        item.color === 'cyan' ? 'bg-violet-500 text-white' :
+                        item.color === 'pink' ? 'bg-purple-500 text-white' :
                         item.color === 'yellow' ? 'bg-yellow-500 text-black' :
                         item.color === 'purple' ? 'bg-purple-500 text-white' :
                         item.color === 'green' ? 'bg-green-500 text-white' :
                         item.color === 'blue' ? 'bg-blue-500 text-white' :
                         item.color === 'red' ? 'bg-red-500 text-white' :
                         item.color === 'orange' ? 'bg-orange-500 text-white' :
-                        'bg-cyan-500 text-black'
+                        'bg-violet-500 text-white'
                       }`}>
                         {item.color}
                       </span>
@@ -413,7 +413,7 @@ export default function AboutManagementPage() {
                   type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="섹션 제목을 입력하세요"
                   required
                 />
@@ -425,7 +425,7 @@ export default function AboutManagementPage() {
                 type="number"
                 value={formData.order || 0}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="0"
               />
             </div>
@@ -435,7 +435,7 @@ export default function AboutManagementPage() {
               <textarea
                 value={formData.content || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 rows={6}
                 placeholder="섹션 내용을 입력하세요"
                 required
@@ -452,7 +452,7 @@ export default function AboutManagementPage() {
                       type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="활동 제목을 입력하세요"
                 required
                     />
@@ -464,7 +464,7 @@ export default function AboutManagementPage() {
                       type="text"
                 value={formData.icon || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="🚀"
                 required
                     />
@@ -475,12 +475,12 @@ export default function AboutManagementPage() {
               <select
                 value={formData.color || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 required
               >
                 <option value="">색상을 선택하세요</option>
-                <option value="cyan">Cyan</option>
-                <option value="pink">Pink</option>
+                <option value="cyan">Violet</option>
+                <option value="pink">Purple</option>
                 <option value="yellow">Yellow</option>
                 <option value="purple">Purple</option>
                 <option value="green">Green</option>
@@ -495,7 +495,7 @@ export default function AboutManagementPage() {
               <textarea
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 rows={4}
                 placeholder="활동 설명을 입력하세요"
                 required
@@ -508,7 +508,7 @@ export default function AboutManagementPage() {
                 type="number"
                 value={formData.order || 0}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="0"
                     />
                   </div>
@@ -523,7 +523,7 @@ export default function AboutManagementPage() {
                 type="number"
                 value={formData.year || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="예: 2024"
                       required
                     />
@@ -535,7 +535,7 @@ export default function AboutManagementPage() {
                 type="text"
                 value={formData.title || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="연혁 제목을 입력하세요"
                     required
                   />
@@ -546,7 +546,7 @@ export default function AboutManagementPage() {
               <textarea
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 rows={4}
                 placeholder="연혁 설명을 입력하세요"
                     required
@@ -559,7 +559,7 @@ export default function AboutManagementPage() {
                 type="number"
                 value={formData.order || 0}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="0"
               />
             </div>
@@ -573,7 +573,7 @@ export default function AboutManagementPage() {
               <select
                 value={formData.type || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 required
               >
                 <option value="">타입을 선택하세요</option>
@@ -590,7 +590,7 @@ export default function AboutManagementPage() {
                 type="text"
                 value={formData.label || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="연락처 라벨을 입력하세요"
                 required
                 />
@@ -602,7 +602,7 @@ export default function AboutManagementPage() {
                 type="text"
                 value={formData.value || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="연락처 값을 입력하세요"
                 required
               />
@@ -614,7 +614,7 @@ export default function AboutManagementPage() {
                 type="number"
                 value={formData.order || 0}
                 onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="0"
               />
               </div>

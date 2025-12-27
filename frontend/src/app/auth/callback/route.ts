@@ -6,6 +6,7 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next') || '/'
   const origin = requestUrl.origin
 
   if (code) {
@@ -27,8 +28,33 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    await supabase.auth.exchangeCodeForSession(code)
+    const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (error || !user) {
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`)
+    }
+
+    const { data: profile } = await supabase
+      .from('member_profiles')
+      .select('status')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (!profile) {
+      return NextResponse.redirect(`${origin}/register`)
+    }
+
+    if (profile.status === 'pending') {
+      return NextResponse.redirect(`${origin}/pending`)
+    }
+
+    if (profile.status === 'rejected') {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(`${origin}/login?error=rejected`)
+    }
+
+    return NextResponse.redirect(`${origin}${next}`)
   }
 
-  return NextResponse.redirect(`${origin}/`)
+  return NextResponse.redirect(`${origin}/login?error=no_code`)
 }
