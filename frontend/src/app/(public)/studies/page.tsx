@@ -37,7 +37,6 @@ export default function StudiesPage() {
   }
 
   const getExcerpt = (content: string, maxLength: number = 150) => {
-    // Markdown 제거하고 텍스트만 추출
     const text = content
       .replace(/[#*`\[\]()]/g, '')
       .replace(/\n/g, ' ')
@@ -49,71 +48,91 @@ export default function StudiesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <Loading />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* 헤더 */}
-      <div className="bg-gradient-to-r from-cyan-600 to-pink-600 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Title className="text-white text-center mb-4">스터디</Title>
-          <Text className="text-cyan-100 text-center text-lg">
-            AIM 부원들의 스터디 활동과 학습 내용을 공유합니다
-          </Text>
+    <div className="min-h-screen bg-black selection:bg-violet-500/30">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[80px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[80px] mix-blend-screen" />
+      </div>
+
+      <div className="relative pt-32 pb-16 md:pt-48 md:pb-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+              스터디
+            </span>
+          </h1>
+          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+            AIM 부원들의 깊이 있는 학습 기록.
+            <br className="hidden md:block" />
+            기술을 탐구하고 지식을 공유하는 공간입니다.
+          </p>
         </div>
       </div>
 
-      {/* 스터디 포스트 목록 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         {posts.length === 0 ? (
-          <Card className="p-8 text-center">
-            <Text className="text-gray-400">등록된 스터디 포스트가 없습니다.</Text>
+          <Card variant="glass" className="p-12 text-center max-w-2xl mx-auto">
+            <Text className="text-gray-400 text-lg">등록된 스터디 포스트가 없습니다.</Text>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.map((post) => (
               <Link 
                 key={post.id} 
                 href={`/studies/${post.id}`}
-                className="block"
+                className="block group"
               >
-                <Card className="p-6 hover:border-cyan-500 transition-colors h-full">
-                  {post.cover_url && (
-                    <div className="mb-4 aspect-video bg-gray-800 rounded-lg overflow-hidden">
+                <Card variant="glass" className="h-full p-0 overflow-hidden transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] group-hover:border-violet-500/50">
+                  <div className="relative aspect-video overflow-hidden bg-white/5">
+                    {post.cover_url ? (
                       <img 
                         src={post.cover_url}
                         alt={post.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                    </div>
-                  )}
-                  <Title className="text-xl mb-2 line-clamp-2">{post.title}</Title>
-                  <Text className="text-gray-400 text-sm mb-4">
-                    {formatDate(post.created_at)}
-                  </Text>
-                  <Text className="text-gray-300 mb-4 line-clamp-3">
-                    {getExcerpt(post.content_md)}
-                  </Text>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {post.tags.map((tagItem) => (
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/10 text-4xl font-bold">
+                        AIM
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+
+                  <div className="p-6">
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {post.tags?.map((tagItem) => (
                         <span
                           key={tagItem.tag.id}
-                          className="px-2 py-1 bg-cyan-600/20 text-cyan-400 rounded text-xs"
+                          className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-medium text-violet-400 ring-1 ring-inset ring-violet-500/20"
                         >
                           #{tagItem.tag.name}
                         </span>
                       ))}
                     </div>
-                  )}
-                  <div className="flex items-center mt-4 pt-4 border-t border-gray-700">
-                    <Text className="text-gray-400 text-sm">
-                      {post.author?.display_name || 'Unknown'}
-                    </Text>
+
+                    <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-violet-400 transition-colors">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-gray-400 text-sm mb-6 line-clamp-3 leading-relaxed">
+                      {getExcerpt(post.content_md)}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
+                      <span className="text-sm font-medium text-gray-300">
+                        {post.author?.display_name || 'Unknown'}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono">
+                        {formatDate(post.created_at)}
+                      </span>
+                    </div>
                   </div>
                 </Card>
               </Link>
@@ -122,13 +141,13 @@ export default function StudiesPage() {
         )}
       </div>
 
-      {/* 푸터 */}
-      <footer className="bg-black border-t border-gray-800 py-8 mt-12">
+      <footer className="relative border-t border-white/10 bg-black/50 backdrop-blur-xl py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">&copy; 2024 AIM (AI Monsters). All rights reserved.</p>
+          <p className="text-gray-500 text-sm">
+            &copy; 2024 AIM (AI Monsters). All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
   )
 }
-

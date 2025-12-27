@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-500 mx-auto"></div>
         <p className="mt-4 text-gray-400">대시보드를 불러오는 중...</p>
       </div>
     )
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
       {/* 헤더 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">
-          <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
             AIM
           </span>{' '}
           관리자 대시보드
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
         <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-cyan-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-violet-500 rounded-md flex items-center justify-center">
                 <span className="text-white text-sm font-medium">👥</span>
               </div>
             </div>
@@ -117,10 +117,10 @@ export default function AdminDashboard() {
           <div className="space-y-3">
             <Link
               href="/admin/member-management"
-              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-cyan-500 rounded-md transition-colors"
+              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-violet-500 rounded-md transition-colors"
             >
               <div className="flex items-center">
-                <span className="text-cyan-400 mr-3">👥</span>
+                <span className="text-violet-400 mr-3">👥</span>
                 <div>
                   <p className="font-medium text-white">멤버 관리</p>
                   <p className="text-sm text-gray-400">멤버 추가, 수정, 삭제</p>
@@ -130,10 +130,10 @@ export default function AdminDashboard() {
             
             <Link
               href="/admin/activities"
-              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-pink-500 rounded-md transition-colors"
+              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-purple-500 rounded-md transition-colors"
             >
               <div className="flex items-center">
-                <span className="text-pink-400 mr-3">🎯</span>
+                <span className="text-purple-400 mr-3">🎯</span>
                 <div>
                   <p className="font-medium text-white">활동 관리</p>
                   <p className="text-sm text-gray-400">동아리 활동 관리</p>

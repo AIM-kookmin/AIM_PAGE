@@ -409,7 +409,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({...formData, title: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="예: 2024년 1학기 신입 부원 모집"
               required
             />
@@ -421,7 +421,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="text"
               value={formData.short_description}
               onChange={(e) => setFormData({...formData, short_description: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="한 줄로 요약 (선택)"
             />
           </div>
@@ -433,7 +433,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
                 type="text"
                 value={formData.target_audience}
                 onChange={(e) => setFormData({...formData, target_audience: e.target.value})}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="예: 전 학년"
               />
             </div>
@@ -443,7 +443,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
                 type="text"
                 value={formData.recruit_count}
                 onChange={(e) => setFormData({...formData, recruit_count: e.target.value})}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="예: 15명 내외"
               />
             </div>
@@ -455,7 +455,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="text"
               value={formData.recruit_method}
               onChange={(e) => setFormData({...formData, recruit_method: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="예: 서류 + 면접"
             />
           </div>
@@ -466,7 +466,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="url"
               value={formData.external_form_url}
               onChange={(e) => setFormData({...formData, external_form_url: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               placeholder="https://forms.google.com/..."
             />
           </div>
@@ -499,7 +499,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="date"
               value={formData.start_at}
               onChange={(e) => setFormData({...formData, start_at: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               required
             />
           </div>
@@ -509,7 +509,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
               type="date"
               value={formData.end_at}
               onChange={(e) => setFormData({...formData, end_at: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               required
             />
           </div>
@@ -521,7 +521,7 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
             id="isOpen"
             checked={formData.is_open}
             onChange={(e) => setFormData({...formData, is_open: e.target.checked})}
-            className="w-4 h-4 text-cyan-600 bg-gray-700 border-gray-600 rounded focus:ring-cyan-500"
+            className="w-4 h-4 text-violet-600 bg-gray-700 border-gray-600 rounded focus:ring-violet-500"
           />
           <label htmlFor="isOpen" className="ml-2 text-white">
             모집 공고 공개

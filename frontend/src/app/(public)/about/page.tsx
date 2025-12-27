@@ -50,8 +50,8 @@ export default function AboutPage() {
 
   const getColorClasses = (color: string) => {
     const colorMap: { [key: string]: { border: string; text: string; bg: string } } = {
-      'cyan': { border: 'hover:border-cyan-500', text: 'text-cyan-400', bg: 'from-cyan-500 to-blue-600' },
-      'pink': { border: 'hover:border-pink-500', text: 'text-pink-400', bg: 'from-pink-500 to-purple-600' },
+      'cyan': { border: 'hover:border-violet-500', text: 'text-violet-400', bg: 'from-violet-500 to-indigo-600' },
+      'pink': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
       'yellow': { border: 'hover:border-yellow-500', text: 'text-yellow-400', bg: 'from-yellow-500 to-orange-600' },
       'purple': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
       'green': { border: 'hover:border-green-500', text: 'text-green-400', bg: 'from-green-500 to-emerald-600' },
@@ -74,29 +74,29 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black overflow-hidden selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-black">
       {/* 배경 효과 */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px] animate-blob" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-900/20 rounded-full blur-[120px] animate-blob animation-delay-2000" />
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[60px]" />
       </div>
 
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="glass p-8 md:p-12 rounded-2xl animate-fade-in-up">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent animate-pulse-glow">
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-pulse-glow">
                 AIM (AI Monsters)
               </span>{' '}
               동아리 소개
             </h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-cyan-500 to-pink-500 mx-auto rounded-full" />
+            <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" />
           </div>
           
           {sections.map((section, index) => (
             <section key={section.id} className="mb-12 animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
-                <span className="w-2 h-8 bg-cyan-500 rounded-full mr-3" />
+                <span className="w-2 h-8 bg-violet-500 rounded-full mr-3" />
                 {section.title}
               </h2>
               <p className="text-gray-300 leading-relaxed text-lg pl-5 border-l border-gray-700">
@@ -108,7 +108,7 @@ export default function AboutPage() {
           {activities.length > 0 && (
             <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <span className="w-2 h-8 bg-pink-500 rounded-full mr-3" />
+                <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
                 주요 활동
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -148,10 +148,10 @@ export default function AboutPage() {
               <div className="relative border-l-2 border-gray-700 ml-4 space-y-8 py-2">
                 {history.map((item, index) => (
                   <div key={item.id} className="relative pl-8 group">
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-800 border-2 border-cyan-500 group-hover:bg-cyan-500 group-hover:scale-125 transition-all duration-300" />
+                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-800 border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
                     <div className="flex flex-col sm:flex-row sm:items-baseline mb-1">
-                      <span className="text-cyan-400 font-bold text-lg mr-4 w-20">{item.year}</span>
-                      <h4 className="text-white font-bold text-lg group-hover:text-cyan-300 transition-colors">{item.title}</h4>
+                      <span className="text-violet-400 font-bold text-lg mr-4 w-20">{item.year}</span>
+                      <h4 className="text-white font-bold text-lg group-hover:text-violet-300 transition-colors">{item.title}</h4>
                     </div>
                     <p className="text-gray-400 text-sm">
                       {item.description}

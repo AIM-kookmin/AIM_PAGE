@@ -517,3 +517,50 @@ export async function deleteAboutContact(id: string): Promise<void> {
 
   if (error) throw error
 }
+
+export async function getPendingMembers(): Promise<MemberProfile[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('member_profiles')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data ?? []
+}
+
+export async function approveMember(id: string): Promise<MemberProfile | null> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('member_profiles')
+    .update({ status: 'active', updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function rejectMember(id: string): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('member_profiles')
+    .update({ status: 'rejected', updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) throw error
+}
+
+export async function getActiveMembers(): Promise<MemberProfile[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('member_profiles')
+    .select('*')
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data ?? []
+}

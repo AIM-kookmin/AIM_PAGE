@@ -226,7 +226,7 @@ export default function ProfilePage() {
         {/* 헤더 */}
         <div className="mb-8">
           <Title level={1} className="text-white mb-2">
-            <span className="bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
               프로필 관리
             </span>
           </Title>
@@ -241,7 +241,7 @@ export default function ProfilePage() {
             onClick={() => setActiveTab('profile')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === 'profile'
-                ? 'bg-cyan-500 text-black'
+                ? 'bg-violet-500 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
@@ -251,7 +251,7 @@ export default function ProfilePage() {
             onClick={() => setActiveTab('password')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === 'password'
-                ? 'bg-cyan-500 text-black'
+                ? 'bg-violet-500 text-white'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
@@ -272,7 +272,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.displayName}
                     onChange={(e) => setProfileData({ ...profileData, displayName: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="표시될 이름을 입력하세요"
                     required
                   />
@@ -286,7 +286,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.studentId}
                     onChange={(e) => setProfileData({ ...profileData, studentId: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="20241234"
                   />
                 </div>
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.position}
                     onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="부원, 운영진 등"
                   />
                 </div>
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.department}
                     onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="소프트웨어학부 등"
                   />
                 </div>
@@ -325,7 +325,7 @@ export default function ProfilePage() {
                     type="text"
                     value={profileData.year}
                     onChange={(e) => setProfileData({ ...profileData, year: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="1학년, 2학년 등"
                   />
                 </div>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                     type="number"
                     value={profileData.generation || ''}
                     onChange={(e) => setProfileData({ ...profileData, generation: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="1, 2, 3..."
                     min="0"
                   />
@@ -351,7 +351,7 @@ export default function ProfilePage() {
                   <textarea
                     value={profileData.bio}
                     onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     rows={4}
                     placeholder="자기소개를 입력하세요"
                   />
@@ -363,7 +363,7 @@ export default function ProfilePage() {
                       type="checkbox"
                       checked={profileData.isPublic}
                       onChange={(e) => setProfileData({ ...profileData, isPublic: e.target.checked })}
-                      className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-cyan-500 focus:ring-2 focus:ring-cyan-500"
+                      className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-primary-500 focus:ring-2 focus:ring-primary-500"
                     />
                     <span className="text-white font-medium">
                       프로필 공개 (부원 페이지에 표시)
@@ -405,7 +405,7 @@ export default function ProfilePage() {
                     type="password"
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="현재 비밀번호 (무시됨)"
                     disabled
                   />
@@ -422,7 +422,7 @@ export default function ProfilePage() {
                     type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="새 비밀번호 (최소 6자)"
                     required
                     minLength={6}
@@ -437,7 +437,7 @@ export default function ProfilePage() {
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="새 비밀번호 확인"
                     required
                     minLength={6}
@@ -484,7 +484,7 @@ export default function ProfilePage() {
                 ? 'border-red-500'
                 : notification.type === 'warning'
                 ? 'border-yellow-500'
-                : 'border-cyan-500'
+                : 'border-violet-500'
             } rounded-lg shadow-xl p-4 min-w-[320px] max-w-md`}
           >
             <div className="flex items-start">
@@ -521,7 +521,7 @@ export default function ProfilePage() {
             </div>
             {!notification.hiding && (
               <div className="mt-2 h-1 bg-gray-700 rounded-full overflow-hidden">
-                <div className="h-full bg-cyan-500 animate-progress" />
+                <div className="h-full bg-violet-500 animate-progress" />
               </div>
             )}
           </div>

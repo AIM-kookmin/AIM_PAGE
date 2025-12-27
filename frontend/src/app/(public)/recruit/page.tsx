@@ -94,12 +94,12 @@ export default function RecruitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-violet-500/30 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[100px] animate-blob mix-blend-screen"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-cyan-500/20 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-screen"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] bg-pink-500/20 rounded-full blur-[100px] animate-blob animation-delay-4000 mix-blend-screen"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px] mix-blend-screen"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-indigo-600/15 rounded-full blur-[80px] mix-blend-screen"></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] bg-violet-500/10 rounded-full blur-[80px] mix-blend-screen"></div>
       </div>
 
       {/* 메인 컨텐츠 */}
@@ -122,7 +122,7 @@ export default function RecruitPage() {
                 </Badge>
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-violet-400 via-purple-500 to-indigo-600 bg-clip-text text-transparent">
                   AIM
                 </span>{' '}
                 {recruitNotice.title}
@@ -134,15 +134,15 @@ export default function RecruitPage() {
 
             {/* 히어로 배너 섹션 */}
             <div className="relative mb-16 group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative glass rounded-2xl overflow-hidden border border-white/10">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-indigo-500/5"></div>
                 <div className="relative p-8 md:p-12">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     {/* 왼쪽: 주요 정보 */}
                     <div>
                       <div className="flex items-center space-x-3 mb-6">
-                        <span className="text-cyan-400 font-medium tracking-wider text-sm uppercase">
+                        <span className="text-primary-400 font-medium tracking-wider text-sm uppercase">
                           Recruitment
                         </span>
                         <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
@@ -158,8 +158,8 @@ export default function RecruitPage() {
                       <p className="text-lg text-gray-300 mb-8 leading-relaxed">
                         {recruitNotice.short_description || (
                           <>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 font-semibold">AI Monsters</span>와 함께 인공지능의 세계로 빠져보세요! 
-                            경험과 전공에 상관없이 <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 font-semibold">열정</span>만 있다면 누구나 환영합니다.
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-500 font-semibold">AI Monsters</span>와 함께 인공지능의 세계로 빠져보세요! 
+                            경험과 전공에 상관없이 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-purple-500 font-semibold">열정</span>만 있다면 누구나 환영합니다.
                           </>
                         )}
                       </p>
@@ -170,7 +170,7 @@ export default function RecruitPage() {
                             href={recruitNotice.external_form_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group/btn relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl hover:from-cyan-400 hover:to-blue-500 focus:outline-none ring-offset-2 focus:ring-2 ring-cyan-400"
+                            className="group/btn relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-violet-500 to-indigo-600 rounded-xl hover:from-violet-400 hover:to-indigo-500 focus:outline-none ring-offset-2 focus:ring-2 ring-primary-400"
                           >
                             <span className="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
                             <span className="relative flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function RecruitPage() {
                     <div className="space-y-4">
                       <div className="glass-hover p-6 rounded-xl border border-white/5 transition-all duration-300">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl flex items-center justify-center border border-cyan-500/30">
+                          <div className="w-12 h-12 bg-gradient-to-br from-violet-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center border border-violet-500/30">
                             <span className="text-2xl">📅</span>
                           </div>
                           <div>
@@ -205,7 +205,7 @@ export default function RecruitPage() {
                       
                       <div className="glass-hover p-6 rounded-xl border border-white/5 transition-all duration-300">
                         <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-xl flex items-center justify-center border border-pink-500/30">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
                             <span className="text-2xl">🎯</span>
                           </div>
                           <div>
@@ -244,7 +244,7 @@ export default function RecruitPage() {
               <div className="glass rounded-2xl border border-white/10 overflow-hidden">
                 <div className="p-8 md:p-12">
                   <div className="flex items-center space-x-4 mb-10 pb-6 border-b border-white/10">
-                    <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
                       <span className="text-white font-bold text-xl">📝</span>
                     </div>
                     <h2 className="text-3xl font-bold text-white">모집 공고 상세</h2>
@@ -255,19 +255,19 @@ export default function RecruitPage() {
                       remarkPlugins={[remarkGfm]}
                       components={{
                         h1: ({children}) => (
-                          <h1 className="text-3xl font-bold text-white mb-8 pb-4 border-b border-white/10 inline-block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                          <h1 className="text-3xl font-bold text-white mb-8 pb-4 border-b border-white/10 inline-block bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
                             {children}
                           </h1>
                         ),
                         h2: ({children}) => (
                           <h2 className="text-2xl font-bold text-white mb-6 mt-12 flex items-center">
-                            <span className="w-1.5 h-8 bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full mr-4"></span>
+                            <span className="w-1.5 h-8 bg-gradient-to-b from-violet-400 to-indigo-600 rounded-full mr-4"></span>
                             {children}
                           </h2>
                         ),
                         h3: ({children}) => (
-                          <h3 className="text-xl font-semibold text-cyan-100 mb-4 mt-8 flex items-center">
-                            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full mr-3"></span>
+                          <h3 className="text-xl font-semibold text-white/90 mb-4 mt-8 flex items-center">
+                            <span className="w-1.5 h-1.5 bg-violet-400 rounded-full mr-3"></span>
                             {children}
                           </h3>
                         ),
@@ -276,18 +276,18 @@ export default function RecruitPage() {
                         ol: ({children}) => <ol className="text-gray-300 mb-8 space-y-3 list-decimal list-inside">{children}</ol>,
                         li: ({children}) => (
                           <li className="flex items-start">
-                            <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full mt-2.5 mr-3 flex-shrink-0"></span>
+                            <span className="w-1.5 h-1.5 bg-violet-500 rounded-full mt-2.5 mr-3 flex-shrink-0"></span>
                             <span className="leading-relaxed">{children}</span>
                           </li>
                         ),
-                        strong: ({children}) => <strong className="text-white font-bold bg-gradient-to-r from-cyan-200 to-blue-200 bg-clip-text text-transparent">{children}</strong>,
-                        em: ({children}) => <em className="text-cyan-300 not-italic">{children}</em>,
-                        code: ({children}) => <code className="bg-white/10 text-cyan-300 px-2 py-0.5 rounded text-sm font-mono border border-white/10">{children}</code>,
+                        strong: ({children}) => <strong className="text-white font-bold bg-gradient-to-r from-violet-200 to-indigo-200 bg-clip-text text-transparent">{children}</strong>,
+                        em: ({children}) => <em className="text-primary-300 not-italic">{children}</em>,
+                        code: ({children}) => <code className="bg-white/10 text-primary-300 px-2 py-0.5 rounded text-sm font-mono border border-white/10">{children}</code>,
                         pre: ({children}) => <pre className="bg-black/50 text-gray-300 p-6 rounded-xl overflow-x-auto text-sm mb-8 border border-white/10 shadow-inner">{children}</pre>,
                         a: ({href, children}) => (
                           <a 
                             href={href} 
-                            className="text-cyan-400 hover:text-cyan-300 underline decoration-1 underline-offset-4 transition-colors" 
+                            className="text-primary-400 hover:text-primary-300 underline decoration-1 underline-offset-4 transition-colors" 
                             target="_blank" 
                             rel="noopener noreferrer"
                           >
@@ -295,7 +295,7 @@ export default function RecruitPage() {
                           </a>
                         ),
                         blockquote: ({children}) => (
-                          <blockquote className="border-l-4 border-cyan-500/50 bg-white/5 pl-6 py-4 italic text-gray-300 mb-8 rounded-r-xl">
+                          <blockquote className="border-l-4 border-violet-500/50 bg-white/5 pl-6 py-4 italic text-gray-300 mb-8 rounded-r-xl">
                             {children}
                           </blockquote>
                         ),
@@ -321,14 +321,14 @@ export default function RecruitPage() {
             {/* 지원하기 섹션 */}
             {recruitNotice.external_form_url && (
               <div className="relative mb-16 group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                 <div className="relative glass rounded-2xl overflow-hidden border border-white/10 p-12 text-center">
                   <div className="mb-10">
-                    <div className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-pink-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-pink-500/20 animate-float">
+                    <div className="w-24 h-24 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-indigo-500/20 animate-float">
                       <span className="text-white text-5xl">🚀</span>
                     </div>
                     <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                      <span className="bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                         AI Monster
                       </span>{' '}
                       되어보세요!
@@ -344,7 +344,7 @@ export default function RecruitPage() {
                       href={recruitNotice.external_form_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-white transition-all duration-300 bg-gradient-to-r from-cyan-500 to-pink-600 rounded-2xl hover:from-cyan-400 hover:to-pink-500 hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/25"
+                      className="inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-white transition-all duration-300 bg-gradient-to-r from-violet-500 to-indigo-600 rounded-2xl hover:from-violet-400 hover:to-indigo-500 hover:scale-105 hover:shadow-2xl hover:shadow-indigo-500/25"
                     >
                       <span className="flex items-center space-x-3">
                         <span>📝</span>
@@ -354,10 +354,10 @@ export default function RecruitPage() {
                     </a>
                     
                     <div className="flex flex-col md:flex-row justify-center gap-6 text-gray-400 text-sm">
-                      <a href="mailto:aim@kookmin.ac.kr" className="flex items-center justify-center gap-2 hover:text-cyan-400 transition-colors">
+                      <a href="mailto:aim@kookmin.ac.kr" className="flex items-center justify-center gap-2 hover:text-primary-400 transition-colors">
                         <span>💬</span> 지원 관련 문의: aim@kookmin.ac.kr
                       </a>
-                      <a href="https://instagram.com/aim_monsters" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 hover:text-pink-400 transition-colors">
+                      <a href="https://instagram.com/aim_monsters" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 hover:text-purple-400 transition-colors">
                         <span>📱</span> 더 많은 정보: @aim_monsters
                       </a>
                     </div>
@@ -395,7 +395,7 @@ export default function RecruitPage() {
                 <div className="mt-8 text-center px-8 pb-8">
                   <Text variant="secondary">
                     더 궁금한 점이 있으시면{' '}
-                    <a href="mailto:aim@kookmin.ac.kr" className="text-cyan-400 hover:text-cyan-300 font-medium underline decoration-1 underline-offset-4">
+                    <a href="mailto:aim@kookmin.ac.kr" className="text-primary-400 hover:text-primary-300 font-medium underline decoration-1 underline-offset-4">
                       aim@kookmin.ac.kr
                     </a>
                     {' '}로 문의해주세요!
@@ -412,7 +412,7 @@ export default function RecruitPage() {
                 <span className="text-4xl">📢</span>
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent">
                   AIM
                 </span>{' '}
                 모집 안내
@@ -528,7 +528,7 @@ export default function RecruitPage() {
               </p>
               <a 
                 href="mailto:aim@kookmin.ac.kr"
-                className="inline-flex items-center bg-white/5 hover:bg-white/10 text-cyan-400 px-6 py-3 rounded-xl font-medium transition-colors border border-white/10"
+                className="inline-flex items-center bg-white/5 hover:bg-white/10 text-primary-400 px-6 py-3 rounded-xl font-medium transition-colors border border-white/10"
               >
                 📧 aim@kookmin.ac.kr
               </a>
@@ -540,13 +540,13 @@ export default function RecruitPage() {
                 <span>🔗</span> 빠른 링크
               </h3>
               <div className="space-y-3">
-                <Link href="/about" className="block text-gray-400 hover:text-cyan-400 transition-colors">
+                <Link href="/about" className="block text-gray-400 hover:text-primary-400 transition-colors">
                   AIM 소개
                 </Link>
-                <Link href="/members" className="block text-gray-400 hover:text-cyan-400 transition-colors">
+                <Link href="/members" className="block text-gray-400 hover:text-primary-400 transition-colors">
                   멤버 소개
                 </Link>
-                <Link href="/login" className="block text-gray-400 hover:text-cyan-400 transition-colors">
+                <Link href="/login" className="block text-gray-400 hover:text-primary-400 transition-colors">
                   운영진 로그인
                 </Link>
               </div>
