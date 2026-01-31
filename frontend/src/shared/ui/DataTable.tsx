@@ -29,7 +29,7 @@ interface DataTableProps<T> {
   className?: string
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   keyField,
@@ -93,8 +93,8 @@ export function DataTable<T extends Record<string, any>>({
     
     // 날짜 정렬
     if (sortField === 'createdAt') {
-      const dateA = new Date(aValue).getTime()
-      const dateB = new Date(bValue).getTime()
+      const dateA = new Date(String(aValue)).getTime()
+      const dateB = new Date(String(bValue)).getTime()
       return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
     }
     
@@ -213,7 +213,7 @@ export function DataTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-gray-800 divide-y divide-gray-700">
             {sortedData.map((item) => (
-              <tr key={item[keyField]} className="hover:bg-gray-700 transition-colors">
+              <tr key={String(item[keyField])} className="hover:bg-gray-700 transition-colors">
                 {selectable && (
                   <td className="px-6 py-4">
                     <input
@@ -226,7 +226,7 @@ export function DataTable<T extends Record<string, any>>({
                 )}
                 {columns.map((column) => (
                   <td key={column.key} className="px-6 py-4 whitespace-nowrap">
-                    {column.render ? column.render(item) : item[column.key]}
+                    {column.render ? column.render(item) : String(item[column.key] ?? '')}
                   </td>
                 ))}
               </tr>

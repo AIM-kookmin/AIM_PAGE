@@ -53,6 +53,7 @@ export default function RecruitManagementPage() {
 
   useEffect(() => {
     fetchNotices()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -91,8 +92,8 @@ export default function RecruitManagementPage() {
       setLoading(true)
       const data = await getAllRecruitNotices()
       setNotices(data)
-    } catch (error) {
-      console.error('네트워크 오류:', error)
+    } catch {
+      console.error('네트워크 오류: 데이터를 불러오는 중 오류가 발생했습니다.')
       showNotification('error', '오류', '데이터를 불러오는 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
@@ -242,7 +243,7 @@ export default function RecruitManagementPage() {
       showNotification('success', '삭제 완료', '모집 공고가 삭제되었습니다.')
       closeDeleteModal()
       fetchNotices()
-    } catch (error) {
+    } catch {
       showNotification('error', '오류', '삭제 중 오류가 발생했습니다.')
     }
   }
@@ -298,7 +299,7 @@ export default function RecruitManagementPage() {
         short_description: ''
       })
       fetchNotices()
-    } catch (error) {
+    } catch {
       showNotification('error', '오류', `${editingNotice ? '수정' : '생성'} 중 오류가 발생했습니다.`)
     }
   }

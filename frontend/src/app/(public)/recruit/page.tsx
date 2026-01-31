@@ -8,16 +8,14 @@ import {
   getActiveRecruitNotice,
   getAllRecruitNotices,
 } from '@/shared/api/supabase'
-import { APP_NAME } from '@/lib/config'
 import type { RecruitNotice } from '@/types/supabase'
 
 // UI Components
-import { Button, Card, Badge, Text, Title, Subtitle, Loading, FAQ } from '@/shared/ui'
+import { Button, Badge, Text, Subtitle, Loading, FAQ } from '@/shared/ui'
 
 export default function RecruitPage() {
   const [recruitNotice, setRecruitNotice] = useState<RecruitNotice | null>(null)
   const [loading, setLoading] = useState(true)
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
   const [showPastRecruits, setShowPastRecruits] = useState(false)
   const [pastRecruits, setPastRecruits] = useState<RecruitNotice[]>([])
   const [loadingPast, setLoadingPast] = useState(false)
@@ -50,9 +48,6 @@ export default function RecruitPage() {
     }
   ]
 
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index)
-  }
 
   const fetchPastRecruits = async () => {
     setLoadingPast(true)

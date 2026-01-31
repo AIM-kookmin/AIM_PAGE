@@ -12,7 +12,6 @@ import type {
 } from '@/types/supabase'
 
 type Tables = Database['public']['Tables']
-type MemberProfileUpdate = Tables['member_profiles']['Update']
 type RecruitNoticeInsert = Tables['recruit_notices']['Insert']
 type RecruitNoticeUpdate = Tables['recruit_notices']['Update']
 type AboutSectionInsert = Tables['about_sections']['Insert']

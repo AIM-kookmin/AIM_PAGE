@@ -4,12 +4,13 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getAdminDashboardStats, getAllMembersAdmin } from '@/shared/api/supabase'
 import { APP_NAME } from '@/lib/config'
+import type { MemberProfile } from '@/types/supabase'
 
 interface DashboardStats {
   totalMembers: number
   totalActivities: number
   totalStudies: number
-  recentMembers: any[]
+  recentMembers: MemberProfile[]
 }
 
 export default function AdminDashboard() {

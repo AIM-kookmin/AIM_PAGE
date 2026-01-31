@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { APP_NAME } from '@/lib/config'
-import { Card, Text, Title, Loading } from '@/shared/ui'
+import { Card, Text, Loading } from '@/shared/ui'
 import { getActivities } from '@/shared/api/supabase'
 import type { Activity } from '@/types/supabase'
 

@@ -28,7 +28,14 @@ async function getHomePageData() {
     .order('year', { ascending: false })
 
   // Transform achievements to match expected type
-  const achievements = (achievementsData || []).map((item: any) => ({
+  interface AchievementItem {
+    id: string
+    year: number
+    title: string
+    description: string
+    category?: string
+  }
+  const achievements = (achievementsData || []).map((item: AchievementItem) => ({
     id: item.id,
     year: item.year,
     title: item.title,

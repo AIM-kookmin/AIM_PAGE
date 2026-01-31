@@ -118,7 +118,7 @@ function Particles({ count = 2000, mouse }: ParticlesProps) {
   )
 }
 
-function ConnectionLines({ count = 300, mouse }: ParticlesProps) {
+function ConnectionLines({ count = 300 }: ParticlesProps) {
   const linesRef = useRef<THREE.LineSegments>(null)
 
   const [positions] = useState<Float32Array>(() => {

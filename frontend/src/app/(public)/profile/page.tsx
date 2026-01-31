@@ -75,6 +75,7 @@ export default function ProfilePage() {
     } else if (isAuthenticated) {
       fetchProfile()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isLoading, router])
 
   const fetchProfile = async () => {
@@ -204,9 +205,9 @@ export default function ProfilePage() {
       } else {
         throw error
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('비밀번호 변경 오류:', error)
-      showNotification('error', '변경 실패', error.message || '비밀번호 변경에 실패했습니다.')
+      showNotification('error', '변경 실패', error instanceof Error ? error.message : '비밀번호 변경에 실패했습니다.')
     } finally {
       setSaving(false)
     }

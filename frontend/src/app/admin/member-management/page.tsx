@@ -6,7 +6,7 @@ import { DataTable } from '@/shared/ui/DataTable'
 import { CardGrid } from '@/shared/ui/CardGrid'
 import { ViewToggle } from '@/shared/ui/ViewToggle'
 import { MemberCard } from '@/entities/member'
-import { getAllMembersAdmin, adminUpdateMember, uploadMemberAvatar, getPendingMembers, approveMember, rejectMember, getActiveMembers } from '@/shared/api/supabase'
+import { adminUpdateMember, uploadMemberAvatar, getPendingMembers, approveMember, rejectMember, getActiveMembers } from '@/shared/api/supabase'
 import type { MemberProfile } from '@/types/supabase'
 
 interface EditMemberData {
@@ -119,6 +119,7 @@ export default function MemberManagement() {
 
   useEffect(() => {
     fetchMembers()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const fetchMembers = async () => {
@@ -355,8 +356,8 @@ export default function MemberManagement() {
     }
   }
 
-  const parseCsvFile = async (file: File): Promise<any[]> => {
-    const tryParseWithEncoding = (encoding: string): Promise<any[]> => {
+  const parseCsvFile = async (file: File): Promise<Record<string, unknown>[]> => {
+    const tryParseWithEncoding = (encoding: string): Promise<Record<string, unknown>[]> => {
       return new Promise((resolve, reject) => {
         if (!file || !(file instanceof File)) {
           reject(new Error('유효하지 않은 파일입니다.'))
@@ -402,7 +403,7 @@ export default function MemberManagement() {
             for (let i = 1; i < lines.length; i++) {
               const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''))
               
-              const member: any = {}
+              const member: Record<string, unknown> = {}
 
               headers.forEach((header, index) => {
                 const value = values[index]
@@ -410,7 +411,7 @@ export default function MemberManagement() {
                   if (header === 'generation') {
                     member[header] = value ? parseInt(value) : null
                   } else if (header === 'isPublic' || header === 'is_public') {
-                    member[header] = value.toLowerCase() === 'true'
+                    member[header === 'isPublic' ? 'is_public' : header] = value.toLowerCase() === 'true'
                   } else {
                     member[header] = value
                   }
@@ -472,7 +473,7 @@ export default function MemberManagement() {
         console.log('UTF-8 인코딩 실패, EUC-KR로 재시도...')
         try {
           return await tryParseWithEncoding('EUC-KR')
-        } catch (eucError) {
+        } catch {
           console.log('EUC-KR 인코딩 실패, CP949로 재시도...')
           return await tryParseWithEncoding('CP949')
         }
@@ -524,7 +525,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
     setSelectedMembers(selectedItems)
   }
 
-  const handleBulkAction = async (action: string, selectedItems: MemberProfile[]) => {
+  const handleBulkAction = async (action: string, _selectedItems: MemberProfile[]) => {
     if (action === 'delete') {
       setShowBulkDeleteModal(true)
     }
@@ -582,7 +583,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       label: '멤버',
       sortable: true,
       width: '200px',
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="flex items-center">
           <div className="w-10 h-10 bg-gradient-to-br from-violet-400 to-indigo-500 rounded-full flex items-center justify-center mr-3">
             <span className="text-white font-bold text-sm">
@@ -601,7 +602,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       key: 'student_id',
       label: '학번',
       sortable: true,
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="text-sm text-gray-300">
           {member.student_id || '-'}
         </div>
@@ -611,7 +612,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       key: 'department',
       label: '학과',
       sortable: true,
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="text-sm text-gray-300">
           {member.department || '-'}
         </div>
@@ -621,7 +622,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       key: 'generation',
       label: '기수',
       sortable: true,
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="text-sm text-gray-300">
           {member.generation ? `${member.generation}기` : '-'}
         </div>
@@ -631,7 +632,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       key: 'position',
       label: '직책',
       sortable: true,
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="text-sm text-gray-300">
           {member.position || '-'}
         </div>
@@ -641,7 +642,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
       key: 'created_at',
       label: '가입일',
       sortable: true,
-      render: (member: any) => (
+      render: (member: MemberProfile) => (
         <div className="text-sm text-gray-300">
           {new Date(member.created_at).toLocaleDateString()}
         </div>

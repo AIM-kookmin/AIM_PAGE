@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { getPublishedStudyPosts } from '@/shared/api/supabase'
 import type { StudyPostWithAuthor } from '@/types/supabase'
 import { APP_NAME } from '@/lib/config'
-import { Card, Text, Title, Loading } from '@/shared/ui'
+import { Card, Text, Loading } from '@/shared/ui'
 
 export default function StudiesPage() {
   const [posts, setPosts] = useState<StudyPostWithAuthor[]>([])

@@ -1,0 +1,212 @@
+# CodeRabbit Configuration for AIM_PAGE
+# AI-powered code review for Next.js 14 + TypeScript + Supabase project
+
+# 기본 설정
+language: ko  # 한국어로 리뷰
+early_access: false
+enable_free_tier: true
+
+# 코드 리뷰 설정
+reviews:
+  profile: chill  # assertive(엄격) | chill(완화)
+  request_changes_workflow: false  # PR 자동 변경 요청 비활성화
+  high_level_summary: true  # 상위 레벨 요약 제공
+  high_level_summary_placeholder: "<!-- CodeRabbit AI 요약 -->"
+  poem: false  # 시 생성 비활성화
+  review_status: true  # 리뷰 상태 표시
+  collapse_walkthrough: false  # Walkthrough 섹션 접기
+
+  # 자동 리뷰 설정
+  auto_review:
+    enabled: true  # 자동 리뷰 활성화
+    auto_incremental_review: true  # 증분 리뷰 (새 커밋만 리뷰)
+    ignore_title_keywords:  # 리뷰 스킵할 PR 제목 키워드
+      - "WIP"
+      - "DO NOT MERGE"
+      - "DRAFT"
+      - "작업중"
+      - "진행중"
+    drafts: false  # Draft PR은 리뷰하지 않음
+
+  # 라벨 자동 할당
+  auto_title_update:
+    enabled: false
+
+# AI 채팅 설정
+chat:
+  auto_reply: true  # 자동 응답 활성화
+
+# 지식 베이스 설정
+knowledge_base:
+  opt_out: false  # 지식 베이스 수집 활성화
+
+  learnings:
+    scope: auto  # 자동으로 학습 내용 수집
+
+  issues:
+    scope: auto  # GitHub Issues에서 컨텍스트 학습
+
+  jira:
+    project_keys: []  # Jira 미사용
+
+  linear:
+    team_keys: []  # Linear 미사용
+
+  pull_requests:
+    scope: auto  # PR에서 패턴 학습
+
+# 리뷰에서 제외할 파일/경로
+path_filters:
+  # 빌드 산출물
+  - "!**/dist/**"
+  - "!**/build/**"
+  - "!**/.next/**"
+  - "!**/out/**"
+
+  # 의존성
+  - "!**/node_modules/**"
+  - "!**/package-lock.json"
+  - "!**/pnpm-lock.yaml"
+  - "!**/yarn.lock"
+
+  # 환경 설정 파일
+  - "!**/.env*"
+  - "!**/.DS_Store"
+
+  # 테스트 커버리지
+  - "!**/coverage/**"
+  - "!**/.nyc_output/**"
+
+  # 문서 (선택적)
+  - "!**/CHANGELOG.md"
+  - "!**/LICENSE"
+
+  # Supabase 마이그레이션 (DB 스키마는 리뷰)
+  # - "!**/supabase/migrations/**"  # 필요시 주석 해제
+
+  # 이미지/에셋
+  - "!**/*.png"
+  - "!**/*.jpg"
+  - "!**/*.jpeg"
+  - "!**/*.gif"
+  - "!**/*.svg"
+  - "!**/*.ico"
+  - "!**/*.woff"
+  - "!**/*.woff2"
+  - "!**/*.ttf"
+  - "!**/*.eot"
+
+# 코드 리뷰 포커스 영역
+path_instructions:
+  # Next.js App Router 관련
+  - path: "frontend/src/app/**/*.tsx"
+    instructions: |
+      - Server Component vs Client Component 올바른 사용 확인
+      - 'use client' 디렉티브 필요성 검토
+      - async/await 패턴 확인
+      - metadata 설정 권장사항 제공
+
+  # API Routes
+  - path: "frontend/src/app/api/**/*.ts"
+    instructions: |
+      - API 라우트 핸들러 보안 검토
+      - 에러 핸들링 적절성 확인
+      - Supabase RLS 정책 준수 확인
+      - CORS 설정 검토
+
+  # Feature-Sliced Design: Widgets
+  - path: "frontend/src/widgets/**/*.tsx"
+    instructions: |
+      - Widget 간 의존성 확인 (widgets는 다른 widgets 의존 금지)
+      - 재사용 가능한 컴포넌트는 shared/ui로 이동 제안
+      - Props 타입 명확성 검토
+
+  # Feature-Sliced Design: Shared UI
+  - path: "frontend/src/shared/ui/**/*.tsx"
+    instructions: |
+      - 컴포넌트 재사용성 극대화
+      - Props 인터페이스 완전성 확인
+      - 접근성(a11y) 검토
+      - Tailwind 클래스 일관성 확인
+
+  # Supabase API
+  - path: "frontend/src/shared/api/supabase/**/*.ts"
+    instructions: |
+      - RLS 정책 준수 확인
+      - 타입 안전성 검토
+      - 에러 핸들링 패턴 확인
+      - 쿼리 최적화 제안
+
+  # Types
+  - path: "frontend/src/types/**/*.ts"
+    instructions: |
+      - Supabase 생성 타입과 커스텀 타입 구분
+      - 타입 재사용성 검토
+      - any 타입 사용 금지 확인
+
+  # Tests
+  - path: "**/*.test.{ts,tsx}"
+    instructions: |
+      - 테스트 커버리지 충분성 평가
+      - 테스트 가독성 및 유지보수성
+      - Mock 사용의 적절성
+      - AAA 패턴 (Arrange-Act-Assert) 준수
+
+  # Configuration
+  - path: "**/*.config.{js,ts}"
+    instructions: |
+      - 설정 값 검증
+      - 보안 관련 설정 확인
+      - 성능 최적화 제안
+
+  # Migrations
+  - path: "supabase/migrations/**/*.sql"
+    instructions: |
+      - SQL 구문 안전성 검토
+      - 인덱스 최적화 제안
+      - RLS 정책 완전성 확인
+      - 롤백 가능성 검토
+
+# 추가 검토 항목
+tone_instructions: |
+  CodeRabbit은 다음 사항을 중점적으로 검토합니다:
+
+  **보안:**
+  - XSS, SQL Injection 취약점
+  - 환경변수 하드코딩 여부
+  - API 키 노출 여부
+  - Supabase RLS 정책 누락
+
+  **성능:**
+  - 불필요한 리렌더링
+  - 메모이제이션 기회 (useMemo, useCallback)
+  - 이미지 최적화 (next/image 사용)
+  - Dynamic import 활용 기회
+
+  **타입 안전성:**
+  - any 타입 사용
+  - 타입 단언(as) 남용
+  - Optional chaining 누락
+  - Null/undefined 처리
+
+  **코드 품질:**
+  - 중복 코드
+  - 복잡도가 높은 함수
+  - 네이밍 컨벤션
+  - 주석 필요성
+
+  **Next.js 14 베스트 프랙티스:**
+  - Server Component 최대 활용
+  - Client Component 최소화
+  - Suspense 경계 설정
+  - Error Boundary 구현
+  - Loading UI 제공
+
+  **접근성(a11y):**
+  - ARIA 속성
+  - 키보드 네비게이션
+  - 스크린 리더 지원
+  - 색상 대비
+
+  리뷰는 건설적이고 친절하게, 한국어로 제공됩니다.
+  개선이 필요한 부분은 구체적인 코드 예시와 함께 제안합니다.
