@@ -21,11 +21,20 @@ async function getHomePageData() {
     .order('order')
 
   // Fetch achievements (history)
-  const { data: achievements } = await supabase
+  const { data: achievementsData } = await supabase
     .from('about_history')
     .select('*')
     .eq('is_active', true)
     .order('year', { ascending: false })
+
+  // Transform achievements to match expected type
+  const achievements = (achievementsData || []).map((item: any) => ({
+    id: item.id,
+    year: item.year,
+    title: item.title,
+    description: item.description,
+    category: (item.category || 'milestone') as 'award' | 'event' | 'milestone',
+  }))
 
   return {
     heroData: heroSections ? {
@@ -35,7 +44,7 @@ async function getHomePageData() {
       badge: heroSections.title,
     } : undefined,
     activities: activities || [],
-    achievements: achievements || [],
+    achievements,
   }
 }
 

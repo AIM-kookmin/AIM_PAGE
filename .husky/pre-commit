@@ -1,2 +1,12 @@
 cd frontend
+
+# Run lint-staged (ESLint on changed files)
 npx lint-staged
+
+# Type check
+echo "🔍 Running type check..."
+npm run type-check
+
+# Optional: Uncomment to run full build (slower)
+# echo "🏗️  Running build..."
+# npm run build
