@@ -1,4 +1,3 @@
-// UI Components Export
 export { Button } from './Button'
 export { Card, CardHeader, CardTitle, CardContent } from './Card'
 export { Badge } from './Badge'
@@ -9,6 +8,10 @@ export { Modal } from './Modal'
 export { DataTable } from './DataTable'
 export { CardGrid } from './CardGrid'
 export { ViewToggle } from './ViewToggle'
-
-// Types
+export { default as SmoothScroll } from './SmoothScroll'
+export { default as ScrollReveal } from './ScrollReveal'
+export { default as AnimatedText } from './AnimatedText'
+export { cn } from './cn'
+export { ParticleBackground } from './ParticleBackground'
+export { default as PageTransition } from './PageTransition'
 export type { default as ButtonProps } from './Button'
