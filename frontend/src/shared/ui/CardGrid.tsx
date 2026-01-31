@@ -1,7 +1,6 @@
 'use client'
 
-import { Card } from './Card'
-import { Title, Text } from './Text'
+import { Text } from './Text'
 
 interface CardGridProps<T> {
   data: T[]
@@ -18,7 +17,7 @@ interface CardGridProps<T> {
   }
 }
 
-export function CardGrid<T extends Record<string, any>>({
+export function CardGrid<T extends Record<string, unknown>>({
   data,
   keyField,
   renderCard,
@@ -52,7 +51,7 @@ export function CardGrid<T extends Record<string, any>>({
   return (
     <div className={`${gridClasses} ${className}`}>
       {data.map((item) => (
-        <div key={item[keyField]}>
+        <div key={String(item[keyField])}>
           {renderCard(item)}
         </div>
       ))}

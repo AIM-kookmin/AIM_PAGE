@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useAuth } from '@/app/providers/AuthContext'
 
 export default function PublicNavigation() {
-  const { user, logout, isAuthenticated, isAdmin } = useAuth()
+  const { logout, isAuthenticated, isAdmin } = useAuth()
 
   const handleLogout = () => {
     if (confirm('로그아웃하시겠습니까?')) {

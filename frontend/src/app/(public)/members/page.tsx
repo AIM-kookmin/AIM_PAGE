@@ -119,9 +119,9 @@ export default function MembersPage() {
         
         {/* 연락처 */}
         <div className="flex space-x-3 mt-auto">
-          {(member.links as any)?.github && (
-            <a 
-              href={`https://github.com/${(member.links as any).github}`}
+          {member.links && typeof member.links === 'object' && 'github' in member.links && member.links.github && (
+            <a
+              href={`https://github.com/${member.links.github}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white transition-colors transform hover:scale-110"
@@ -131,9 +131,9 @@ export default function MembersPage() {
               </svg>
             </a>
           )}
-          {(member.links as any)?.linkedin && (
-            <a 
-              href={`https://linkedin.com/in/${(member.links as any).linkedin}`}
+          {member.links && typeof member.links === 'object' && 'linkedin' in member.links && member.links.linkedin && (
+            <a
+              href={`https://linkedin.com/in/${member.links.linkedin}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-primary-400 transition-colors transform hover:scale-110"

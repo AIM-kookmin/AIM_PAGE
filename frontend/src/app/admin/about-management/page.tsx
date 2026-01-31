@@ -11,6 +11,8 @@ import {
 } from '@/shared/api/supabase'
 import type { AboutSection, AboutActivity, AboutHistory, AboutContact } from '@/types/supabase'
 
+type ManageableItem = AboutSection | AboutActivity | AboutHistory | AboutContact
+
 export default function AboutManagementPage() {
   const [activeTab, setActiveTab] = useState<'sections' | 'activities' | 'history' | 'contact'>('sections')
   const [sections, setSections] = useState<AboutSection[]>([])
@@ -20,8 +22,8 @@ export default function AboutManagementPage() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletingItem, setDeletingItem] = useState<any>(null)
-  const [editingItem, setEditingItem] = useState<any>(null)
+  const [deletingItem, setDeletingItem] = useState<ManageableItem | null>(null)
+  const [editingItem, setEditingItem] = useState<ManageableItem | null>(null)
   const [formData, setFormData] = useState<{
     title?: string
     content?: string
@@ -53,31 +55,22 @@ export default function AboutManagementPage() {
     document.title = `소개 관리 - ${APP_NAME}`
   }, [])
 
-  useEffect(() => {
-    fetchData()
-  }, [activeTab])
-
   const fetchData = async () => {
     try {
       setLoading(true)
-      let data: any[] = []
-      
+
       switch (activeTab) {
         case 'sections':
-          data = await getAllAboutSections()
-          setSections(data)
+          setSections(await getAllAboutSections())
           break
         case 'activities':
-          data = await getAllAboutActivities()
-          setActivities(data)
+          setActivities(await getAllAboutActivities())
           break
         case 'history':
-          data = await getAllAboutHistory()
-          setHistory(data)
+          setHistory(await getAllAboutHistory())
           break
         case 'contact':
-          data = await getAllAboutContacts()
-          setContacts(data)
+          setContacts(await getAllAboutContacts())
           break
       }
     } catch (error) {
@@ -86,6 +79,11 @@ export default function AboutManagementPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab])
 
   const openAddModal = () => {
     setEditingItem(null)
@@ -99,13 +97,13 @@ export default function AboutManagementPage() {
     setFormData({})
   }
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: ManageableItem) => {
     setEditingItem(item)
     setFormData({ ...item })
     setShowModal(true)
   }
 
-  const openDeleteModal = (item: any) => {
+  const openDeleteModal = (item: ManageableItem) => {
     setDeletingItem(item)
     setShowDeleteModal(true)
   }
@@ -142,7 +140,7 @@ export default function AboutManagementPage() {
       })
       closeDeleteModal()
       fetchData()
-    } catch (error) {
+    } catch {
       showNotification({
         show: true,
         type: 'error',
@@ -319,7 +317,7 @@ export default function AboutManagementPage() {
           ].map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
+              onClick={() => setActiveTab(tab.key as 'sections' | 'activities' | 'history' | 'contact')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.key
                   ? 'bg-violet-500 text-white'
@@ -348,35 +346,37 @@ export default function AboutManagementPage() {
             </Text>
           </Card>
         ) : (
-          getCurrentData().map((item: any) => (
+          getCurrentData().map((item: ManageableItem) => (
             <Card key={item.id} className="p-6">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <Title level={3} className="text-white mb-2">
-                    {item.title || item.label}
+                    {'title' in item ? item.title : 'label' in item ? item.label : ''}
                   </Title>
                   <Text variant="secondary" className="mb-2">
-                    {item.content || item.description || item.value}
+                    {'content' in item ? item.content : 'description' in item ? item.description : 'value' in item ? item.value : ''}
                   </Text>
-                  {activeTab === 'activities' && (
+                  {activeTab === 'activities' && 'icon' in item && (
                     <div className="flex items-center space-x-2">
                       <span className="text-2xl">{item.icon}</span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        item.color === 'cyan' ? 'bg-violet-500 text-white' :
-                        item.color === 'pink' ? 'bg-purple-500 text-white' :
-                        item.color === 'yellow' ? 'bg-yellow-500 text-black' :
-                        item.color === 'purple' ? 'bg-purple-500 text-white' :
-                        item.color === 'green' ? 'bg-green-500 text-white' :
-                        item.color === 'blue' ? 'bg-blue-500 text-white' :
-                        item.color === 'red' ? 'bg-red-500 text-white' :
-                        item.color === 'orange' ? 'bg-orange-500 text-white' :
-                        'bg-violet-500 text-white'
-                      }`}>
-                        {item.color}
-                      </span>
+                      {'color' in item && (
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          item.color === 'cyan' ? 'bg-violet-500 text-white' :
+                          item.color === 'pink' ? 'bg-purple-500 text-white' :
+                          item.color === 'yellow' ? 'bg-yellow-500 text-black' :
+                          item.color === 'purple' ? 'bg-purple-500 text-white' :
+                          item.color === 'green' ? 'bg-green-500 text-white' :
+                          item.color === 'blue' ? 'bg-blue-500 text-white' :
+                          item.color === 'red' ? 'bg-red-500 text-white' :
+                          item.color === 'orange' ? 'bg-orange-500 text-white' :
+                          'bg-violet-500 text-white'
+                        }`}>
+                          {item.color}
+                        </span>
+                      )}
                     </div>
                   )}
-                  {activeTab === 'history' && (
+                  {activeTab === 'history' && 'year' in item && (
                     <Text variant="muted" size="sm">
                       {item.year}년
                     </Text>
@@ -636,7 +636,7 @@ export default function AboutManagementPage() {
             {deletingItem && (
               <>
                 <span className="font-semibold text-red-400">
-                  "{deletingItem.title || deletingItem.label || '이 항목'}"
+                  "{('title' in deletingItem ? deletingItem.title : 'label' in deletingItem ? deletingItem.label : '이 항목')}"
                 </span>
                 을(를) 삭제하시겠습니까?
               </>

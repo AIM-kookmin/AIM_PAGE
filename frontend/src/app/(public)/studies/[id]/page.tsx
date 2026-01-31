@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'
 import { getStudyPostById } from '@/shared/api/supabase'
 import type { StudyPostWithAuthor } from '@/types/supabase'
 import { APP_NAME } from '@/lib/config'
-import { Card, Text, Title, Loading } from '@/shared/ui'
+import { Card, Loading } from '@/shared/ui'
 import ReactMarkdown from 'react-markdown'
 
 export default function StudyPostPage() {
@@ -14,12 +14,6 @@ export default function StudyPostPage() {
   const postId = params?.id as string
   const [post, setPost] = useState<StudyPostWithAuthor | null>(null)
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (postId) {
-      fetchPost()
-    }
-  }, [postId])
 
   const fetchPost = async () => {
     try {
@@ -34,6 +28,13 @@ export default function StudyPostPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (postId) {
+      fetchPost()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

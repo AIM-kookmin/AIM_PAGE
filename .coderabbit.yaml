@@ -1,0 +1,108 @@
+# CodeRabbit Configuration for AIM_PAGE
+# AI-powered code review for Next.js 14 + TypeScript + Supabase project
+
+language: ko
+early_access: false
+enable_free_tier: true
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "<!-- CodeRabbit AI 요약 -->"
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    ignore_title_keywords:
+      - "WIP"
+      - "DO NOT MERGE"
+      - "DRAFT"
+      - "작업중"
+      - "진행중"
+    drafts: false
+
+    # dev, prod 브랜치도 리뷰 활성화
+    base_branches:
+      - main
+      - master
+      - dev
+      - prod
+
+  auto_title_update:
+    enabled: false
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  jira:
+    project_keys: []
+  linear:
+    team_keys: []
+  pull_requests:
+    scope: auto
+
+# 제외할 파일/경로
+path_filters:
+  - "!**/dist/**"
+  - "!**/build/**"
+  - "!**/.next/**"
+  - "!**/out/**"
+  - "!**/node_modules/**"
+  - "!**/package-lock.json"
+  - "!**/pnpm-lock.yaml"
+  - "!**/yarn.lock"
+  - "!**/.env*"
+  - "!**/.DS_Store"
+  - "!**/coverage/**"
+  - "!**/.nyc_output/**"
+  - "!**/CHANGELOG.md"
+  - "!**/LICENSE"
+  - "!**/*.png"
+  - "!**/*.jpg"
+  - "!**/*.jpeg"
+  - "!**/*.gif"
+  - "!**/*.svg"
+  - "!**/*.ico"
+  - "!**/*.woff"
+  - "!**/*.woff2"
+  - "!**/*.ttf"
+  - "!**/*.eot"
+
+# 경로별 리뷰 가이드
+path_instructions:
+  - path: "frontend/src/app/**/*.tsx"
+    instructions: "Server Component vs Client Component 올바른 사용 확인. async/await 패턴 검토. metadata 설정 권장."
+
+  - path: "frontend/src/app/api/**/*.ts"
+    instructions: "API 라우트 핸들러 보안 검토. 에러 핸들링 확인. Supabase RLS 정책 준수 확인."
+
+  - path: "frontend/src/widgets/**/*.tsx"
+    instructions: "Widget 간 의존성 확인. 재사용 가능한 컴포넌트는 shared/ui로 이동 제안. Props 타입 명확성 검토."
+
+  - path: "frontend/src/shared/ui/**/*.tsx"
+    instructions: "컴포넌트 재사용성 극대화. Props 인터페이스 완전성 확인. 접근성 검토. Tailwind 클래스 일관성 확인."
+
+  - path: "frontend/src/shared/api/supabase/**/*.ts"
+    instructions: "RLS 정책 준수 확인. 타입 안전성 검토. 에러 핸들링 패턴 확인. 쿼리 최적화 제안."
+
+  - path: "frontend/src/types/**/*.ts"
+    instructions: "Supabase 생성 타입과 커스텀 타입 구분. 타입 재사용성 검토. any 타입 사용 금지 확인."
+
+  - path: "**/*.test.{ts,tsx}"
+    instructions: "테스트 커버리지 충분성 평가. 테스트 가독성 및 유지보수성. Mock 사용의 적절성. AAA 패턴 준수."
+
+  - path: "**/*.config.{js,ts}"
+    instructions: "설정 값 검증. 보안 관련 설정 확인. 성능 최적화 제안."
+
+  - path: "supabase/migrations/**/*.sql"
+    instructions: "SQL 구문 안전성 검토. 인덱스 최적화 제안. RLS 정책 완전성 확인. 롤백 가능성 검토."

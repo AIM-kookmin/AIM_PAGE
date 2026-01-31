@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, Text, Title, Subtitle, Loading } from '@/shared/ui'
+import { Loading } from '@/shared/ui'
 import { APP_NAME } from '@/lib/config'
 import {
   getAboutSections,
@@ -146,7 +146,7 @@ export default function AboutPage() {
                 동아리 연혁
               </h2>
               <div className="relative border-l-2 border-gray-700 ml-4 space-y-8 py-2">
-                {history.map((item, index) => (
+                {history.map((item) => (
                   <div key={item.id} className="relative pl-8 group">
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-800 border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
                     <div className="flex flex-col sm:flex-row sm:items-baseline mb-1">

@@ -1,14 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/', '/about', '/members', '/activities', '/studies', '/recruit', '/login', '/register', '/pending']
 const AUTH_REQUIRED_PATHS = ['/profile', '/admin']
-
-function isPublicPath(pathname: string): boolean {
-  if (PUBLIC_PATHS.includes(pathname)) return true
-  if (pathname.startsWith('/studies/')) return true
-  return false
-}
 
 function isAuthRequiredPath(pathname: string): boolean {
   return AUTH_REQUIRED_PATHS.some(path => pathname.startsWith(path))
