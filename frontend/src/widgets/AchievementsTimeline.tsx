@@ -12,58 +12,6 @@ interface Achievement {
   category: 'award' | 'event' | 'milestone'
 }
 
-const achievements: Achievement[] = [
-  {
-    id: '1',
-    year: 2024,
-    title: 'DACON 금융 AI 대회 우수상',
-    description: '금융 데이터 기반 신용점수 예측 모델로 상위 5% 달성',
-    category: 'award',
-  },
-  {
-    id: '2',
-    year: 2024,
-    title: 'Kaggle Competition Silver Medal',
-    description: 'Image Classification 대회에서 은메달 획득',
-    category: 'award',
-  },
-  {
-    id: '3',
-    year: 2024,
-    title: '10기 신규 부원 모집',
-    description: '20명의 새로운 AI Monster 합류',
-    category: 'milestone',
-  },
-  {
-    id: '4',
-    year: 2023,
-    title: '국민대 AI 해커톤 대상',
-    description: '교내 AI 해커톤에서 1위 달성',
-    category: 'award',
-  },
-  {
-    id: '5',
-    year: 2023,
-    title: 'AWS AI/ML 세미나 개최',
-    description: 'AWS 전문가 초청 세미나 진행, 100명 참석',
-    category: 'event',
-  },
-  {
-    id: '6',
-    year: 2023,
-    title: '9기 신규 부원 모집',
-    description: '25명의 새로운 AI Monster 합류',
-    category: 'milestone',
-  },
-  {
-    id: '7',
-    year: 2022,
-    title: 'AIM 동아리 창립',
-    description: '국민대학교 AI 동아리 AIM 설립',
-    category: 'milestone',
-  },
-]
-
 const categoryColors = {
   award: 'from-amber-500 to-orange-500',
   event: 'from-violet-500 to-indigo-500',
@@ -140,9 +88,11 @@ function TimelineItem({ achievement, index }: { achievement: Achievement; index:
   )
 }
 
-export default function AchievementsTimeline() {
-  const years = Array.from(new Set(achievements.map(a => a.year))).sort((a, b) => b - a)
+interface AchievementsTimelineProps {
+  achievements?: Achievement[]
+}
 
+export default function AchievementsTimeline({ achievements = [] }: AchievementsTimelineProps) {
   return (
     <section className="relative z-10 py-24 md:py-32">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,9 +120,13 @@ export default function AchievementsTimeline() {
         </div>
 
         <div className="relative">
-          {achievements.map((achievement, index) => (
-            <TimelineItem key={achievement.id} achievement={achievement} index={index} />
-          ))}
+          {achievements.length > 0 ? (
+            achievements.map((achievement, index) => (
+              <TimelineItem key={achievement.id} achievement={achievement} index={index} />
+            ))
+          ) : (
+            <p className="text-white/40 text-center py-12">성과 정보가 없습니다.</p>
+          )}
         </div>
       </div>
     </section>

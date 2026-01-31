@@ -10,6 +10,13 @@ const ParticleBackground = dynamic(
   { ssr: false }
 )
 
+interface HeroData {
+  badge?: string
+  title: string
+  subtitle: string
+  description: string
+}
+
 function ScrollIndicator() {
   return (
     <motion.div 
@@ -34,7 +41,11 @@ function ScrollIndicator() {
   )
 }
 
-export default function Hero() {
+interface HeroProps {
+  data?: HeroData
+}
+
+export default function Hero({ data }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -45,8 +56,14 @@ export default function Hero() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
 
-  const titleLetters = 'AIM'.split('')
-  const subtitleWords = 'AI Monsters'.split(' ')
+  // Use data from props or fallback to defaults
+  const badge = data?.badge || '국민대학교 AI 동아리'
+  const title = data?.title || 'AIM'
+  const subtitle = data?.subtitle || 'AI Monsters'
+  const description = data?.description || '함께 코딩하고, 학습하며, 세상을 바꿀 AI 프로젝트를 만들어갑니다.'
+
+  const titleLetters = title.split('')
+  const subtitleWords = subtitle.split(' ')
 
   return (
     <section 
@@ -66,7 +83,7 @@ export default function Hero() {
           transition={{ duration: 0.6, ease: 'backOut' }}
         >
           <span className="inline-block px-4 py-2 text-sm font-medium text-violet-400 border border-violet-500/30 rounded-full bg-violet-500/10 backdrop-blur-sm">
-            국민대학교 AI 동아리
+            {badge}
           </span>
         </motion.div>
 
@@ -117,13 +134,13 @@ export default function Hero() {
           </span>
         </h1>
 
-        <motion.p 
+        <motion.p
           className="text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed"
           initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          함께 코딩하고, 학습하며, 세상을 바꿀 AI 프로젝트를 만들어갑니다.
+          {description}
         </motion.p>
 
         <div className="flex flex-col sm:flex-row gap-4">
