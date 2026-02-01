@@ -81,6 +81,17 @@ export async function getActivities(): Promise<Activity[]> {
   return data ?? []
 }
 
+/**
+ * Fetches all published study posts with author information and tags.
+ *
+ * @returns Promise<StudyPostWithAuthor[]> Array of published study posts with nested author and tags data
+ * @throws Error if the Supabase query fails or if data validation fails
+ *
+ * @example
+ * const posts = await getPublishedStudyPosts()
+ * // posts[0].author.display_name
+ * // posts[0].tags[0].tag.name
+ */
 export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -94,5 +105,24 @@ export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return (data ?? []) as StudyPostWithAuthor[]
+
+  // Validate response data structure
+  if (!Array.isArray(data)) {
+    throw new Error('getPublishedStudyPosts: Expected array response from Supabase')
+  }
+
+  // Runtime validation for StudyPostWithAuthor structure
+  data.forEach((post, index) => {
+    if (!post || typeof post !== 'object') {
+      throw new Error(`getPublishedStudyPosts: Invalid post at index ${index}`)
+    }
+    if (!post.author || typeof post.author !== 'object' || !post.author.display_name) {
+      throw new Error(`getPublishedStudyPosts: Missing or invalid author data at index ${index}`)
+    }
+    if (!Array.isArray(post.tags)) {
+      throw new Error(`getPublishedStudyPosts: Missing or invalid tags array at index ${index}`)
+    }
+  })
+
+  return data as StudyPostWithAuthor[]
 }

@@ -1,5 +1,3 @@
-'use client'
-
 import { Card, Text } from '@/shared/ui'
 import type { Activity } from '@/types/supabase'
 
@@ -81,7 +79,7 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
       <footer className="relative border-t border-white/10 bg-black/50 backdrop-blur-xl py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-500 text-sm">
-            &copy; 2024 AIM (AI Monsters). All rights reserved.
+            &copy; {new Date().getFullYear()} AIM (AI Monsters). All rights reserved.
           </p>
         </div>
       </footer>

@@ -1,5 +1,3 @@
-'use client'
-
 import type {
   AboutSection,
   AboutActivity,
@@ -44,10 +42,10 @@ export default function AboutClient({
       </div>
 
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="glass p-8 md:p-12 rounded-2xl animate-fade-in-up">
+        <div className="glass p-8 md:p-12 rounded-2xl animate-slide-up">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-pulse-glow">
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-glow-pulse">
                 AIM (AI Monsters)
               </span>{' '}
               동아리 소개
@@ -56,7 +54,7 @@ export default function AboutClient({
           </div>
 
           {sections.map((section, index) => (
-            <section key={section.id} className="mb-12 animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+            <section key={section.id} className="mb-12 animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
                 <span className="w-2 h-8 bg-violet-500 rounded-full mr-3" />
                 {section.title}
@@ -68,7 +66,7 @@ export default function AboutClient({
           ))}
 
           {activities.length > 0 && (
-            <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <section className="mb-12 animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                 <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
                 주요 활동
@@ -102,7 +100,7 @@ export default function AboutClient({
           )}
 
           {history.length > 0 && (
-            <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+            <section className="mb-12 animate-slide-up" style={{ animationDelay: '0.5s' }}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                 <span className="w-2 h-8 bg-yellow-500 rounded-full mr-3" />
                 동아리 연혁
@@ -125,7 +123,7 @@ export default function AboutClient({
           )}
 
           {contacts.length > 0 && (
-            <section className="animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+            <section className="animate-slide-up" style={{ animationDelay: '0.7s' }}>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                 <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
                 Contact

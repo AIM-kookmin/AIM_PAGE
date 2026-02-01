@@ -28,8 +28,8 @@ const TimelineItem = memo(function TimelineItem({ achievement, index }: { achiev
   const [isExpanded, setIsExpanded] = useState(false)
 
   const handleClick = useCallback(() => {
-    setIsExpanded(!isExpanded)
-  }, [isExpanded])
+    setIsExpanded(prev => !prev)
+  }, [])
 
   return (
     <ScrollReveal delay={index * 0.1}>

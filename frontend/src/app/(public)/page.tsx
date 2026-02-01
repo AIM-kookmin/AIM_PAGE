@@ -19,7 +19,7 @@ async function getHomePageData() {
       .eq('is_active', true)
       .order('order')
       .limit(1)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('about_activities')
       .select('id, title, description, icon, color, order')
