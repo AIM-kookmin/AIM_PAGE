@@ -92,9 +92,9 @@ export default function RecruitPage() {
     <div className="min-h-screen bg-black text-white selection:bg-violet-500/30 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px] mix-blend-screen"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-indigo-600/15 rounded-full blur-[80px] mix-blend-screen"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] bg-violet-500/10 rounded-full blur-[80px] mix-blend-screen"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[20px] mix-blend-screen"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-indigo-600/15 rounded-full blur-[20px] mix-blend-screen"></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[35%] h-[35%] bg-violet-500/10 rounded-full blur-[20px] mix-blend-screen"></div>
       </div>
 
       {/* 메인 컨텐츠 */}

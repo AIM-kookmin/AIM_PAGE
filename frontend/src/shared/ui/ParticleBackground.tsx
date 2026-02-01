@@ -198,8 +198,8 @@ export function ParticleBackground({ className = '' }: ParticleBackgroundProps) 
         
         <ambientLight intensity={0.5} />
         
-        <Particles count={1500} mouse={mouse} />
-        <ConnectionLines count={200} mouse={mouse} />
+        <Particles count={300} mouse={mouse} />
+        <ConnectionLines count={50} mouse={mouse} />
       </Canvas>
     </div>
   )

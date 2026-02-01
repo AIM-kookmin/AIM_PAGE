@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import ScrollReveal from '@/shared/ui/ScrollReveal'
@@ -47,16 +47,19 @@ const iconMap: Record<string, React.ReactNode> = {
   ),
 }
 
-function ActivityItem({ activity, index }: { activity: Activity; index: number }) {
+const ActivityItem = memo(function ActivityItem({ activity, index }: { activity: Activity; index: number }) {
   const [isHovered, setIsHovered] = useState(false)
   const direction = index % 2 === 0 ? 'left' : 'right'
+
+  const handleMouseEnter = useCallback(() => setIsHovered(true), [])
+  const handleMouseLeave = useCallback(() => setIsHovered(false), [])
 
   return (
     <ScrollReveal delay={index * 0.1} direction={direction}>
       <motion.div
         className="group relative border-b border-white/10 cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="py-8 md:py-12 px-4 md:px-8 flex items-center justify-between gap-8">
           <div className="flex items-center gap-6 md:gap-12 flex-1">
@@ -101,7 +104,7 @@ function ActivityItem({ activity, index }: { activity: Activity; index: number }
       </motion.div>
     </ScrollReveal>
   )
-}
+})
 
 interface ActivitiesSectionProps {
   activities?: Array<{
@@ -113,15 +116,18 @@ interface ActivitiesSectionProps {
   }>
 }
 
-export default function ActivitiesSection({ activities: activitiesData }: ActivitiesSectionProps) {
-  // Transform data from DB to component format
-  const activities: Activity[] = (activitiesData || []).map((item, index) => ({
-    id: item.id,
-    number: String(index + 1).padStart(2, '0'),
-    title: item.title,
-    description: item.description,
-    icon: iconMap[item.icon] || iconMap.default,
-  }))
+function ActivitiesSection({ activities: activitiesData }: ActivitiesSectionProps) {
+  // Memoize transformed activities data
+  const activities: Activity[] = useMemo(() =>
+    (activitiesData || []).map((item, index) => ({
+      id: item.id,
+      number: String(index + 1).padStart(2, '0'),
+      title: item.title,
+      description: item.description,
+      icon: iconMap[item.icon] || iconMap.default,
+    })),
+    [activitiesData]
+  )
 
   return (
     <section className="relative z-10 py-24 md:py-32">
@@ -166,3 +172,7 @@ export default function ActivitiesSection({ activities: activitiesData }: Activi
     </section>
   )
 }
+
+ActivitiesSection.displayName = 'ActivitiesSection'
+
+export default memo(ActivitiesSection)

@@ -1,31 +1,38 @@
 import { createClient } from '@/shared/api/supabase/server'
 import HomeClient from './HomeClient'
 
+// ✅ Revalidate every 60 seconds (ISR - Incremental Static Regeneration)
+export const revalidate = 60
+
 async function getHomePageData() {
   const supabase = await createClient()
 
-  // Fetch hero data from about_sections
-  const { data: heroSections } = await supabase
-    .from('about_sections')
-    .select('*')
-    .eq('is_active', true)
-    .order('order')
-    .limit(1)
-    .single()
-
-  // Fetch activities
-  const { data: activities } = await supabase
-    .from('about_activities')
-    .select('*')
-    .eq('is_active', true)
-    .order('order')
-
-  // Fetch achievements (history)
-  const { data: achievementsData } = await supabase
-    .from('about_history')
-    .select('*')
-    .eq('is_active', true)
-    .order('year', { ascending: false })
+  // ✅ Parallel fetching - all queries execute simultaneously
+  const [
+    { data: heroSections },
+    { data: activities },
+    { data: achievementsData }
+  ] = await Promise.all([
+    supabase
+      .from('about_sections')
+      .select('id, title, content')
+      .eq('is_active', true)
+      .order('order')
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('about_activities')
+      .select('id, title, description, icon, color, order')
+      .eq('is_active', true)
+      .order('order')
+      .limit(6),
+    supabase
+      .from('about_history')
+      .select('id, year, title, description')
+      .eq('is_active', true)
+      .order('year', { ascending: false })
+      .limit(10)
+  ])
 
   // Transform achievements to match expected type
   interface AchievementItem {
