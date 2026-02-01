@@ -97,19 +97,20 @@ function Hero({ data }: HeroProps) {
           <span className="block text-7xl md:text-9xl lg:text-[12rem] font-black tracking-tighter">
             {titleLetters.map((letter, i) => (
               <motion.span
-                key={i}
+                key={`title-${i}`}
                 className="inline-block bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-transparent"
-                initial={{ 
-                  opacity: 0, 
+                initial={{
+                  opacity: 0,
                   x: i % 2 === 0 ? -100 : 100,
                   y: i === 1 ? -50 : 0,
                   rotate: (i - 1) * 15
                 }}
-                animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
-                transition={{ 
-                  delay: 0.2 + i * 0.15, 
-                  duration: 0.8, 
-                  ease: [0.22, 1, 0.36, 1] 
+                whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{
+                  delay: 0.2 + i * 0.15,
+                  duration: 0.8,
+                  ease: [0.22, 1, 0.36, 1]
                 }}
               >
                 {letter}
@@ -120,18 +121,19 @@ function Hero({ data }: HeroProps) {
           <span className="block text-2xl md:text-4xl lg:text-5xl font-bold text-white/80 tracking-wide mt-4">
             {subtitleWords.map((word, i) => (
               <motion.span
-                key={i}
+                key={`subtitle-${i}`}
                 className="inline-block mr-4 last:mr-0"
-                initial={{ 
-                  opacity: 0, 
+                initial={{
+                  opacity: 0,
                   x: i === 0 ? -50 : 50,
                   scale: 0.8
                 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ 
-                  delay: 0.8 + i * 0.2, 
-                  duration: 0.6, 
-                  ease: 'easeOut' 
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{
+                  delay: 0.8 + i * 0.2,
+                  duration: 0.6,
+                  ease: 'easeOut'
                 }}
               >
                 {word}
@@ -143,7 +145,8 @@ function Hero({ data }: HeroProps) {
         <motion.p
           className="text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed"
           initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
           {description}
@@ -152,7 +155,8 @@ function Hero({ data }: HeroProps) {
         <div className="flex flex-col sm:flex-row gap-4">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ delay: 1.4, duration: 0.6, ease: 'easeOut' }}
           >
             <Link 
@@ -166,7 +170,8 @@ function Hero({ data }: HeroProps) {
           
           <motion.div
             initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ delay: 1.5, duration: 0.6, ease: 'easeOut' }}
           >
             <Link
