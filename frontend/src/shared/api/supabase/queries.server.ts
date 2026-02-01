@@ -13,7 +13,7 @@ export async function getAboutSections(): Promise<AboutSection[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('about_sections')
-    .select('*')
+    .select('id, title, content, order, is_active, created_at, updated_at')
     .eq('is_active', true)
     .order('order', { ascending: true })
 
@@ -25,7 +25,7 @@ export async function getAboutActivities(): Promise<AboutActivity[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('about_activities')
-    .select('*')
+    .select('id, title, description, icon, color, order, is_active, created_at, updated_at')
     .eq('is_active', true)
     .order('order', { ascending: true })
 
@@ -37,7 +37,7 @@ export async function getAboutHistory(): Promise<AboutHistory[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('about_history')
-    .select('*')
+    .select('id, year, title, description, order, is_active, created_at, updated_at')
     .eq('is_active', true)
     .order('year', { ascending: false })
     .order('order', { ascending: true })
@@ -75,6 +75,7 @@ export async function getActivities(): Promise<Activity[]> {
     .from('activities')
     .select('*')
     .order('date', { ascending: false })
+    .limit(50)
 
   if (error) throw error
   return data ?? []

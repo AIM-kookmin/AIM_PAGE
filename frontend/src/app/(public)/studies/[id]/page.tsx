@@ -71,8 +71,8 @@ export default function StudyPostPage() {
   return (
     <div className="min-h-screen bg-black selection:bg-violet-500/30">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[80px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[80px] mix-blend-screen" />
+        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[20px] mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[20px] mix-blend-screen" />
       </div>
 
       <div className="relative pt-32 pb-12 md:pt-48 md:pb-20">

@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import type { MemberProfile } from '@/types/supabase'
 
@@ -8,7 +9,8 @@ interface MembersClientProps {
   regularMembers: MemberProfile[]
 }
 
-const MemberCard = ({ member }: { member: MemberProfile }) => (
+const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile }) {
+  return (
   <div className="group glass p-6 rounded-xl hover:-translate-y-2 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] hover:border-violet-500/50">
     <div className="flex flex-col items-center text-center">
       {/* 프로필 이미지 */}
@@ -71,15 +73,16 @@ const MemberCard = ({ member }: { member: MemberProfile }) => (
       </div>
     </div>
   </div>
-)
+  )
+})
 
-export default function MembersClient({ executives, regularMembers }: MembersClientProps) {
+function MembersClient({ executives, regularMembers }: MembersClientProps) {
   return (
     <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-black">
       {/* 배경 효과 */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[60px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[20px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[15px]" />
       </div>
 
       {/* 메인 컨텐츠 */}
@@ -169,3 +172,7 @@ export default function MembersClient({ executives, regularMembers }: MembersCli
     </div>
   )
 }
+
+MembersClient.displayName = 'MembersClient'
+
+export default memo(MembersClient)

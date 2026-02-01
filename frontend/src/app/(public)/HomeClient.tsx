@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, memo } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -33,7 +33,7 @@ interface HomeClientProps {
   }>
 }
 
-export default function HomeClient({ heroData, activities, achievements }: HomeClientProps) {
+function HomeClient({ heroData, activities, achievements }: HomeClientProps) {
   const mainRef = useRef<HTMLDivElement>(null)
   const activitiesRef = useRef<HTMLDivElement>(null)
   const achievementsRef = useRef<HTMLDivElement>(null)
@@ -55,7 +55,7 @@ export default function HomeClient({ heroData, activities, achievements }: HomeC
             trigger: activitiesRef.current,
             start: 'top bottom',
             end: 'top 20%',
-            scrub: 1,
+            scrub: true,
           },
         }
       )
@@ -74,7 +74,7 @@ export default function HomeClient({ heroData, activities, achievements }: HomeC
             trigger: achievementsRef.current,
             start: 'top bottom',
             end: 'top 20%',
-            scrub: 1,
+            scrub: true,
           },
         }
       )
@@ -95,7 +95,7 @@ export default function HomeClient({ heroData, activities, achievements }: HomeC
             trigger: ctaRef.current,
             start: 'top bottom',
             end: 'top 30%',
-            scrub: 1,
+            scrub: true,
           },
         }
       )
@@ -159,3 +159,7 @@ export default function HomeClient({ heroData, activities, achievements }: HomeC
     </div>
   )
 }
+
+HomeClient.displayName = 'HomeClient'
+
+export default memo(HomeClient)

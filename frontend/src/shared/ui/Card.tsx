@@ -16,10 +16,10 @@ export const Card: React.FC<CardProps> = ({
   const baseClasses = 'rounded-2xl'
   
   const variants = {
-    default: 'bg-white/5 backdrop-blur-xl border border-white/10 hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300',
-    dark: 'bg-white/[0.03] backdrop-blur-lg border border-white/5 hover:bg-white/[0.06] transition-all duration-300',
-    gradient: 'bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 hover:shadow-glow-sm transition-all duration-300',
-    glass: 'bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300'
+    default: 'bg-white/5 border border-white/10 hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300',
+    dark: 'bg-white/[0.03] border border-white/5 hover:bg-white/[0.06] transition-all duration-300',
+    gradient: 'bg-gradient-to-br from-white/10 to-white/5 border border-white/10 hover:shadow-glow-sm transition-all duration-300',
+    glass: 'bg-white/5 border border-white/10 rounded-2xl hover:bg-white/[0.08] hover:border-white/20 hover:shadow-glow-sm transition-all duration-300'
   }
   
   const paddings = {

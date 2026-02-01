@@ -15,21 +15,23 @@ async function getHomePageData() {
   ] = await Promise.all([
     supabase
       .from('about_sections')
-      .select('*')
+      .select('id, title, content')
       .eq('is_active', true)
       .order('order')
       .limit(1)
       .single(),
     supabase
       .from('about_activities')
-      .select('*')
+      .select('id, title, description, icon, color, order')
       .eq('is_active', true)
-      .order('order'),
+      .order('order')
+      .limit(6),
     supabase
       .from('about_history')
-      .select('*')
+      .select('id, year, title, description')
       .eq('is_active', true)
       .order('year', { ascending: false })
+      .limit(10)
   ])
 
   // Transform achievements to match expected type

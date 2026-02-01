@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ScrollReveal from '@/shared/ui/ScrollReveal'
 
@@ -24,8 +24,12 @@ const categoryLabels = {
   milestone: '마일스톤',
 }
 
-function TimelineItem({ achievement, index }: { achievement: Achievement; index: number }) {
+const TimelineItem = memo(function TimelineItem({ achievement, index }: { achievement: Achievement; index: number }) {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleClick = useCallback(() => {
+    setIsExpanded(!isExpanded)
+  }, [isExpanded])
 
   return (
     <ScrollReveal delay={index * 0.1}>
@@ -42,9 +46,9 @@ function TimelineItem({ achievement, index }: { achievement: Achievement; index:
           whileHover={{ scale: 1.5 }}
         />
 
-        <div 
+        <div
           className="glass p-6 rounded-xl cursor-pointer hover:bg-white/[0.08] transition-all duration-300 group"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={handleClick}
         >
           <div className="flex items-start justify-between gap-4 mb-2">
             <div className="flex items-center gap-3">
@@ -86,13 +90,13 @@ function TimelineItem({ achievement, index }: { achievement: Achievement; index:
       </motion.div>
     </ScrollReveal>
   )
-}
+})
 
 interface AchievementsTimelineProps {
   achievements?: Achievement[]
 }
 
-export default function AchievementsTimeline({ achievements = [] }: AchievementsTimelineProps) {
+function AchievementsTimeline({ achievements = [] }: AchievementsTimelineProps) {
   return (
     <section className="relative z-10 py-24 md:py-32">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,3 +136,7 @@ export default function AchievementsTimeline({ achievements = [] }: Achievements
     </section>
   )
 }
+
+AchievementsTimeline.displayName = 'AchievementsTimeline'
+
+export default memo(AchievementsTimeline)

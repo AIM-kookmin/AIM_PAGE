@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, memo, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import dynamic from 'next/dynamic'
@@ -17,7 +17,7 @@ interface HeroData {
   description: string
 }
 
-function ScrollIndicator() {
+const ScrollIndicator = memo(function ScrollIndicator() {
   return (
     <motion.div 
       className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
@@ -39,13 +39,13 @@ function ScrollIndicator() {
       </motion.div>
     </motion.div>
   )
-}
+})
 
 interface HeroProps {
   data?: HeroData
 }
 
-export default function Hero({ data }: HeroProps) {
+function Hero({ data }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -56,14 +56,20 @@ export default function Hero({ data }: HeroProps) {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
 
-  // Use data from props or fallback to defaults
-  const badge = data?.badge || '국민대학교 AI 동아리'
-  const title = data?.title || 'AIM'
-  const subtitle = data?.subtitle || 'AI Monsters'
-  const description = data?.description || '함께 코딩하고, 학습하며, 세상을 바꿀 AI 프로젝트를 만들어갑니다.'
+  // Memoize data processing
+  const { badge, description, titleLetters, subtitleWords } = useMemo(() => {
+    const badgeText = data?.badge || '국민대학교 AI 동아리'
+    const titleText = data?.title || 'AIM'
+    const subtitleText = data?.subtitle || 'AI Monsters'
+    const descText = data?.description || '함께 코딩하고, 학습하며, 세상을 바꿀 AI 프로젝트를 만들어갑니다.'
 
-  const titleLetters = title.split('')
-  const subtitleWords = subtitle.split(' ')
+    return {
+      badge: badgeText,
+      description: descText,
+      titleLetters: titleText.split(''),
+      subtitleWords: subtitleText.split(' ')
+    }
+  }, [data])
 
   return (
     <section 
@@ -177,3 +183,7 @@ export default function Hero({ data }: HeroProps) {
     </section>
   )
 }
+
+Hero.displayName = 'Hero'
+
+export default memo(Hero)
