@@ -1,0 +1,149 @@
+'use client'
+
+import type {
+  AboutSection,
+  AboutActivity,
+  AboutHistory,
+  AboutContact,
+} from '@/types/supabase'
+
+interface AboutClientProps {
+  sections: AboutSection[]
+  activities: AboutActivity[]
+  history: AboutHistory[]
+  contacts: AboutContact[]
+}
+
+export default function AboutClient({
+  sections,
+  activities,
+  history,
+  contacts,
+}: AboutClientProps) {
+  const getColorClasses = (color: string) => {
+    const colorMap: { [key: string]: { border: string; text: string; bg: string } } = {
+      'cyan': { border: 'hover:border-violet-500', text: 'text-violet-400', bg: 'from-violet-500 to-indigo-600' },
+      'pink': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
+      'yellow': { border: 'hover:border-yellow-500', text: 'text-yellow-400', bg: 'from-yellow-500 to-orange-600' },
+      'purple': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
+      'green': { border: 'hover:border-green-500', text: 'text-green-400', bg: 'from-green-500 to-emerald-600' },
+      'blue': { border: 'hover:border-blue-500', text: 'text-blue-400', bg: 'from-blue-500 to-cyan-600' },
+      'red': { border: 'hover:border-red-500', text: 'text-red-400', bg: 'from-red-500 to-rose-600' },
+      'orange': { border: 'hover:border-orange-500', text: 'text-orange-400', bg: 'from-orange-500 to-red-600' }
+    }
+
+    return colorMap[color] || colorMap['cyan']
+  }
+
+  return (
+    <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-black">
+      {/* Background effects */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[80px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[60px]" />
+      </div>
+
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="glass p-8 md:p-12 rounded-2xl animate-fade-in-up">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-pulse-glow">
+                AIM (AI Monsters)
+              </span>{' '}
+              동아리 소개
+            </h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" />
+          </div>
+
+          {sections.map((section, index) => (
+            <section key={section.id} className="mb-12 animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
+                <span className="w-2 h-8 bg-violet-500 rounded-full mr-3" />
+                {section.title}
+              </h2>
+              <p className="text-gray-300 leading-relaxed text-lg pl-5 border-l border-gray-700">
+                {section.content}
+              </p>
+            </section>
+          ))}
+
+          {activities.length > 0 && (
+            <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
+                주요 활동
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {activities.map((activity) => {
+                  const colorClasses = getColorClasses(activity.color)
+                  return (
+                    <div
+                      key={activity.id}
+                      className={`group glass p-6 rounded-xl hover:-translate-y-1 transition-all duration-300 border border-white/5 ${colorClasses.border}`}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClasses.bg} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          {activity.icon}
+                        </div>
+                        <div>
+                          <h3 className={`text-xl font-bold mb-2 ${colorClasses.text}`}>
+                            {activity.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm leading-relaxed">
+                            {activity.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {history.length > 0 && (
+            <section className="mb-12 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <span className="w-2 h-8 bg-yellow-500 rounded-full mr-3" />
+                동아리 연혁
+              </h2>
+              <div className="relative border-l-2 border-gray-700 ml-4 space-y-8 py-2">
+                {history.map((item) => (
+                  <div key={item.id} className="relative pl-8 group">
+                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-800 border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
+                    <div className="flex flex-col sm:flex-row sm:items-baseline mb-1">
+                      <span className="text-violet-400 font-bold text-lg mr-4 w-20">{item.year}</span>
+                      <h4 className="text-white font-bold text-lg group-hover:text-violet-300 transition-colors">{item.title}</h4>
+                    </div>
+                    <p className="text-gray-400 text-sm">
+                      {item.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {contacts.length > 0 && (
+            <section className="animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
+                Contact
+              </h2>
+              <div className="glass p-6 rounded-xl border border-white/10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {contacts.map((contact) => (
+                    <div key={contact.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
+                      <span className="text-gray-400 font-medium min-w-[80px]">{contact.label}</span>
+                      <span className="text-white font-semibold">{contact.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}
