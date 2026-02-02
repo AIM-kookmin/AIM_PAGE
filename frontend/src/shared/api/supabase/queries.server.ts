@@ -94,22 +94,45 @@ export async function getActivities(): Promise<Activity[]> {
  */
 export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
   const supabase = await createClient()
-  const { data, error } = await supabase
+
+  // Fetch study posts first
+  const { data: posts, error: postsError } = await supabase
     .from('study_posts')
     .select(`
       *,
-      author:member_profiles!author_id(id, display_name, avatar_url),
       tags:study_post_tags(tag:tags(id, name))
     `)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
-  if (error) throw error
-
-  // Validate response data structure
-  if (!Array.isArray(data)) {
-    throw new Error('getPublishedStudyPosts: Expected array response from Supabase')
+  if (postsError) throw postsError
+  if (!Array.isArray(posts) || posts.length === 0) {
+    return []
   }
+
+  // Fetch author profiles separately
+  const authorIds = Array.from(new Set(posts.map(p => p.author_id).filter(Boolean)))
+  const { data: profiles, error: profilesError } = await supabase
+    .from('member_profiles')
+    .select('id, display_name, avatar_url, user_id')
+    .in('user_id', authorIds)
+
+  if (profilesError) throw profilesError
+
+  // Create a map of user_id to profile
+  const profileMap = new Map(
+    (profiles || []).map(p => [p.user_id, p])
+  )
+
+  // Combine the data
+  const data = posts.map(post => ({
+    ...post,
+    author: profileMap.get(post.author_id) || {
+      id: '',
+      display_name: 'Unknown',
+      avatar_url: null
+    }
+  }))
 
   // Runtime validation for StudyPostWithAuthor structure
   data.forEach((post, index) => {
