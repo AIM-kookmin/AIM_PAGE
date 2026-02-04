@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { User, Key, Save, ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
 import { Button, Card, Text, Title, Subtitle, Loading } from '@/shared/ui'
 import { useAuth } from '@/app/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
@@ -222,8 +223,26 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-black overflow-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(20%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(-20%, 30%)',
+          }}
+        />
+      </div>
+
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* 헤더 */}
         <div className="mb-8">
           <Title level={1} className="text-white mb-2">
@@ -240,22 +259,24 @@ export default function ProfilePage() {
         <div className="flex space-x-2 mb-6">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
               activeTab === 'profile'
                 ? 'bg-violet-500 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white/[0.02] text-gray-400 hover:bg-white/[0.05] border border-white/5 hover:border-violet-500/30'
             }`}
           >
+            <User className="w-4 h-4" />
             프로필 정보
           </button>
           <button
             onClick={() => setActiveTab('password')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
               activeTab === 'password'
                 ? 'bg-violet-500 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white/[0.02] text-gray-400 hover:bg-white/[0.05] border border-white/5 hover:border-violet-500/30'
             }`}
           >
+            <Key className="w-4 h-4" />
             비밀번호 변경
           </button>
         </div>
@@ -266,107 +287,107 @@ export default function ProfilePage() {
             <form onSubmit={handleProfileSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     표시 이름 *
                   </label>
                   <input
                     type="text"
                     value={profileData.displayName}
                     onChange={(e) => setProfileData({ ...profileData, displayName: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="표시될 이름을 입력하세요"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     학번
                   </label>
                   <input
                     type="text"
                     value={profileData.studentId}
                     onChange={(e) => setProfileData({ ...profileData, studentId: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="20241234"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     직책
                   </label>
                   <input
                     type="text"
                     value={profileData.position}
                     onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="부원, 운영진 등"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     학과
                   </label>
                   <input
                     type="text"
                     value={profileData.department}
                     onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="소프트웨어학부 등"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     학년
                   </label>
                   <input
                     type="text"
                     value={profileData.year}
                     onChange={(e) => setProfileData({ ...profileData, year: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="1학년, 2학년 등"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     기수
                   </label>
                   <input
                     type="number"
                     value={profileData.generation || ''}
                     onChange={(e) => setProfileData({ ...profileData, generation: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="1, 2, 3..."
                     min="0"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     자기소개
                   </label>
                   <textarea
                     value={profileData.bio}
                     onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors resize-none"
                     rows={4}
                     placeholder="자기소개를 입력하세요"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label className="flex items-center space-x-3 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={profileData.isPublic}
                       onChange={(e) => setProfileData({ ...profileData, isPublic: e.target.checked })}
-                      className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-primary-500 focus:ring-2 focus:ring-primary-500"
+                      className="w-5 h-5 rounded border-white/10 bg-white/[0.02] text-violet-500 focus:ring-2 focus:ring-violet-500/50"
                     />
-                    <span className="text-white font-medium">
+                    <span className="text-gray-400 group-hover:text-white transition-colors">
                       프로필 공개 (부원 페이지에 표시)
                     </span>
                   </label>
@@ -399,31 +420,31 @@ export default function ProfilePage() {
             <form onSubmit={handlePasswordSubmit}>
               <div className="max-w-md space-y-6">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     현재 비밀번호 *
                   </label>
                   <input
                     type="password"
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors disabled:opacity-50"
                     placeholder="현재 비밀번호 (무시됨)"
                     disabled
                   />
-                  <p className="text-gray-500 text-xs mt-1">
+                  <p className="text-gray-500 text-xs mt-2">
                     * 로그인된 상태에서는 현재 비밀번호 확인 없이 변경 가능합니다.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     새 비밀번호 *
                   </label>
                   <input
                     type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="새 비밀번호 (최소 6자)"
                     required
                     minLength={6}
@@ -431,20 +452,20 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
                     새 비밀번호 확인 *
                   </label>
                   <input
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="새 비밀번호 확인"
                     required
                     minLength={6}
                   />
                   {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p className="mt-2 text-sm text-red-400">
                       비밀번호가 일치하지 않습니다.
                     </p>
                   )}
@@ -491,14 +512,10 @@ export default function ProfilePage() {
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 {notification.type === 'success' && (
-                  <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                 )}
                 {notification.type === 'error' && (
-                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  <XCircle className="h-5 w-5 text-red-500" />
                 )}
               </div>
               <div className="ml-3 flex-1">

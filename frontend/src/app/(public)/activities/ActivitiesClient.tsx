@@ -1,11 +1,22 @@
-import { Card, Text } from '@/shared/ui'
+'use client'
+
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Calendar } from 'lucide-react'
 import type { Activity } from '@/types/supabase'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface ActivitiesClientProps {
   activities: Activity[]
 }
 
 export default function ActivitiesClient({ activities }: ActivitiesClientProps) {
+  const mainRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('ko-KR', {
@@ -15,72 +26,108 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
     })
   }
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(heroRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+      )
+
+      if (gridRef.current) {
+        gsap.fromTo(gridRef.current,
+          { y: 100, opacity: 0 },
+          {
+            y: 0, opacity: 1, ease: 'power2.out',
+            scrollTrigger: { trigger: gridRef.current, start: 'top bottom', end: 'top 40%', scrub: true }
+          }
+        )
+      }
+    }, mainRef)
+
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-black selection:bg-violet-500/30">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[20px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[20px] mix-blend-screen" />
+    <div ref={mainRef} className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-white">
+      {/* Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute top-0 left-0 w-[800px] h-[800px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(-20%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(20%, 30%)',
+          }}
+        />
       </div>
 
-      <div className="relative pt-32 pb-16 md:pt-48 md:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              동아리 활동
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-            AIM의 다양한 활동과 이벤트를 확인해보세요.
-            <br className="hidden md:block" />
-            함께 성장하며 만들어가는 우리의 이야기입니다.
-          </p>
-        </div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        {activities.length === 0 ? (
-          <Card variant="glass" className="p-12 text-center max-w-2xl mx-auto">
-            <Text className="text-gray-400 text-lg">등록된 활동이 없습니다.</Text>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {activities.map((activity) => (
-              <Card
-                key={activity.id}
-                variant="glass"
-                className="group p-0 overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] hover:border-violet-500/50 transition-all duration-300"
-              >
-                <div className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="inline-flex items-center rounded-full bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-400 ring-1 ring-inset ring-violet-500/20">
-                      {activity.category}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono">
-                      {formatDate(activity.date)}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-violet-400 transition-colors">
-                    {activity.title}
-                  </h3>
-
-                  {activity.description && (
-                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-4">
-                      {activity.description}
-                    </p>
-                  )}
-                </div>
-              </Card>
-            ))}
+      <main className="relative z-10">
+        {/* Hero */}
+        <section ref={heroRef} className="min-h-[50vh] flex items-center justify-center pt-20 px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+                Activities
+              </span>
+            </h1>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              AIM의 다양한 활동과 이벤트를 확인해보세요
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />
           </div>
-        )}
-      </div>
+        </section>
 
-      <footer className="relative border-t border-white/10 bg-black/50 backdrop-blur-xl py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} AIM (AI Monsters). All rights reserved.
-          </p>
+        {/* Activities Grid */}
+        <section ref={gridRef} className="py-24 px-4">
+          <div className="max-w-6xl mx-auto">
+            {activities.length === 0 ? (
+              <div className="text-center p-12 rounded-2xl bg-white/[0.02] border border-white/5">
+                <p className="text-gray-500 text-lg">등록된 활동이 없습니다.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activities.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-medium">
+                        {activity.category}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(activity.date)}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-violet-300 transition-colors">
+                      {activity.title}
+                    </h3>
+
+                    {activity.description && (
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                        {activity.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-white/5 py-12">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-gray-600 text-sm">&copy; 2025 AIM (AI Monsters). All rights reserved.</p>
         </div>
       </footer>
     </div>

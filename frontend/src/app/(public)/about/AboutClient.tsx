@@ -1,9 +1,17 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { BookOpen, Code, Users, Trophy, Mail, Github, Instagram, MapPin } from 'lucide-react'
 import type {
   AboutSection,
   AboutActivity,
   AboutHistory,
   AboutContact,
 } from '@/types/supabase'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface AboutClientProps {
   sections: AboutSection[]
@@ -12,136 +20,296 @@ interface AboutClientProps {
   contacts: AboutContact[]
 }
 
+// 이모지를 Lucide 아이콘으로 매핑
+const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  '📚': BookOpen,
+  '💻': Code,
+  '🎤': Users,
+  '🏆': Trophy,
+  '📖': BookOpen,
+  '🤖': Code,
+  '👥': Users,
+  '🏅': Trophy,
+}
+
+// Contact 라벨을 아이콘으로 매핑
+const contactIconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+  'Email': Mail,
+  'email': Mail,
+  '이메일': Mail,
+  'GitHub': Github,
+  'github': Github,
+  '깃허브': Github,
+  'Instagram': Instagram,
+  'instagram': Instagram,
+  '인스타그램': Instagram,
+  '위치': MapPin,
+  'Location': MapPin,
+}
+
 export default function AboutClient({
   sections,
   activities,
   history,
   contacts,
 }: AboutClientProps) {
-  const getColorClasses = (color: string) => {
-    const colorMap: { [key: string]: { border: string; text: string; bg: string } } = {
-      'cyan': { border: 'hover:border-violet-500', text: 'text-violet-400', bg: 'from-violet-500 to-indigo-600' },
-      'pink': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
-      'yellow': { border: 'hover:border-yellow-500', text: 'text-yellow-400', bg: 'from-yellow-500 to-orange-600' },
-      'purple': { border: 'hover:border-purple-500', text: 'text-purple-400', bg: 'from-purple-500 to-indigo-600' },
-      'green': { border: 'hover:border-green-500', text: 'text-green-400', bg: 'from-green-500 to-emerald-600' },
-      'blue': { border: 'hover:border-blue-500', text: 'text-blue-400', bg: 'from-blue-500 to-cyan-600' },
-      'red': { border: 'hover:border-red-500', text: 'text-red-400', bg: 'from-red-500 to-rose-600' },
-      'orange': { border: 'hover:border-orange-500', text: 'text-orange-400', bg: 'from-orange-500 to-red-600' }
-    }
+  const mainRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const sectionsRef = useRef<HTMLDivElement>(null)
+  const activitiesRef = useRef<HTMLDivElement>(null)
+  const historyRef = useRef<HTMLDivElement>(null)
+  const contactRef = useRef<HTMLDivElement>(null)
 
-    return colorMap[color] || colorMap['cyan']
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero 애니메이션
+      gsap.fromTo(
+        heroRef.current,
+        { opacity: 0, y: 50 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+      )
+
+      // Sections 애니메이션
+      gsap.fromTo(
+        sectionsRef.current,
+        { x: '-100vw', opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: sectionsRef.current,
+            start: 'top bottom',
+            end: 'top 30%',
+            scrub: true,
+          },
+        }
+      )
+
+      // Activities 애니메이션
+      gsap.fromTo(
+        activitiesRef.current,
+        { x: '100vw', opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: activitiesRef.current,
+            start: 'top bottom',
+            end: 'top 30%',
+            scrub: true,
+          },
+        }
+      )
+
+      // History 애니메이션
+      gsap.fromTo(
+        historyRef.current,
+        { y: 100, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: historyRef.current,
+            start: 'top bottom',
+            end: 'top 40%',
+            scrub: true,
+          },
+        }
+      )
+
+      // Contact 애니메이션
+      gsap.fromTo(
+        contactRef.current,
+        { scale: 0.8, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: contactRef.current,
+            start: 'top bottom',
+            end: 'top 50%',
+            scrub: true,
+          },
+        }
+      )
+    }, mainRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  const getIcon = (emoji: string) => {
+    const IconComponent = iconMap[emoji] || BookOpen
+    return <IconComponent className="w-6 h-6 text-violet-400" />
+  }
+
+  const getContactIcon = (label: string) => {
+    const IconComponent = contactIconMap[label] || Mail
+    return <IconComponent className="w-5 h-5 text-violet-400" />
   }
 
   return (
-    <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-black">
-      {/* Background effects */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600/20 rounded-full blur-[20px]" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[15px]" />
+    <div ref={mainRef} className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-white">
+      {/* Background effects - 부드러운 그라데이션 */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(30%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(-30%, 30%)',
+          }}
+        />
       </div>
 
-      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="glass p-8 md:p-12 rounded-2xl animate-slide-up">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent animate-glow-pulse">
-                AIM (AI Monsters)
-              </span>{' '}
-              동아리 소개
-            </h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto rounded-full" />
+      {/* Hero Section */}
+      <section ref={heroRef} className="relative z-10 min-h-[60vh] flex items-center justify-center pt-20">
+        <div className="text-center px-4">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+            <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+              AIM
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-4">AI Monsters</p>
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            국민대학교 AI 동아리
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />
+        </div>
+      </section>
+
+      {/* About Sections */}
+      {sections.length > 0 && (
+        <section ref={sectionsRef} className="relative z-10 py-24">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="space-y-16">
+              {sections.map((section) => (
+                <div key={section.id} className="group">
+                  <div className="flex items-start gap-6">
+                    <div className="w-1 h-full bg-gradient-to-b from-violet-500 to-transparent rounded-full flex-shrink-0" />
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-violet-300 transition-colors">
+                        {section.title}
+                      </h2>
+                      <p className="text-gray-400 text-lg leading-relaxed">
+                        {section.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
+      )}
 
-          {sections.map((section, index) => (
-            <section key={section.id} className="mb-12 animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-              <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
-                <span className="w-2 h-8 bg-violet-500 rounded-full mr-3" />
-                {section.title}
-              </h2>
-              <p className="text-gray-300 leading-relaxed text-lg pl-5 border-l border-gray-700">
-                {section.content}
-              </p>
-            </section>
-          ))}
-
-          {activities.length > 0 && (
-            <section className="mb-12 animate-slide-up" style={{ animationDelay: '0.3s' }}>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
-                주요 활동
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {activities.map((activity) => {
-                  const colorClasses = getColorClasses(activity.color)
-                  return (
-                    <div
-                      key={activity.id}
-                      className={`group glass p-6 rounded-xl hover:-translate-y-1 transition-all duration-300 border border-white/5 ${colorClasses.border}`}
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorClasses.bg} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          {activity.icon}
-                        </div>
-                        <div>
-                          <h3 className={`text-xl font-bold mb-2 ${colorClasses.text}`}>
-                            {activity.title}
-                          </h3>
-                          <p className="text-gray-400 text-sm leading-relaxed">
-                            {activity.description}
-                          </p>
-                        </div>
-                      </div>
+      {/* Activities Section */}
+      {activities.length > 0 && (
+        <section ref={activitiesRef} className="relative z-10 py-24">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
+              주요 활동
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {activities.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="group p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
+                >
+                  <div className="flex items-start gap-5">
+                    <div className="w-14 h-14 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/20 group-hover:scale-110 transition-all duration-300">
+                      {getIcon(activity.icon)}
                     </div>
-                  )
-                })}
-              </div>
-            </section>
-          )}
-
-          {history.length > 0 && (
-            <section className="mb-12 animate-slide-up" style={{ animationDelay: '0.5s' }}>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <span className="w-2 h-8 bg-yellow-500 rounded-full mr-3" />
-                동아리 연혁
-              </h2>
-              <div className="relative border-l-2 border-gray-700 ml-4 space-y-8 py-2">
-                {history.map((item) => (
-                  <div key={item.id} className="relative pl-8 group">
-                    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-gray-800 border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
-                    <div className="flex flex-col sm:flex-row sm:items-baseline mb-1">
-                      <span className="text-violet-400 font-bold text-lg mr-4 w-20">{item.year}</span>
-                      <h4 className="text-white font-bold text-lg group-hover:text-violet-300 transition-colors">{item.title}</h4>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition-colors">
+                        {activity.title}
+                      </h3>
+                      <p className="text-gray-500 leading-relaxed">
+                        {activity.description}
+                      </p>
                     </div>
-                    <p className="text-gray-400 text-sm">
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* History Timeline */}
+      {history.length > 0 && (
+        <section ref={historyRef} className="relative z-10 py-24">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
+              연혁
+            </h2>
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-violet-500 via-violet-500/50 to-transparent" />
+
+              <div className="space-y-12">
+                {history.map((item, index) => (
+                  <div key={item.id} className="relative pl-20 group">
+                    {/* Timeline dot */}
+                    <div className="absolute left-6 top-1 w-5 h-5 rounded-full bg-black border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
+
+                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 mb-2">
+                      <span className="text-violet-400 font-mono text-lg font-bold">
+                        {item.year}
+                      </span>
+                      <h3 className="text-xl font-bold text-white group-hover:text-violet-300 transition-colors">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <p className="text-gray-500">
                       {item.description}
                     </p>
                   </div>
                 ))}
               </div>
-            </section>
-          )}
+            </div>
+          </div>
+        </section>
+      )}
 
-          {contacts.length > 0 && (
-            <section className="animate-slide-up" style={{ animationDelay: '0.7s' }}>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <span className="w-2 h-8 bg-purple-500 rounded-full mr-3" />
-                Contact
-              </h2>
-              <div className="glass p-6 rounded-xl border border-white/10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {contacts.map((contact) => (
-                    <div key={contact.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
-                      <span className="text-gray-400 font-medium min-w-[80px]">{contact.label}</span>
-                      <span className="text-white font-semibold">{contact.value}</span>
-                    </div>
-                  ))}
+      {/* Contact Section */}
+      {contacts.length > 0 && (
+        <section ref={contactRef} className="relative z-10 py-24">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
+              Contact
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {contacts.map((contact) => (
+                <div
+                  key={contact.id}
+                  className="group flex items-center gap-4 p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/20 transition-colors">
+                    {getContactIcon(contact.label)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-gray-500 text-sm mb-1">{contact.label}</p>
+                    <p className="text-white font-medium truncate">{contact.value}</p>
+                  </div>
                 </div>
-              </div>
-            </section>
-          )}
-        </div>
-      </main>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Footer spacer */}
+      <div className="h-20" />
     </div>
   )
 }

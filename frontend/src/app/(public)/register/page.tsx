@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Check, User, GraduationCap, Building, Hash } from 'lucide-react'
 import { useAuth } from '@/app/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 import { Button, Loading } from '@/shared/ui'
@@ -133,27 +134,43 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-black">
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-600/20 rounded-full blur-[20px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[15px]" />
+        <div
+          className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(-30%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(30%, 30%)',
+          }}
+        />
       </div>
 
       <div className="relative z-10 flex flex-col justify-center py-12 sm:px-6 lg:px-8 min-h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <Link href="/" className="flex justify-center text-2xl font-bold text-white mb-8">
-            <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+          <Link href="/" className="flex justify-center mb-8">
+            <span className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
               AIM
             </span>
-            <span className="ml-2 text-gray-400">AI Monsters</span>
           </Link>
-          <h2 className="text-center text-3xl font-extrabold text-white">
+          <h1 className="text-center text-3xl font-bold text-white mb-2">
             {step === 'check' && '회원가입'}
             {step === 'form' && '추가 정보 입력'}
             {step === 'complete' && '가입 요청 완료'}
-          </h2>
+          </h1>
+          <p className="text-center text-gray-500">
+            {step === 'check' && 'AIM 부원이 되어 함께 성장하세요'}
+            {step === 'form' && '부원 정보를 입력해주세요'}
+            {step === 'complete' && '운영진 승인을 기다려주세요'}
+          </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white/5 backdrop-blur-xl py-8 px-4 border border-white/10 sm:rounded-2xl sm:px-10">
+          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
             
             {step === 'check' && (
               <div className="space-y-6">
@@ -181,10 +198,10 @@ export default function RegisterPage() {
                   <p className="text-red-400 text-sm text-center">{error}</p>
                 )}
 
-                <div className="text-center pt-4 border-t border-white/10">
-                  <p className="text-sm text-gray-400">
+                <div className="text-center pt-4 border-t border-white/5">
+                  <p className="text-sm text-gray-500">
                     이미 계정이 있으신가요?{' '}
-                    <Link href="/login" className="text-primary-400 hover:text-primary-300">
+                    <Link href="/login" className="text-violet-400 hover:text-violet-300 transition-colors">
                       로그인하기
                     </Link>
                   </p>
@@ -325,7 +342,7 @@ export default function RegisterPage() {
             {step === 'complete' && (
               <div className="text-center space-y-6">
                 <div className="w-20 h-20 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-4xl">✓</span>
+                  <Check className="w-10 h-10 text-white" />
                 </div>
                 
                 <div>
@@ -339,13 +356,13 @@ export default function RegisterPage() {
                 <div className="pt-4 space-y-3">
                   <Link
                     href="/"
-                    className="block w-full px-4 py-3 bg-primary-500 hover:bg-primary-400 text-white rounded-xl font-semibold transition-all duration-300 text-center"
+                    className="block w-full px-4 py-3 bg-violet-500 hover:bg-violet-400 text-white rounded-xl font-semibold transition-all duration-300 text-center"
                   >
                     홈으로 돌아가기
                   </Link>
                   <Link
                     href="/pending"
-                    className="block w-full px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold transition-all duration-300 text-center border border-white/10"
+                    className="block w-full px-4 py-3 bg-white/[0.02] hover:bg-white/[0.05] text-white rounded-xl font-semibold transition-all duration-300 text-center border border-white/5 hover:border-violet-500/30"
                   >
                     승인 대기 상태 확인
                   </Link>
