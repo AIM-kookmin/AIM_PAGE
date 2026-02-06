@@ -323,22 +323,57 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
 
                 <div className="border-t border-white/10 pt-6 mt-6">
                   <Title level={3} className="text-white mb-4">상세 내용</Title>
-                  <div className="prose prose-invert prose-lg max-w-none
-                    prose-headings:text-white prose-headings:font-bold
-                    prose-p:text-white/80 prose-p:leading-relaxed
-                    prose-a:text-primary-400 prose-a:no-underline hover:prose-a:text-primary-300
-                    prose-strong:text-white prose-strong:font-semibold
-                    prose-ul:text-white/80 prose-ol:text-white/80
-                    prose-li:text-white/80 prose-li:my-1
-                    prose-code:text-primary-300 prose-code:bg-white/10 prose-code:px-2 prose-code:py-1 prose-code:rounded
-                    prose-pre:bg-white/10 prose-pre:border prose-pre:border-white/20
-                    prose-blockquote:border-l-primary-500 prose-blockquote:text-white/70
-                    prose-hr:border-white/20
-                    prose-table:text-white/80
-                    prose-th:text-white prose-th:font-semibold
-                    prose-td:text-white/80"
-                  >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <div className="prose prose-invert max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({children}) => <h1 className="text-2xl font-bold text-white mb-6 mt-8">{children}</h1>,
+                        h2: ({children}) => (
+                          <h2 className="text-xl font-bold text-white mb-4 mt-8 flex items-center gap-3">
+                            <span className="w-1 h-6 bg-violet-500 rounded-full" />
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({children}) => <h3 className="text-lg font-semibold text-white/90 mb-3 mt-6">{children}</h3>,
+                        p: ({children}) => <p className="text-white/70 mb-4 leading-relaxed">{children}</p>,
+                        ul: ({children}) => <ul className="text-white/70 mb-6 space-y-2 list-disc list-inside">{children}</ul>,
+                        ol: ({children}) => <ol className="text-white/70 mb-6 space-y-2 list-decimal list-inside">{children}</ol>,
+                        li: ({children}) => <li className="text-white/70">{children}</li>,
+                        strong: ({children}) => <strong className="text-white font-semibold">{children}</strong>,
+                        em: ({children}) => <em className="text-white/80 italic">{children}</em>,
+                        a: ({href, children}) => (
+                          <a href={href} className="text-violet-400 hover:text-violet-300 underline underline-offset-4" target="_blank" rel="noopener noreferrer">
+                            {children}
+                          </a>
+                        ),
+                        blockquote: ({children}) => (
+                          <blockquote className="border-l-2 border-violet-500/50 pl-6 py-2 text-white/60 italic my-6">
+                            {children}
+                          </blockquote>
+                        ),
+                        code: ({children}) => (
+                          <code className="text-violet-300 bg-white/10 px-2 py-1 rounded text-sm">
+                            {children}
+                          </code>
+                        ),
+                        pre: ({children}) => (
+                          <pre className="bg-white/10 border border-white/20 p-4 rounded-lg overflow-x-auto my-4">
+                            {children}
+                          </pre>
+                        ),
+                        hr: () => <hr className="border-white/20 my-8" />,
+                        table: ({children}) => (
+                          <div className="overflow-x-auto my-6">
+                            <table className="min-w-full border border-white/20">{children}</table>
+                          </div>
+                        ),
+                        thead: ({children}) => <thead className="bg-white/5">{children}</thead>,
+                        tbody: ({children}) => <tbody>{children}</tbody>,
+                        tr: ({children}) => <tr className="border-b border-white/10">{children}</tr>,
+                        th: ({children}) => <th className="px-4 py-2 text-left text-white font-semibold">{children}</th>,
+                        td: ({children}) => <td className="px-4 py-2 text-white/70">{children}</td>,
+                      }}
+                    >
                       {selectedNotice.body_md}
                     </ReactMarkdown>
                   </div>
