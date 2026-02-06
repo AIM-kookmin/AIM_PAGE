@@ -10,6 +10,7 @@ import type {
   Activity,
   StudyPostWithAuthor,
 } from '@/types/supabase'
+import type { Study, StudyInsert, StudyUpdate } from '@/types/database'
 
 type Tables = Database['public']['Tables']
 type RecruitNoticeInsert = Tables['recruit_notices']['Insert']
@@ -22,6 +23,8 @@ type AboutHistoryInsert = Tables['about_history']['Insert']
 type AboutHistoryUpdate = Tables['about_history']['Update']
 type AboutContactInsert = Tables['about_contacts']['Insert']
 type AboutContactUpdate = Tables['about_contacts']['Update']
+type ActivityInsert = Tables['activities']['Insert']
+type ActivityUpdate = Tables['activities']['Update']
 
 export async function getAboutSections(): Promise<AboutSection[]> {
   const supabase = createClient()
@@ -90,12 +93,18 @@ export async function getActiveRecruitNotice(): Promise<RecruitNotice | null> {
   return data
 }
 
-export async function getAllRecruitNotices(): Promise<RecruitNotice[]> {
+export async function getAllRecruitNotices(limit?: number): Promise<RecruitNotice[]> {
   const supabase = createClient()
-  const { data, error } = await supabase
+  let query = supabase
     .from('recruit_notices')
     .select('*')
     .order('created_at', { ascending: false })
+
+  if (limit) {
+    query = query.limit(limit)
+  }
+
+  const { data, error } = await query
 
   if (error) throw error
   return data ?? []
@@ -143,10 +152,68 @@ export async function getActivities(): Promise<Activity[]> {
   const { data, error } = await supabase
     .from('activities')
     .select('*')
+    .eq('is_active', true)
     .order('date', { ascending: false })
 
   if (error) throw error
   return data ?? []
+}
+
+export async function getAllActivities(limit?: number): Promise<Activity[]> {
+  const supabase = createClient()
+  let query = supabase
+    .from('activities')
+    .select('*')
+    .order('date', { ascending: false })
+
+  if (limit) {
+    query = query.limit(limit)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw error
+  return data ?? []
+}
+
+export async function createActivity(
+  data: ActivityInsert
+): Promise<Activity> {
+  const supabase = createClient()
+  const { data: result, error } = await supabase
+    .from('activities')
+    .insert(data)
+    .select()
+    .single()
+
+  if (error) throw error
+  return result
+}
+
+export async function updateActivity(
+  id: string,
+  updates: ActivityUpdate
+): Promise<Activity | null> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('activities')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteActivity(id: string): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('activities')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
 }
 
 export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
@@ -213,12 +280,30 @@ export async function updateMemberProfile(
   return data
 }
 
-export async function getAllMembersAdmin(): Promise<MemberProfile[]> {
+export async function getAllMembersAdmin(limit?: number): Promise<MemberProfile[]> {
+  const supabase = createClient()
+  let query = supabase
+    .from('member_profiles')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (limit) {
+    query = query.limit(limit)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw error
+  return data ?? []
+}
+
+export async function getRecentMembersAdmin(limit: number = 5): Promise<MemberProfile[]> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('member_profiles')
     .select('*')
     .order('created_at', { ascending: false })
+    .limit(limit)
 
   if (error) throw error
   return data ?? []
@@ -562,4 +647,84 @@ export async function getActiveMembers(): Promise<MemberProfile[]> {
 
   if (error) throw error
   return data ?? []
+}
+
+// ============================================================================
+// Studies Management
+// ============================================================================
+
+export async function getAllStudies(limit?: number): Promise<Study[]> {
+  const supabase = createClient()
+  let query = supabase
+    .from('studies')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (limit) {
+    query = query.limit(limit)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw error
+  return (data ?? []) as Study[]
+}
+
+export async function getActiveStudies(): Promise<Study[]> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('studies')
+    .select('*')
+    .eq('status', 'active')
+    .order('start_date', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []) as Study[]
+}
+
+export async function getStudyById(id: string): Promise<Study | null> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('studies')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) throw error
+  return data as Study | null
+}
+
+export async function createStudy(studyData: StudyInsert): Promise<Study> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('studies')
+    .insert(studyData)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data as Study
+}
+
+export async function updateStudy(id: string, updates: StudyUpdate): Promise<Study> {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('studies')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data as Study
+}
+
+export async function deleteStudy(id: string): Promise<void> {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('studies')
+    .delete()
+    .eq('id', id)
+
+  if (error) throw error
 }

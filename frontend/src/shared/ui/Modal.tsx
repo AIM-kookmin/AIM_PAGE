@@ -1,4 +1,7 @@
-import React from 'react'
+'use client'
+
+import React, { useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Button } from './Button'
 
 interface ModalProps {
@@ -30,8 +33,19 @@ export const Modal: React.FC<ModalProps> = ({
   submitVariant = 'primary',
   maxWidth = '4xl'
 }) => {
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
   const handleBackgroundClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === overlayRef.current) {
       onClose()
     }
   }
@@ -54,49 +68,65 @@ export const Modal: React.FC<ModalProps> = ({
     '4xl': 'max-w-4xl'
   }
 
-  return (
-    <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-lg flex items-center justify-center p-4 pt-20"
+  const modalContent = (
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-start justify-center p-4"
       onClick={handleBackgroundClick}
-      style={{zIndex: 40, backdropFilter: 'blur(8px) saturate(150%)'}}
+      style={{ backdropFilter: 'blur(8px) saturate(150%)' }}
     >
-      <div className={`bg-gray-800 border border-gray-700 rounded-lg p-6 w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] overflow-y-auto`}>
-        <h2 className="text-2xl font-bold text-white mb-6">
-          {title}
-        </h2>
-        
-        {onSubmit ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {children}
-            
-            <div className="flex justify-end space-x-3">
-              {showCancelButton && (
-                <Button type="button" onClick={onClose} variant="ghost">
-                  {cancelText}
-                </Button>
-              )}
-              {showSubmitButton && (
-                <Button type="submit" variant={submitVariant} disabled={submitDisabled}>
-                  {submitText}
-                </Button>
-              )}
-            </div>
-          </form>
-        ) : (
-          <>
-            {children}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} my-auto flex flex-col`}
+        style={{ maxHeight: 'calc(100vh - 2rem)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header - Fixed */}
+        <div className="px-6 py-4 border-b border-gray-700 flex-shrink-0">
+          <h2 id="modal-title" className="text-2xl font-bold text-white">
+            {title}
+          </h2>
+        </div>
+
+        {/* Content - Scrollable */}
+        <div className="overflow-auto flex-1 px-6 py-6" style={{ minHeight: 0 }}>
+          {onSubmit ? (
+            <form onSubmit={handleSubmit} className="space-y-6" id="modal-form">
+              {children}
+            </form>
+          ) : (
+            children
+          )}
+        </div>
+
+        {/* Footer - Fixed */}
+        <div className="px-6 py-4 border-t border-gray-700 flex-shrink-0">
+          <div className="flex justify-end space-x-3">
             {showCancelButton && (
-              <div className="flex justify-end mt-6">
-                <Button onClick={onClose} variant="ghost">
-                  {cancelText}
-                </Button>
-              </div>
+              <Button type="button" onClick={onClose} variant="ghost">
+                {cancelText}
+              </Button>
             )}
-          </>
-        )}
+            {showSubmitButton && onSubmit && (
+              <Button
+                type="submit"
+                form="modal-form"
+                variant={submitVariant}
+                disabled={submitDisabled}
+              >
+                {submitText}
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )
+
+  // Render modal using React Portal to document.body
+  return typeof window !== 'undefined' ? createPortal(modalContent, document.body) : null
 }
 
 export default Modal

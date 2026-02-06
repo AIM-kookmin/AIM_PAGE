@@ -197,7 +197,6 @@ export interface Database {
           student_id: string | null
           position: string | null
           department: string | null
-          year: string | null
           generation: number | null
           bio: string | null
           one_liner: string | null
@@ -215,7 +214,6 @@ export interface Database {
           student_id?: string | null
           position?: string | null
           department?: string | null
-          year?: string | null
           generation?: number | null
           bio?: string | null
           one_liner?: string | null
@@ -233,7 +231,6 @@ export interface Database {
           student_id?: string | null
           position?: string | null
           department?: string | null
-          year?: string | null
           generation?: number | null
           bio?: string | null
           one_liner?: string | null
@@ -253,8 +250,16 @@ export interface Database {
           category: string
           date: string
           description: string | null
+          image_url: string | null
           gallery_urls: Json | null
+          link: string | null
+          is_active: boolean
+          order: number
+          location: string | null
+          participants: number | null
+          organizer: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -262,8 +267,16 @@ export interface Database {
           category: string
           date: string
           description?: string | null
+          image_url?: string | null
           gallery_urls?: Json | null
+          link?: string | null
+          is_active?: boolean
+          order?: number
+          location?: string | null
+          participants?: number | null
+          organizer?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -271,8 +284,16 @@ export interface Database {
           category?: string
           date?: string
           description?: string | null
+          image_url?: string | null
           gallery_urls?: Json | null
+          link?: string | null
+          is_active?: boolean
+          order?: number
+          location?: string | null
+          participants?: number | null
+          organizer?: string | null
           created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -367,6 +388,87 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
+      }
+      studies: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          status: string
+          visibility: string
+          start_date: string | null
+          end_date: string | null
+          max_members: number
+          current_members: number
+          is_recruiting: boolean
+          difficulty: string
+          schedule: string | null
+          meeting_type: string
+          cover_url: string | null
+          syllabus: string | null
+          prerequisites: string | null
+          order: number
+          created_by: string | null
+          images: Json | null
+          participants: string[] | null
+          link: string | null
+          content: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          status?: string
+          visibility?: string
+          start_date?: string | null
+          end_date?: string | null
+          max_members?: number
+          current_members?: number
+          is_recruiting?: boolean
+          difficulty?: string
+          schedule?: string | null
+          meeting_type?: string
+          cover_url?: string | null
+          syllabus?: string | null
+          prerequisites?: string | null
+          order?: number
+          created_by?: string | null
+          images?: Json | null
+          participants?: string[] | null
+          link?: string | null
+          content?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          status?: string
+          visibility?: string
+          start_date?: string | null
+          end_date?: string | null
+          max_members?: number
+          current_members?: number
+          is_recruiting?: boolean
+          difficulty?: string
+          schedule?: string | null
+          meeting_type?: string
+          cover_url?: string | null
+          syllabus?: string | null
+          prerequisites?: string | null
+          order?: number
+          created_by?: string | null
+          images?: Json | null
+          participants?: string[] | null
+          link?: string | null
+          content?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: Record<string, never>

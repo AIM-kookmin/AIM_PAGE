@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { getAdminDashboardStats, getAllMembersAdmin } from '@/shared/api/supabase'
+import { getAdminDashboardStats, getRecentMembersAdmin } from '@/shared/api/supabase'
 import { APP_NAME } from '@/lib/config'
 import type { MemberProfile } from '@/types/supabase'
 
@@ -31,11 +31,11 @@ export default function AdminDashboard() {
     try {
       const [stats, members] = await Promise.all([
         getAdminDashboardStats(),
-        getAllMembersAdmin()
+        getRecentMembersAdmin(5)
       ])
       setStats({
         ...stats,
-        recentMembers: members.slice(0, 5)
+        recentMembers: members
       })
     } catch (error) {
       console.error('대시보드 데이터 로딩 실패:', error)
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
         <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
                 <span className="text-white text-sm font-medium">🎯</span>
               </div>
             </div>
@@ -99,12 +99,12 @@ export default function AdminDashboard() {
         <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700 p-6">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                <span className="text-white text-sm font-medium">📚</span>
+              <div className="w-8 h-8 bg-violet-500 rounded-md flex items-center justify-center">
+                <span className="text-white text-sm font-medium">📢</span>
               </div>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-400">총 스터디 수</p>
+              <p className="text-sm font-medium text-gray-400">모집 공고 수</p>
               <p className="text-2xl font-semibold text-white">{stats.totalStudies}개</p>
             </div>
           </div>
@@ -130,11 +130,11 @@ export default function AdminDashboard() {
             </Link>
             
             <Link
-              href="/admin/activities"
-              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-purple-500 rounded-md transition-colors"
+              href="/admin/activities-management"
+              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-violet-500 rounded-md transition-colors"
             >
               <div className="flex items-center">
-                <span className="text-purple-400 mr-3">🎯</span>
+                <span className="text-violet-400 mr-3">🎯</span>
                 <div>
                   <p className="font-medium text-white">활동 관리</p>
                   <p className="text-sm text-gray-400">동아리 활동 관리</p>
@@ -143,14 +143,14 @@ export default function AdminDashboard() {
             </Link>
 
             <Link
-              href="/admin/studies"
-              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-yellow-500 rounded-md transition-colors"
+              href="/admin/recruit-management"
+              className="block w-full text-left px-4 py-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 hover:border-violet-500 rounded-md transition-colors"
             >
               <div className="flex items-center">
-                <span className="text-yellow-400 mr-3">📚</span>
+                <span className="text-violet-400 mr-3">📢</span>
                 <div>
-                  <p className="font-medium text-white">스터디 관리</p>
-                  <p className="text-sm text-gray-400">스터디 그룹 관리</p>
+                  <p className="font-medium text-white">모집 공고 관리</p>
+                  <p className="text-sm text-gray-400">신입 부원 모집 공고</p>
                 </div>
               </div>
             </Link>
