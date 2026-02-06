@@ -79,8 +79,7 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} flex flex-col`}
-        style={{ maxHeight: '90vh', height: 'auto' }}
+        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
@@ -91,7 +90,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="overflow-auto flex-1 px-6 py-6" style={{ minHeight: 0 }}>
+        <div className="overflow-y-auto flex-1 px-6 py-6">
           {onSubmit ? (
             <form onSubmit={handleSubmit} className="space-y-6" id="modal-form">
               {children}
