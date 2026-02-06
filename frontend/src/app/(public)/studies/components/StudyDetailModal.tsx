@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { X, Calendar, Users, BarChart3, CheckCircle2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import gsap from 'gsap'
 import type { Study } from '@/types/database'
+import { useLenisControl } from '@/shared/hooks'
 
 interface StudyDetailModalProps {
   study: Study | null
@@ -20,6 +21,8 @@ export default function StudyDetailModal({
   const modalRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useLenisControl(isOpen)
 
   const formatDateRange = (startDate: string | null, endDate: string | null) => {
     if (!startDate && !endDate) return null

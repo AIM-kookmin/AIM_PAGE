@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from './Button'
+import { useLenisControl } from '@/shared/hooks'
 
 interface ModalProps {
   isOpen: boolean
@@ -34,6 +35,7 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = '4xl'
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  useLenisControl(isOpen)
 
   useEffect(() => {
     if (isOpen) {
