@@ -28,6 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_studies_is_recruiting ON public.studies(is_recrui
 CREATE INDEX IF NOT EXISTS idx_studies_order ON public.studies("order" DESC);
 
 -- Add trigger for updated_at
+DROP TRIGGER IF EXISTS set_studies_updated_at ON public.studies;
 CREATE TRIGGER set_studies_updated_at
   BEFORE UPDATE ON public.studies
   FOR EACH ROW
@@ -44,7 +45,14 @@ CREATE POLICY "allow_public_read_active" ON public.studies
 
 CREATE POLICY "allow_member_read_all" ON public.studies
   FOR SELECT USING (
-    auth.uid() IS NOT NULL
+    auth.uid() IS NOT NULL AND (
+      visibility = 'public' OR
+      EXISTS (
+        SELECT 1 FROM public.study_members
+        WHERE study_members.study_id = studies.id
+          AND study_members.member_id = auth.uid()
+      )
+    )
   );
 
 -- Add comments for documentation

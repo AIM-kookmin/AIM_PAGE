@@ -81,7 +81,7 @@ export async function uploadActivityCover(
   const ext = file.name.split('.').pop()
   const path = `covers/${activityId}_${Date.now()}.${ext}`
   await uploadFile('activities', path, file)
-  return getPublicUrl('activities', path)
+  return getSecureUrl('activities', path)
 }
 
 export async function uploadActivityImages(
@@ -95,7 +95,7 @@ export async function uploadActivityImages(
     const ext = file.name.split('.').pop()
     const path = `${activityId}/${Date.now()}_${i}.${ext}`
     await uploadFile('activities', path, file)
-    urls.push(getPublicUrl('activities', path))
+    urls.push(getSecureUrl('activities', path))
   }
 
   return urls
@@ -108,7 +108,7 @@ export async function uploadStudyCover(
   const ext = file.name.split('.').pop()
   const path = `covers/${studyId}.${ext}`
   await uploadFile('studies', path, file)
-  return getPublicUrl('studies', path)
+  return getSecureUrl('studies', path)
 }
 
 export async function uploadStudyImages(
@@ -122,7 +122,7 @@ export async function uploadStudyImages(
     const ext = file.name.split('.').pop()
     const path = `${studyId}/${Date.now()}_${i}.${ext}`
     await uploadFile('studies', path, file)
-    urls.push(getPublicUrl('studies', path))
+    urls.push(getSecureUrl('studies', path))
   }
 
   return urls

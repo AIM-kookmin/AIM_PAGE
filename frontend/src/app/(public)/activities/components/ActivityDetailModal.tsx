@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import { X, Calendar, Users, MapPin, User, ExternalLink } from 'lucide-react'
 import gsap from 'gsap'
 import type { Activity } from '@/types/supabase'
+import { useLenisControl } from '@/shared/hooks'
 
 interface ActivityDetailModalProps {
   activity: Activity | null
@@ -19,6 +20,8 @@ export default function ActivityDetailModal({
   const overlayRef = useRef<HTMLDivElement>(null)
   const modalRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+
+  useLenisControl(isOpen)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -123,7 +126,7 @@ export default function ActivityDetailModal({
         </button>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto custom-scrollbar">
+        <div data-lenis-prevent className="overflow-y-auto custom-scrollbar">
           {/* Hero Image Section */}
           <div className="relative w-full aspect-[16/9] bg-gray-800/50 overflow-hidden">
             {activity.image_url ? (

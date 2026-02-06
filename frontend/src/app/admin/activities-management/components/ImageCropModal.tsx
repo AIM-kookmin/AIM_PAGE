@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import { X, Crop } from 'lucide-react'
 import { Area, Point } from 'react-easy-crop'
+import { useLenisControl } from '@/shared/hooks'
 
 interface ImageCropModalProps {
   imageSrc: string
@@ -28,6 +29,8 @@ export default function ImageCropModal({
   const [rotation, setRotation] = useState(0)
   const [aspectRatio, setAspectRatio] = useState<number | undefined>(16 / 9)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
+
+  useLenisControl(true)
 
   const onCropChange = useCallback((location: Point) => {
     setCrop(location)
@@ -242,7 +245,7 @@ export default function ImageCropModal({
         </div>
 
         {/* Crop Area */}
-        <div className="relative w-full h-[500px] bg-black">
+        <div data-lenis-prevent className="relative w-full h-[500px] bg-black">
           <Cropper
             image={imageSrc}
             crop={crop}
