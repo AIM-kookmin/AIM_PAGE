@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from './Button'
+import { useLenisControl } from '@/shared/hooks'
 
 interface ModalProps {
   isOpen: boolean
@@ -34,6 +35,7 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = '4xl'
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  useLenisControl(isOpen)
 
   useEffect(() => {
     if (isOpen) {
@@ -71,7 +73,7 @@ export const Modal: React.FC<ModalProps> = ({
   const modalContent = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-start justify-center p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-center justify-center p-4"
       onClick={handleBackgroundClick}
       style={{ backdropFilter: 'blur(8px) saturate(150%)' }}
     >
@@ -79,8 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} my-auto flex flex-col`}
-        style={{ maxHeight: 'calc(100vh - 2rem)' }}
+        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
@@ -91,7 +92,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="overflow-auto flex-1 px-6 py-6" style={{ minHeight: 0 }}>
+        <div data-lenis-prevent className="overflow-y-auto flex-1 px-6 py-6">
           {onSubmit ? (
             <form onSubmit={handleSubmit} className="space-y-6" id="modal-form">
               {children}

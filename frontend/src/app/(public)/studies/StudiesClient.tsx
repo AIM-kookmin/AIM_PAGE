@@ -1,54 +1,20 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Calendar, Users } from 'lucide-react'
 import type { Study } from '@/types/database'
 import StudyDetailModal from './components/StudyDetailModal'
-
-gsap.registerPlugin(ScrollTrigger)
 
 interface StudiesClientProps {
   studies: Study[]
 }
 
 export default function StudiesClient({ studies }: StudiesClientProps) {
-  const mainRef = useRef<HTMLDivElement>(null)
-  const heroRef = useRef<HTMLDivElement>(null)
-  const listRef = useRef<HTMLDivElement>(null)
   const [selectedStudy, setSelectedStudy] = useState<Study | null>(null)
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(heroRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
-      )
-
-      if (listRef.current) {
-        gsap.fromTo(listRef.current,
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: listRef.current,
-              start: 'top 80%',
-              toggleActions: 'play none none none'
-            }
-          }
-        )
-      }
-    }, mainRef)
-
-    return () => ctx.revert()
-  }, [])
-
   return (
-    <div ref={mainRef} className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-white">
+    <div className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-white">
       {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div
@@ -69,7 +35,12 @@ export default function StudiesClient({ studies }: StudiesClientProps) {
 
       <main className="relative z-10">
         {/* Hero */}
-        <section ref={heroRef} className="min-h-[50vh] flex items-center justify-center pt-20 px-4">
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="min-h-[50vh] flex items-center justify-center pt-20 px-4"
+        >
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
@@ -81,10 +52,16 @@ export default function StudiesClient({ studies }: StudiesClientProps) {
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />
           </div>
-        </section>
+        </motion.section>
 
         {/* Studies List */}
-        <section ref={listRef} className="py-24 px-4">
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          viewport={{ once: true, amount: 0.2 }}
+          className="py-24 px-4"
+        >
           <div className="max-w-5xl mx-auto">
             {studies.length === 0 ? (
               <div className="text-center p-12 rounded-2xl bg-white/[0.02] border border-white/5">
@@ -102,7 +79,7 @@ export default function StudiesClient({ studies }: StudiesClientProps) {
               </div>
             )}
           </div>
-        </section>
+        </motion.section>
       </main>
 
       {/* Footer */}

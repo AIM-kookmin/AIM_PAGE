@@ -22,7 +22,15 @@ fi
 
 # Link to project (if not already linked)
 echo "🔗 Linking to Supabase project..."
-supabase link --project-ref gttkvtlkjdusbortnbiz || echo "Already linked"
+if output=$(supabase link --project-ref gttkvtlkjdusbortnbiz 2>&1); then
+    echo "✓ Linked successfully"
+elif echo "$output" | grep -q "already linked"; then
+    echo "✓ Already linked"
+else
+    echo "❌ Failed to link to project:"
+    echo "$output"
+    exit 1
+fi
 
 # Show pending migrations
 echo ""

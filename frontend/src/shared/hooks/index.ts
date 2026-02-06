@@ -1,0 +1,1 @@
+export { useLenisControl } from './useLenisControl'

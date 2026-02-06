@@ -80,21 +80,28 @@ export default function MemberSelector({
       {/* Selected Members Display */}
       {selectedMembers.length > 0 && (
         <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-          {selectedMembers.map(memberName => (
-            <div
-              key={memberName}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-violet-500/20 border border-violet-500/30 text-sm text-violet-300"
-            >
-              <span>{memberName}</span>
-              <button
-                type="button"
-                onClick={() => removeMember(memberName)}
-                className="hover:bg-violet-500/30 rounded-full p-0.5 transition-colors duration-200"
+          {selectedMembers.map(memberName => {
+            const isActive = members.some(m => m.display_name === memberName)
+            return (
+              <div
+                key={memberName}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm ${
+                  isActive
+                    ? 'bg-violet-500/20 border-violet-500/30 text-violet-300'
+                    : 'bg-gray-500/10 border-gray-500/30 text-gray-400 opacity-60'
+                }`}
               >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ))}
+                <span>{memberName}{!isActive && ' (비활성)'}</span>
+                <button
+                  type="button"
+                  onClick={() => removeMember(memberName)}
+                  className="hover:bg-violet-500/30 rounded-full p-0.5 transition-colors duration-200"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )
+          })}
           <button
             type="button"
             onClick={clearAll}
