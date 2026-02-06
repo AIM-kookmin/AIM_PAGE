@@ -15,7 +15,7 @@ import { TabType, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormD
 import Notification from './components/Notification'
 import TabNavigation from './components/TabNavigation'
 import SectionCard from './components/cards/SectionCard'
-import { AboutActivityCard } from './components/cards/AboutActivityCard'
+import AboutActivityCard from './components/cards/AboutActivityCard'
 import HistoryCard from './components/cards/HistoryCard'
 import ContactCard from './components/cards/ContactCard'
 import SectionForm from './components/forms/SectionForm'

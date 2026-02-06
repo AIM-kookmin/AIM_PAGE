@@ -5,7 +5,7 @@ import { AboutActivityFormData } from '../../types'
 
 interface AboutActivityFormProps {
   formData: AboutActivityFormData
-  onChange: (field: keyof AboutActivityFormData, value: any) => void
+  onChange: (field: keyof AboutActivityFormData, value: string | number) => void
   onSubmit: () => void
   onCancel: () => void
   isSubmitting: boolean

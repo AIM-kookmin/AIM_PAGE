@@ -5,7 +5,7 @@ import { HistoryFormData } from '../../types'
 
 interface HistoryFormProps {
   formData: HistoryFormData
-  onChange: (field: keyof HistoryFormData, value: any) => void
+  onChange: (field: keyof HistoryFormData, value: string | number) => void
   onSubmit: () => void
   onCancel: () => void
   isSubmitting: boolean

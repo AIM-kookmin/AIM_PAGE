@@ -22,7 +22,7 @@ const colorClasses = {
 
 type ColorKey = keyof typeof colorClasses
 
-export function AboutActivityCard({ activity, onEdit, onDelete }: AboutActivityCardProps) {
+export default function AboutActivityCard({ activity, onEdit, onDelete }: AboutActivityCardProps) {
   const colorKey = (activity.color as ColorKey) || 'violet'
   const colorClass = colorClasses[colorKey] || colorClasses.violet
 
@@ -68,17 +68,17 @@ export function AboutActivityCard({ activity, onEdit, onDelete }: AboutActivityC
       <div className="flex gap-2">
         <button
           onClick={onEdit}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/30 text-white/80 hover:text-white transition-all duration-200"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-300 hover:text-violet-200 transition-all duration-200 font-medium"
         >
           <Pencil className="w-4 h-4" />
-          <span className="text-sm font-medium">Edit</span>
+          <span className="text-sm">수정</span>
         </button>
         <button
           onClick={onDelete}
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 text-white/80 hover:text-red-400 transition-all duration-200"
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-300 hover:text-red-200 transition-all duration-200 font-medium"
         >
           <Trash2 className="w-4 h-4" />
-          <span className="text-sm font-medium">Delete</span>
+          <span className="text-sm">삭제</span>
         </button>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { ContactFormData } from '../../types'
 
 interface ContactFormProps {
   formData: ContactFormData
-  onChange: (field: keyof ContactFormData, value: any) => void
+  onChange: (field: keyof ContactFormData, value: string | number) => void
   onSubmit: () => void
   onCancel: () => void
   isSubmitting: boolean
