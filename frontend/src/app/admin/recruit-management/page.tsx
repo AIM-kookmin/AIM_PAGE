@@ -321,8 +321,23 @@ AIM(AI Monsters)은 인공지능과 머신러닝에 관심 있는 학생들이 �
                   </div>
                 )}
 
-                <div className="border-t border-white/10 pt-6">
-                  <div className="prose prose-invert max-w-none">
+                <div className="border-t border-white/10 pt-6 mt-6">
+                  <Title level={3} className="text-white mb-4">상세 내용</Title>
+                  <div className="prose prose-invert prose-lg max-w-none
+                    prose-headings:text-white prose-headings:font-bold
+                    prose-p:text-white/80 prose-p:leading-relaxed
+                    prose-a:text-primary-400 prose-a:no-underline hover:prose-a:text-primary-300
+                    prose-strong:text-white prose-strong:font-semibold
+                    prose-ul:text-white/80 prose-ol:text-white/80
+                    prose-li:text-white/80 prose-li:my-1
+                    prose-code:text-primary-300 prose-code:bg-white/10 prose-code:px-2 prose-code:py-1 prose-code:rounded
+                    prose-pre:bg-white/10 prose-pre:border prose-pre:border-white/20
+                    prose-blockquote:border-l-primary-500 prose-blockquote:text-white/70
+                    prose-hr:border-white/20
+                    prose-table:text-white/80
+                    prose-th:text-white prose-th:font-semibold
+                    prose-td:text-white/80"
+                  >
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {selectedNotice.body_md}
                     </ReactMarkdown>
