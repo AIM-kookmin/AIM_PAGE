@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button, Card, Text, Title, Subtitle, Loading, Modal } from '@/shared/ui'
+import { useState, useEffect, useMemo } from 'react'
+import { Plus, FileText } from 'lucide-react'
+import { Button, Loading } from '@/shared/ui'
 import { APP_NAME } from '@/lib/config'
 import {
   getAllAboutSections, createAboutSection, updateAboutSection, deleteAboutSection,
@@ -10,681 +11,187 @@ import {
   getAllAboutContacts, createAboutContact, updateAboutContact, deleteAboutContact,
 } from '@/shared/api/supabase'
 import type { AboutSection, AboutActivity, AboutHistory, AboutContact } from '@/types/supabase'
+import { TabType, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormData, ContactFormData } from './types'
+import Notification from './components/Notification'
+import TabNavigation from './components/TabNavigation'
+import SectionCard from './components/cards/SectionCard'
+import { AboutActivityCard } from './components/cards/AboutActivityCard'
+import HistoryCard from './components/cards/HistoryCard'
+import ContactCard from './components/cards/ContactCard'
+import SectionForm from './components/forms/SectionForm'
+import AboutActivityForm from './components/forms/AboutActivityForm'
+import HistoryForm from './components/forms/HistoryForm'
+import ContactForm from './components/forms/ContactForm'
+import DeleteConfirmView from './components/DeleteConfirmView'
 
-type ManageableItem = AboutSection | AboutActivity | AboutHistory | AboutContact
+type FormData = SectionFormData | AboutActivityFormData | HistoryFormData | ContactFormData
+type DataItem = AboutSection | AboutActivity | AboutHistory | AboutContact
+
+const TAB_LABELS: Record<TabType, string> = { sections: '섹션', activities: '활동', history: '연혁', contact: '연락처' }
+
+const getEmptyFormData = (tab: TabType): FormData => {
+  const base = { order: 0 }
+  switch (tab) {
+    case 'sections': return { ...base, title: '', content: '' }
+    case 'activities': return { ...base, title: '', description: '', icon: '', color: '' }
+    case 'history': return { ...base, year: new Date().getFullYear(), title: '', description: '' }
+    case 'contact': return { ...base, type: '', label: '', value: '' }
+  }
+}
+
+const itemToFormData = (tab: TabType, item: DataItem): FormData => {
+  const base = { order: item.order }
+  switch (tab) {
+    case 'sections': { const i = item as AboutSection; return { ...base, title: i.title, content: i.content } }
+    case 'activities': { const i = item as AboutActivity; return { ...base, title: i.title, description: i.description, icon: i.icon, color: i.color } }
+    case 'history': { const i = item as AboutHistory; return { ...base, year: i.year, title: i.title, description: i.description } }
+    case 'contact': { const i = item as AboutContact; return { ...base, type: i.type, label: i.label, value: i.value } }
+  }
+}
 
 export default function AboutManagementPage() {
-  const [activeTab, setActiveTab] = useState<'sections' | 'activities' | 'history' | 'contact'>('sections')
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [activeTab, setActiveTab] = useState<TabType>('sections')
   const [sections, setSections] = useState<AboutSection[]>([])
   const [activities, setActivities] = useState<AboutActivity[]>([])
   const [history, setHistory] = useState<AboutHistory[]>([])
   const [contacts, setContacts] = useState<AboutContact[]>([])
+  const [editingItem, setEditingItem] = useState<DataItem | null>(null)
+  const [formData, setFormData] = useState<FormData>(getEmptyFormData('sections'))
+  const [initialFormData, setInitialFormData] = useState<FormData>(getEmptyFormData('sections'))
   const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletingItem, setDeletingItem] = useState<ManageableItem | null>(null)
-  const [editingItem, setEditingItem] = useState<ManageableItem | null>(null)
-  const [formData, setFormData] = useState<{
-    title?: string
-    content?: string
-    description?: string
-    icon?: string
-    color?: string
-    year?: number
-    label?: string
-    value?: string
-    type?: string
-    order?: number
-    is_active?: boolean
-  }>({})
-  const [notification, setNotification] = useState<{
-    show: boolean
-    type: 'success' | 'error'
-    title: string
-    message: string
-    hiding?: boolean
-  }>({
-    show: false,
-    type: 'success',
-    title: '',
-    message: '',
-    hiding: false
-  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [notification, setNotification] = useState<{ show: boolean; type: 'success' | 'error'; title: string; message: string; hiding: boolean }>({ show: false, type: 'success', title: '', message: '', hiding: false })
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
 
-  useEffect(() => {
-    document.title = `소개 관리 - ${APP_NAME}`
-  }, [])
+  const hasChanges = useMemo(() => JSON.stringify(formData) !== JSON.stringify(initialFormData), [formData, initialFormData])
+  const dataMap = { sections, activities, history, contact: contacts }
+  const getCurrentItems = () => dataMap[activeTab]
+  const getItemTitle = (item: DataItem | null) => item ? ('title' in item ? item.title : 'label' in item ? item.label : '') : ''
 
-  const fetchData = async () => {
+  useEffect(() => { document.title = `소개 관리 - ${APP_NAME}`; fetchAllData() }, [])
+
+  const fetchAllData = async () => {
     try {
       setLoading(true)
-
-      switch (activeTab) {
-        case 'sections':
-          setSections(await getAllAboutSections())
-          break
-        case 'activities':
-          setActivities(await getAllAboutActivities())
-          break
-        case 'history':
-          setHistory(await getAllAboutHistory())
-          break
-        case 'contact':
-          setContacts(await getAllAboutContacts())
-          break
-      }
-    } catch (error) {
-      console.error('데이터 로딩 오류:', error)
-    } finally {
-      setLoading(false)
-    }
+      const [s, a, h, c] = await Promise.all([getAllAboutSections(), getAllAboutActivities(), getAllAboutHistory(), getAllAboutContacts()])
+      setSections(s); setActivities(a); setHistory(h); setContacts(c)
+    } catch (e) { console.error(e); notify('error', '오류', '데이터를 불러오는데 실패했습니다.') }
+    finally { setLoading(false) }
   }
 
-  useEffect(() => {
-    fetchData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab])
-
-  const openAddModal = () => {
-    setEditingItem(null)
-    setFormData({})
-    setShowModal(true)
+  const notify = (type: 'success' | 'error', title: string, message: string) => {
+    setNotification({ show: true, type, title, message, hiding: false })
+    setTimeout(() => { setNotification(p => ({ ...p, hiding: true })); setTimeout(() => setNotification({ show: false, type: type, title: '', message: '', hiding: false }), 300) }, 3000)
   }
 
-  const closeModal = () => {
-    setShowModal(false)
-    setEditingItem(null)
-    setFormData({})
-  }
+  const handleAdd = () => { const d = getEmptyFormData(activeTab); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
+  const handleEdit = (item: DataItem) => { const d = itemToFormData(activeTab, item); setEditingItem(item); setFormData(d); setInitialFormData(d); setViewMode('edit') }
+  const handleDeleteClick = (item: DataItem) => { setEditingItem(item); setViewMode('delete') }
+  const handleFormChange = (field: string, value: string | number) => setFormData(p => ({ ...p, [field]: value }))
+  const handleCancel = () => hasChanges ? setShowUnsavedDialog(true) : setViewMode('list')
 
-  const handleEdit = (item: ManageableItem) => {
-    setEditingItem(item)
-    setFormData({ ...item })
-    setShowModal(true)
-  }
-
-  const openDeleteModal = (item: ManageableItem) => {
-    setDeletingItem(item)
-    setShowDeleteModal(true)
-  }
-
-  const closeDeleteModal = () => {
-    setShowDeleteModal(false)
-    setDeletingItem(null)
-  }
-
-  const confirmDelete = async () => {
-    if (!deletingItem) return
-
+  const handleSubmit = async () => {
     try {
-      switch (activeTab) {
-        case 'sections':
-          await deleteAboutSection(deletingItem.id)
-          break
-        case 'activities':
-          await deleteAboutActivity(deletingItem.id)
-          break
-        case 'history':
-          await deleteAboutHistoryItem(deletingItem.id)
-          break
-        case 'contact':
-          await deleteAboutContact(deletingItem.id)
-          break
-      }
-      
-      showNotification({
-        show: true,
-        type: 'success',
-        title: '삭제 완료',
-        message: '항목이 성공적으로 삭제되었습니다.'
-      })
-      closeDeleteModal()
-      fetchData()
-    } catch {
-      showNotification({
-        show: true,
-        type: 'error',
-        title: '오류',
-        message: '삭제 중 오류가 발생했습니다.'
-      })
-    }
-  }
+      setIsSubmitting(true)
+      const isEdit = viewMode === 'edit' && editingItem
+      const is_active = isEdit ? editingItem!.is_active : true
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      let success = false
-      
-      const commonData = {
-        order: formData.order || 0,
-        is_active: editingItem ? editingItem.is_active : true,
-      }
-
-      if (editingItem) {
-        switch (activeTab) {
-          case 'sections':
-            await updateAboutSection(editingItem.id, {
-              title: formData.title!,
-              content: formData.content!,
-              ...commonData
-            })
-            break
-          case 'activities':
-            await updateAboutActivity(editingItem.id, {
-              title: formData.title!,
-              description: formData.description!,
-              icon: formData.icon!,
-              color: formData.color!,
-              ...commonData
-            })
-            break
-          case 'history':
-            await updateAboutHistoryItem(editingItem.id, {
-              year: formData.year!,
-              title: formData.title!,
-              description: formData.description!,
-              ...commonData
-            })
-            break
-          case 'contact':
-            await updateAboutContact(editingItem.id, {
-              type: formData.type!,
-              label: formData.label!,
-              value: formData.value!,
-              ...commonData
-            })
-            break
-        }
-        success = true
+      if (activeTab === 'sections') {
+        const d = formData as SectionFormData
+        if (isEdit) await updateAboutSection(editingItem!.id, { ...d, is_active })
+        else await createAboutSection({ ...d, is_active })
+      } else if (activeTab === 'activities') {
+        const d = formData as AboutActivityFormData
+        if (isEdit) await updateAboutActivity(editingItem!.id, { ...d, is_active })
+        else await createAboutActivity({ ...d, is_active })
+      } else if (activeTab === 'history') {
+        const d = formData as HistoryFormData
+        if (isEdit) await updateAboutHistoryItem(editingItem!.id, { ...d, is_active })
+        else await createAboutHistoryItem({ ...d, is_active })
       } else {
-        switch (activeTab) {
-          case 'sections':
-            await createAboutSection({
-              title: formData.title!,
-              content: formData.content!,
-              ...commonData
-            })
-            break
-          case 'activities':
-            await createAboutActivity({
-              title: formData.title!,
-              description: formData.description!,
-              icon: formData.icon!,
-              color: formData.color!,
-              ...commonData
-            })
-            break
-          case 'history':
-            await createAboutHistoryItem({
-              year: formData.year!,
-              title: formData.title!,
-              description: formData.description!,
-              ...commonData
-            })
-            break
-          case 'contact':
-            await createAboutContact({
-              type: formData.type!,
-              label: formData.label!,
-              value: formData.value!,
-              ...commonData
-            })
-            break
-        }
-        success = true
+        const d = formData as ContactFormData
+        if (isEdit) await updateAboutContact(editingItem!.id, { ...d, is_active })
+        else await createAboutContact({ ...d, is_active })
       }
-
-      if (success) {
-        showNotification({
-          show: true,
-          type: 'success',
-          title: editingItem ? '수정 완료' : '생성 완료',
-          message: `항목이 성공적으로 ${editingItem ? '수정' : '생성'}되었습니다.`
-        })
-        closeModal()
-        fetchData()
-      }
-    } catch (error) {
-      console.error(error)
-      showNotification({
-        show: true,
-        type: 'error',
-        title: editingItem ? '수정 실패' : '생성 실패',
-        message: `항목 ${editingItem ? '수정' : '생성'}에 실패했습니다.`
-      })
-    }
+      notify('success', isEdit ? '수정 완료' : '생성 완료', `${TAB_LABELS[activeTab]}이(가) 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다.`)
+      await fetchAllData(); setViewMode('list')
+    } catch (e) { console.error(e); notify('error', '오류', `${TAB_LABELS[activeTab]} 저장에 실패했습니다.`) }
+    finally { setIsSubmitting(false) }
   }
 
-  const getCurrentData = () => {
-    switch (activeTab) {
-      case 'sections': return sections
-      case 'activities': return activities
-      case 'history': return history
-      case 'contact': return contacts
-      default: return []
-    }
+  const handleDelete = async () => {
+    if (!editingItem) return
+    try {
+      setIsSubmitting(true)
+      const deleteFns = { sections: deleteAboutSection, activities: deleteAboutActivity, history: deleteAboutHistoryItem, contact: deleteAboutContact }
+      await deleteFns[activeTab](editingItem.id)
+      notify('success', '삭제 완료', `${TAB_LABELS[activeTab]}이(가) 삭제되었습니다.`)
+      await fetchAllData(); setViewMode('list')
+    } catch (e) { console.error(e); notify('error', '오류', '삭제에 실패했습니다.') }
+    finally { setIsSubmitting(false) }
   }
 
-  const showNotification = (notification: {
-    show: boolean
-    type: 'success' | 'error'
-    title: string
-    message: string
-  }) => {
-    setNotification(notification)
-    // 3초 후 자동으로 사라지게 설정
-    setTimeout(() => {
-      hideNotification()
-    }, 3000)
-  }
+  if (loading) return <div className="min-h-screen bg-black flex justify-center items-center"><Loading text="소개 내용을 불러오는 중..." size="lg" /></div>
 
-  const hideNotification = () => {
-    setNotification(prev => ({ ...prev, hiding: true }))
-    // 애니메이션 후 완전히 제거
-    setTimeout(() => {
-      setNotification({ show: false, type: 'success', title: '', message: '', hiding: false })
-    }, 300)
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black">
-        <div className="flex justify-center items-center h-screen">
-          <Loading text="소개 내용을 불러오는 중..." size="lg" />
-        </div>
-      </div>
-    )
-  }
+  const formProps = { onChange: handleFormChange, onSubmit: handleSubmit, onCancel: handleCancel, isSubmitting, hasChanges, mode: viewMode as 'add' | 'edit' }
 
   return (
     <div className="min-h-screen bg-black">
-      {/* 헤더 */}
-      <div className="mb-8">
-        <Title level={1} className="text-white mb-2">소개 관리</Title>
-        <Subtitle className="text-gray-400">
-          소개 페이지의 각 섹션을 관리할 수 있습니다.
-        </Subtitle>
-      </div>
-
-      {/* 탭 네비게이션 */}
-      <div className="mb-6">
-        <div className="flex space-x-1 bg-gray-800 p-1 rounded-lg">
-          {[
-            { key: 'sections', label: '소개 섹션', icon: '📝' },
-            { key: 'activities', label: '주요 활동', icon: '🚀' },
-            { key: 'history', label: '동아리 연혁', icon: '🗓️' },
-            { key: 'contact', label: '연락처', icon: '📞' }
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key as 'sections' | 'activities' | 'history' | 'contact')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-violet-500 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 추가 버튼 */}
-      <div className="mb-6">
-        <Button onClick={openAddModal} variant="primary">
-          + 새 {activeTab === 'sections' ? '소개 섹션' : activeTab === 'activities' ? '주요 활동' : activeTab === 'history' ? '동아리 연혁' : '연락처'} 추가
-        </Button>
+      {viewMode === 'list' && (
+        <>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">소개 관리</h1>
+            <p className="text-gray-400">소개 페이지의 각 섹션을 관리할 수 있습니다.</p>
           </div>
-
-      {/* 데이터 목록 */}
-      <div className="space-y-4">
-        {getCurrentData().length === 0 ? (
-          <Card className="text-center py-12">
-            <Text variant="secondary" size="lg">
-              아직 등록된 {activeTab === 'sections' ? '소개 섹션' : activeTab === 'activities' ? '주요 활동' : activeTab === 'history' ? '동아리 연혁' : '연락처'}이 없습니다.
-            </Text>
-          </Card>
-        ) : (
-          getCurrentData().map((item: ManageableItem) => (
-            <Card key={item.id} className="p-6">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <Title level={3} className="text-white mb-2">
-                    {'title' in item ? item.title : 'label' in item ? item.label : ''}
-                  </Title>
-                  <Text variant="secondary" className="mb-2">
-                    {'content' in item ? item.content : 'description' in item ? item.description : 'value' in item ? item.value : ''}
-                  </Text>
-                  {activeTab === 'activities' && 'icon' in item && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl">{item.icon}</span>
-                      {'color' in item && (
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          item.color === 'cyan' ? 'bg-violet-500 text-white' :
-                          item.color === 'pink' ? 'bg-purple-500 text-white' :
-                          item.color === 'yellow' ? 'bg-yellow-500 text-black' :
-                          item.color === 'purple' ? 'bg-purple-500 text-white' :
-                          item.color === 'green' ? 'bg-green-500 text-white' :
-                          item.color === 'blue' ? 'bg-blue-500 text-white' :
-                          item.color === 'red' ? 'bg-red-500 text-white' :
-                          item.color === 'orange' ? 'bg-orange-500 text-white' :
-                          'bg-violet-500 text-white'
-                        }`}>
-                          {item.color}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  {activeTab === 'history' && 'year' in item && (
-                    <Text variant="muted" size="sm">
-                      {item.year}년
-                    </Text>
-                  )}
-                </div>
-                <div className="flex space-x-2">
-                  <Button onClick={() => handleEdit(item)} variant="ghost" size="sm">
-                    수정
-                  </Button>
-                  <Button onClick={() => openDeleteModal(item)} variant="ghost" size="sm">
-                    삭제
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))
-        )}
-      </div>
-
-      {/* 모달 */}
-      <Modal
-        isOpen={showModal}
-        onClose={closeModal}
-        title={editingItem ? `${activeTab === 'sections' ? '소개 섹션' : activeTab === 'activities' ? '주요 활동' : activeTab === 'history' ? '동아리 연혁' : '연락처'} 수정` : `새 ${activeTab === 'sections' ? '소개 섹션' : activeTab === 'activities' ? '주요 활동' : activeTab === 'history' ? '동아리 연혁' : '연락처'} 추가`}
-        onSubmit={handleSubmit}
-        submitText={editingItem ? '수정' : '생성'}
-        maxWidth="4xl"
-      >
-        {activeTab === 'sections' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white font-medium mb-2">제목 *</label>
-                <input
-                  type="text"
-                value={formData.title || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="섹션 제목을 입력하세요"
-                  required
-                />
-              </div>
-
-            <div>
-              <label className="block text-white font-medium mb-2">순서</label>
-              <input
-                type="number"
-                value={formData.order || 0}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="0"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-white font-medium mb-2">내용 *</label>
-              <textarea
-                value={formData.content || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                rows={6}
-                placeholder="섹션 내용을 입력하세요"
-                required
-              />
-            </div>
+          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} counts={{ sections: sections.length, activities: activities.length, history: history.length, contact: contacts.length }} />
+          <div className="mb-6">
+            <Button onClick={handleAdd} variant="primary"><Plus className="w-5 h-5 mr-2" />{TAB_LABELS[activeTab]} 추가</Button>
           </div>
-        )}
-                  
-        {activeTab === 'activities' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-              <label className="block text-white font-medium mb-2">제목 *</label>
-                    <input
-                      type="text"
-                value={formData.title || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="활동 제목을 입력하세요"
-                required
-                    />
-                  </div>
-                  
-                  <div>
-              <label className="block text-white font-medium mb-2">아이콘 *</label>
-                    <input
-                      type="text"
-                value={formData.icon || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, icon: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="🚀"
-                required
-                    />
-                  </div>
-                  
-                  <div>
-              <label className="block text-white font-medium mb-2">색상 *</label>
-              <select
-                value={formData.color || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                required
-              >
-                <option value="">색상을 선택하세요</option>
-                <option value="cyan">Violet</option>
-                <option value="pink">Purple</option>
-                <option value="yellow">Yellow</option>
-                <option value="purple">Purple</option>
-                <option value="green">Green</option>
-                <option value="blue">Blue</option>
-                <option value="red">Red</option>
-                <option value="orange">Orange</option>
-              </select>
+          {getCurrentItems().length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24">
+              <div className="w-24 h-24 rounded-full bg-violet-500/10 flex items-center justify-center mb-6"><FileText className="w-12 h-12 text-violet-400" /></div>
+              <h3 className="text-xl font-semibold text-white mb-2">아직 등록된 {TAB_LABELS[activeTab]}이(가) 없습니다</h3>
+              <p className="text-gray-500 text-sm mb-6">첫 번째 {TAB_LABELS[activeTab]}을(를) 추가해보세요</p>
+              <Button onClick={handleAdd}><Plus className="w-5 h-5 mr-2" />{TAB_LABELS[activeTab]} 추가하기</Button>
             </div>
-            
-            <div className="md:col-span-2">
-              <label className="block text-white font-medium mb-2">설명 *</label>
-              <textarea
-                value={formData.description || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                rows={4}
-                placeholder="활동 설명을 입력하세요"
-                required
-                    />
-                  </div>
-                  
-                  <div>
-              <label className="block text-white font-medium mb-2">순서</label>
-                    <input
-                type="number"
-                value={formData.order || 0}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                      className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="0"
-                    />
-                  </div>
-                </div>
-        )}
-
-        {activeTab === 'history' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-              <label className="block text-white font-medium mb-2">연도 *</label>
-              <input
-                type="number"
-                value={formData.year || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="예: 2024"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-              <label className="block text-white font-medium mb-2">제목 *</label>
-                  <input
-                type="text"
-                value={formData.title || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="연혁 제목을 입력하세요"
-                    required
-                  />
-                </div>
-            
-            <div className="md:col-span-2">
-              <label className="block text-white font-medium mb-2">설명 *</label>
-              <textarea
-                value={formData.description || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                rows={4}
-                placeholder="연혁 설명을 입력하세요"
-                    required
-                  />
-                </div>
-            
-            <div>
-              <label className="block text-white font-medium mb-2">순서</label>
-              <input
-                type="number"
-                value={formData.order || 0}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="0"
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'contact' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-white font-medium mb-2">타입 *</label>
-              <select
-                value={formData.type || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                required
-              >
-                <option value="">타입을 선택하세요</option>
-                <option value="email">Email</option>
-                <option value="github">GitHub</option>
-                <option value="instagram">Instagram</option>
-                <option value="phone">Phone</option>
-              </select>
-              </div>
-
-              <div>
-              <label className="block text-white font-medium mb-2">라벨 *</label>
-                <input
-                type="text"
-                value={formData.label || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
-                  className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="연락처 라벨을 입력하세요"
-                required
-                />
-              </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-white font-medium mb-2">값 *</label>
-                <input
-                type="text"
-                value={formData.value || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, value: e.target.value }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="연락처 값을 입력하세요"
-                required
-              />
-              </div>
-
-            <div>
-              <label className="block text-white font-medium mb-2">순서</label>
-              <input
-                type="number"
-                value={formData.order || 0}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) }))}
-                className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                placeholder="0"
-              />
-              </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeTab === 'sections' && sections.map(i => <SectionCard key={i.id} section={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
+              {activeTab === 'activities' && activities.map(i => <AboutActivityCard key={i.id} activity={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
+              {activeTab === 'history' && history.map(i => <HistoryCard key={i.id} history={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
+              {activeTab === 'contact' && contacts.map(i => <ContactCard key={i.id} contact={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
             </div>
           )}
+        </>
+      )}
 
-      </Modal>
+      {(viewMode === 'add' || viewMode === 'edit') && (
+        <>
+          {activeTab === 'sections' && <SectionForm formData={formData as SectionFormData} {...formProps} />}
+          {activeTab === 'activities' && <AboutActivityForm formData={formData as AboutActivityFormData} {...formProps} />}
+          {activeTab === 'history' && <HistoryForm formData={formData as HistoryFormData} {...formProps} />}
+          {activeTab === 'contact' && <ContactForm formData={formData as ContactFormData} {...formProps} />}
+        </>
+      )}
 
-      {/* 삭제 확인 모달 */}
-      <Modal
-        isOpen={showDeleteModal}
-        onSubmit={confirmDelete}
-        onClose={closeDeleteModal}
-        submitText = '삭제'
-        title="삭제 확인"
-      >
-        <div className="space-y-4">
-          <Text className="text-white">
-            {deletingItem && (
-              <>
-                <span className="font-semibold text-red-400">
-                  "{('title' in deletingItem ? deletingItem.title : 'label' in deletingItem ? deletingItem.label : '이 항목')}"
-                </span>
-                을(를) 삭제하시겠습니까?
-              </>
-            )}
-          </Text>
-          <Text variant="secondary" size="sm">
-            이 작업은 되돌릴 수 없습니다.
-          </Text>
-          
-        </div>
-      </Modal>
+      {viewMode === 'delete' && <DeleteConfirmView itemType={activeTab} itemTitle={getItemTitle(editingItem)} onConfirm={handleDelete} onCancel={() => setViewMode('list')} isDeleting={isSubmitting} />}
 
-      {/* 알림 */}
-      {notification.show && (
-        <div className={`fixed top-4 right-4 z-50 bg-gray-800 border ${
-            notification.type === 'success' ? 'border-green-500' : 'border-red-500'
-          } rounded-lg p-4 w-80 shadow-2xl ${
-            notification.hiding ? 'animate-slide-out-right' : 'animate-slide-in-right'
-          }`}>
-            <div className="flex items-start gap-3">
-              <div className={`w-1 h-full absolute left-0 top-0 bottom-0 rounded-l-lg ${
-                notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-              }`}></div>
-              <span className="text-2xl ml-2">
-                {notification.type === 'success' ? '✓' : '⚠️'}
-              </span>
-              <div className="flex-1">
-                <Title level={4} className={`mb-1 ${
-                  notification.type === 'success' ? 'text-green-400' : 'text-red-400'
-                }`}>
-                  {notification.title}
-                </Title>
-                <Text variant="secondary" size="sm">
-                  {notification.message}
-                </Text>
-                </div>
-              <Button onClick={hideNotification} variant="ghost" size="sm" className="hover:bg-gray-700 -mt-1">
-                ✕
-              </Button>
+      {showUnsavedDialog && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-gray-900 rounded-2xl p-6 max-w-md border border-white/10">
+            <h3 className="text-lg font-bold text-white mb-2">저장되지 않은 변경사항</h3>
+            <p className="text-gray-400 mb-6">변경사항을 저장하지 않고 나가시겠습니까?</p>
+            <div className="flex gap-3 justify-end">
+              <Button variant="ghost" onClick={() => setShowUnsavedDialog(false)}>취소</Button>
+              <Button variant="ghost" onClick={() => { setShowUnsavedDialog(false); handleSubmit() }}>저장하고 나가기</Button>
+              <Button className="bg-red-500 hover:bg-red-600" onClick={() => { setShowUnsavedDialog(false); setViewMode('list') }}>저장 안함</Button>
             </div>
-            {/* 진행 바 */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700 rounded-b-lg overflow-hidden">
-              <div className={`h-full ${
-                notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-              } animate-progress`}></div>
           </div>
         </div>
       )}
+
+      <Notification show={notification.show} type={notification.type} title={notification.title} message={notification.message} hiding={notification.hiding} onClose={() => setNotification(p => ({ ...p, show: false }))} />
     </div>
   )
 }
