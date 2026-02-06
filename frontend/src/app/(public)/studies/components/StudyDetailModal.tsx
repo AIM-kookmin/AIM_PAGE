@@ -194,7 +194,7 @@ export default function StudyDetailModal({
         </button>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto custom-scrollbar">
+        <div data-lenis-prevent className="overflow-y-auto custom-scrollbar">
           {/* Image Carousel Section */}
           <div className="relative w-full aspect-[16/9] bg-gray-800/50 overflow-hidden">
             {images.length > 0 ? (

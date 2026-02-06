@@ -126,7 +126,7 @@ export default function ActivityDetailModal({
         </button>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto custom-scrollbar">
+        <div data-lenis-prevent className="overflow-y-auto custom-scrollbar">
           {/* Hero Image Section */}
           <div className="relative w-full aspect-[16/9] bg-gray-800/50 overflow-hidden">
             {activity.image_url ? (

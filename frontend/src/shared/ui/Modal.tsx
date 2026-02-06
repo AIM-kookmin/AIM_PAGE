@@ -92,7 +92,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="overflow-y-auto flex-1 px-6 py-6">
+        <div data-lenis-prevent className="overflow-y-auto flex-1 px-6 py-6">
           {onSubmit ? (
             <form onSubmit={handleSubmit} className="space-y-6" id="modal-form">
               {children}
