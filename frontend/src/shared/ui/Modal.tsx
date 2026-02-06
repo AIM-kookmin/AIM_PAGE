@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
   const modalContent = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-start justify-center p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-center justify-center p-4"
       onClick={handleBackgroundClick}
       style={{ backdropFilter: 'blur(8px) saturate(150%)' }}
     >
@@ -79,8 +79,8 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} my-auto flex flex-col`}
-        style={{ maxHeight: 'calc(100vh - 2rem)' }}
+        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} flex flex-col`}
+        style={{ maxHeight: '90vh', height: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
