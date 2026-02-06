@@ -80,46 +80,74 @@ export default function RecruitPage() {
 
     const ctx = gsap.context(() => {
       gsap.fromTo(heroRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
 
       if (infoRef.current) {
         gsap.fromTo(infoRef.current,
-          { x: '-100vw', opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            x: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: infoRef.current, start: 'top bottom', end: 'top 30%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: infoRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
 
       if (detailRef.current) {
         gsap.fromTo(detailRef.current,
-          { x: '100vw', opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            x: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: detailRef.current, start: 'top bottom', end: 'top 30%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: detailRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
 
       if (ctaRef.current) {
         gsap.fromTo(ctaRef.current,
-          { scale: 0.8, opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            scale: 1, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: ctaRef.current, start: 'top bottom', end: 'top 40%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
 
       if (faqRef.current) {
         gsap.fromTo(faqRef.current,
-          { y: 100, opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            y: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: faqRef.current, start: 'top bottom', end: 'top 50%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: faqRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }

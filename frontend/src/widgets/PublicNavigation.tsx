@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 
 export default function PublicNavigation() {
   const { logout, isAuthenticated, isAdmin } = useAuth()

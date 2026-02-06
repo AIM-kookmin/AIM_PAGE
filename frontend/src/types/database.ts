@@ -15,6 +15,7 @@ export interface Activity {
   description: string | null
   image_url: string | null
   gallery_urls: string[] | null // JSON array of image URLs
+  link: string | null
   is_active: boolean
   order: number
   location: string | null
@@ -31,6 +32,7 @@ export interface ActivityInsert {
   description?: string
   image_url?: string
   gallery_urls?: string[]
+  link?: string
   is_active?: boolean
   order?: number
   location?: string
@@ -45,6 +47,7 @@ export interface ActivityUpdate {
   description?: string
   image_url?: string
   gallery_urls?: string[]
+  link?: string
   is_active?: boolean
   order?: number
   location?: string
@@ -60,7 +63,6 @@ export interface Study {
   id: string
   title: string
   description: string | null
-  category: 'ml' | 'dl' | 'algorithm' | 'paper' | 'project' | 'general'
   status: 'recruiting' | 'active' | 'completed' | 'cancelled'
   visibility: 'public' | 'private' | 'members_only'
   start_date: string | null
@@ -76,6 +78,10 @@ export interface Study {
   prerequisites: string | null
   order: number
   created_by: string | null
+  images: string[] | null // Array of image URLs
+  participants: string[] | null // Array of member names
+  link: string | null // External link
+  content: string | null // Study content/description
   created_at: string
   updated_at: string
 }
@@ -83,7 +89,6 @@ export interface Study {
 export interface StudyInsert {
   title: string
   description?: string
-  category?: Study['category']
   status?: Study['status']
   visibility?: Study['visibility']
   start_date?: string
@@ -98,12 +103,15 @@ export interface StudyInsert {
   prerequisites?: string
   order?: number
   created_by?: string
+  images?: string[]
+  participants?: string[]
+  link?: string
+  content?: string
 }
 
 export interface StudyUpdate {
   title?: string
   description?: string
-  category?: Study['category']
   status?: Study['status']
   visibility?: Study['visibility']
   start_date?: string
@@ -117,6 +125,10 @@ export interface StudyUpdate {
   syllabus?: string
   prerequisites?: string
   order?: number
+  images?: string[]
+  participants?: string[]
+  link?: string
+  content?: string
 }
 
 // ============================================================================

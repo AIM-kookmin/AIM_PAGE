@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Calendar } from 'lucide-react'
+import { Calendar, Image as ImageIcon } from 'lucide-react'
 import type { Activity } from '@/types/supabase'
+import ActivityDetailModal from './components/ActivityDetailModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -16,6 +17,7 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
   const mainRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -29,16 +31,23 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(heroRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
 
       if (gridRef.current) {
         gsap.fromTo(gridRef.current,
-          { y: 100, opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            y: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: gridRef.current, start: 'top bottom', end: 'top 40%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
@@ -92,32 +101,53 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activities.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-medium">
-                        {activity.category}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs text-gray-500">
-                        <Calendar className="w-3 h-3" />
-                        {formatDate(activity.date)}
-                      </span>
-                    </div>
+                {activities.map((activity) => {
+                  return (
+                    <button
+                      key={activity.id}
+                      onClick={() => setSelectedActivity(activity)}
+                      className="group rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden flex flex-col text-left cursor-pointer"
+                    >
+                      {/* Image */}
+                      {activity.image_url ? (
+                        <div className="relative w-full h-48 bg-white/[0.02] overflow-hidden">
+                          <img
+                            src={activity.image_url}
+                            alt={activity.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      ) : (
+                        <div className="relative w-full h-48 bg-white/[0.02] flex items-center justify-center">
+                          <ImageIcon className="w-12 h-12 text-gray-700" />
+                        </div>
+                      )}
 
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-violet-300 transition-colors">
-                      {activity.title}
-                    </h3>
+                      {/* Content */}
+                      <div className="p-6 flex-1 flex flex-col">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-medium">
+                            {activity.category}
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(activity.date)}
+                          </span>
+                        </div>
 
-                    {activity.description && (
-                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
-                        {activity.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-violet-300 transition-colors">
+                          {activity.title}
+                        </h3>
+
+                        {activity.description && (
+                          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                            {activity.description}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -130,6 +160,13 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
           <p className="text-gray-600 text-sm">&copy; 2025 AIM (AI Monsters). All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Activity Detail Modal */}
+      <ActivityDetailModal
+        activity={selectedActivity}
+        isOpen={!!selectedActivity}
+        onClose={() => setSelectedActivity(null)}
+      />
     </div>
   )
 }

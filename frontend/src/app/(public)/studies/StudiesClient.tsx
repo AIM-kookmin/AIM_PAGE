@@ -1,55 +1,44 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Calendar, User } from 'lucide-react'
-import type { StudyPostWithAuthor } from '@/types/supabase'
+import { Calendar, Users } from 'lucide-react'
+import type { Study } from '@/types/database'
+import StudyDetailModal from './components/StudyDetailModal'
 
 gsap.registerPlugin(ScrollTrigger)
 
 interface StudiesClientProps {
-  posts: StudyPostWithAuthor[]
+  studies: Study[]
 }
 
-export default function StudiesClient({ posts }: StudiesClientProps) {
+export default function StudiesClient({ studies }: StudiesClientProps) {
   const mainRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
-  const gridRef = useRef<HTMLDivElement>(null)
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
-
-  const getExcerpt = (content: string, maxLength: number = 150) => {
-    const text = content
-      .replace(/[#*`\[\]()]/g, '')
-      .replace(/\n/g, ' ')
-      .trim()
-
-    if (text.length <= maxLength) return text
-    return text.substring(0, maxLength) + '...'
-  }
+  const listRef = useRef<HTMLDivElement>(null)
+  const [selectedStudy, setSelectedStudy] = useState<Study | null>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(heroRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
 
-      if (gridRef.current) {
-        gsap.fromTo(gridRef.current,
-          { y: 100, opacity: 0 },
+      if (listRef.current) {
+        gsap.fromTo(listRef.current,
+          { y: 40, opacity: 0 },
           {
-            y: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: gridRef.current, start: 'top bottom', end: 'top 40%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: listRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
@@ -94,73 +83,21 @@ export default function StudiesClient({ posts }: StudiesClientProps) {
           </div>
         </section>
 
-        {/* Studies Grid */}
-        <section ref={gridRef} className="py-24 px-4">
-          <div className="max-w-6xl mx-auto">
-            {posts.length === 0 ? (
+        {/* Studies List */}
+        <section ref={listRef} className="py-24 px-4">
+          <div className="max-w-5xl mx-auto">
+            {studies.length === 0 ? (
               <div className="text-center p-12 rounded-2xl bg-white/[0.02] border border-white/5">
-                <p className="text-gray-500 text-lg">등록된 스터디 포스트가 없습니다.</p>
+                <p className="text-gray-500 text-lg">등록된 스터디가 없습니다.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/studies/${post.id}`}
-                    className="group"
-                  >
-                    <div className="h-full rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300 overflow-hidden">
-                      {/* Cover Image */}
-                      <div className="aspect-video bg-white/[0.02] overflow-hidden">
-                        {post.cover_url ? (
-                          <img
-                            src={post.cover_url}
-                            alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-violet-500/20 text-4xl font-bold">AIM</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="p-6">
-                        {/* Tags */}
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {post.tags.slice(0, 3).map((tagItem) => (
-                              <span
-                                key={tagItem.tag.id}
-                                className="px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs"
-                              >
-                                #{tagItem.tag.name}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <h3 className="text-lg font-bold text-white mb-3 line-clamp-2 group-hover:text-violet-300 transition-colors">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
-                          {getExcerpt(post.content_md)}
-                        </p>
-
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                          <span className="flex items-center gap-2 text-sm text-gray-400">
-                            <User className="w-3 h-3" />
-                            {post.author?.display_name || 'Unknown'}
-                          </span>
-                          <span className="flex items-center gap-1 text-xs text-gray-500">
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(post.created_at)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+              <div className="space-y-4">
+                {studies.map((study) => (
+                  <StudyListItem
+                    key={study.id}
+                    study={study}
+                    onClick={() => setSelectedStudy(study)}
+                  />
                 ))}
               </div>
             )}
@@ -174,6 +111,119 @@ export default function StudiesClient({ posts }: StudiesClientProps) {
           <p className="text-gray-600 text-sm">&copy; 2025 AIM (AI Monsters). All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Study Detail Modal */}
+      <StudyDetailModal
+        study={selectedStudy}
+        isOpen={!!selectedStudy}
+        onClose={() => setSelectedStudy(null)}
+      />
     </div>
+  )
+}
+
+interface StudyListItemProps {
+  study: Study
+  onClick: () => void
+}
+
+function StudyListItem({ study, onClick }: StudyListItemProps) {
+  const getStatusBadge = (status: Study['status']) => {
+    const badges = {
+      recruiting: { text: '모집중', color: 'bg-green-500/10 border-green-500/20 text-green-400' },
+      active: { text: '진행중', color: 'bg-blue-500/10 border-blue-500/20 text-blue-400' },
+      completed: { text: '완료', color: 'bg-gray-500/10 border-gray-500/20 text-gray-400' },
+      cancelled: { text: '취소', color: 'bg-red-500/10 border-red-500/20 text-red-400' },
+    }
+    return badges[status]
+  }
+
+  const getDifficultyBadge = (difficulty: Study['difficulty']) => {
+    const badges = {
+      beginner: { text: '초급', color: 'bg-green-500/10 border-green-500/20 text-green-400' },
+      intermediate: { text: '중급', color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' },
+      advanced: { text: '고급', color: 'bg-red-500/10 border-red-500/20 text-red-400' },
+    }
+    return badges[difficulty]
+  }
+
+  const formatDateRange = (startDate: string | null, endDate: string | null) => {
+    if (!startDate && !endDate) return null
+
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'short',
+      })
+    }
+
+    if (startDate && endDate) {
+      return `${formatDate(startDate)} - ${formatDate(endDate)}`
+    }
+    if (startDate) {
+      return `${formatDate(startDate)} -`
+    }
+    return formatDate(endDate!)
+  }
+
+  const images = study.images && study.images.length > 0 ? study.images : [study.cover_url].filter((url): url is string => Boolean(url))
+  const thumbnail = images.length > 0 ? images[0] : null
+  const statusBadge = getStatusBadge(study.status)
+  const difficultyBadge = getDifficultyBadge(study.difficulty)
+  const dateRange = formatDateRange(study.start_date, study.end_date)
+  const participantCount = study.participants ? study.participants.length : 0
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-6 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group text-left"
+    >
+      {/* Thumbnail */}
+      <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-white/5 border border-white/5">
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={study.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-violet-500/20 text-xl font-bold">AIM</span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-lg md:text-xl font-bold text-white truncate group-hover:text-violet-300 transition-colors mb-1">
+          {study.title}
+        </h3>
+        <div className="flex items-center gap-3 flex-wrap text-sm text-gray-400">
+          {dateRange && (
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              {dateRange}
+            </span>
+          )}
+          {participantCount > 0 && (
+            <span className="flex items-center gap-1">
+              <Users className="w-3.5 h-3.5" />
+              {participantCount}명
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Badges */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className={`px-2.5 py-1 rounded-full border text-xs font-medium ${statusBadge.color}`}>
+          {statusBadge.text}
+        </span>
+        <span className={`px-2.5 py-1 rounded-full border text-xs font-medium ${difficultyBadge.color}`}>
+          {difficultyBadge.text}
+        </span>
+      </div>
+    </button>
   )
 }

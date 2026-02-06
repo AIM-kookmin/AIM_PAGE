@@ -65,74 +65,74 @@ export default function AboutClient({
       // Hero 애니메이션
       gsap.fromTo(
         heroRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
 
-      // Sections 애니메이션
+      // Sections 애니메이션 - 부드러운 페이드 인
       gsap.fromTo(
         sectionsRef.current,
-        { x: '-100vw', opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: sectionsRef.current,
-            start: 'top bottom',
-            end: 'top 30%',
-            scrub: true,
-          },
-        }
-      )
-
-      // Activities 애니메이션
-      gsap.fromTo(
-        activitiesRef.current,
-        { x: '100vw', opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: activitiesRef.current,
-            start: 'top bottom',
-            end: 'top 30%',
-            scrub: true,
-          },
-        }
-      )
-
-      // History 애니메이션
-      gsap.fromTo(
-        historyRef.current,
-        { y: 100, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
           y: 0,
           opacity: 1,
+          duration: 0.8,
           ease: 'power2.out',
           scrollTrigger: {
-            trigger: historyRef.current,
-            start: 'top bottom',
-            end: 'top 40%',
-            scrub: true,
+            trigger: sectionsRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
           },
         }
       )
 
-      // Contact 애니메이션
+      // Activities 애니메이션 - 부드러운 페이드 인
+      gsap.fromTo(
+        activitiesRef.current,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: activitiesRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          },
+        }
+      )
+
+      // History 애니메이션 - 부드러운 페이드 인
+      gsap.fromTo(
+        historyRef.current,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: historyRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          },
+        }
+      )
+
+      // Contact 애니메이션 - 부드러운 페이드 인
       gsap.fromTo(
         contactRef.current,
-        { scale: 0.8, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
-          scale: 1,
+          y: 0,
           opacity: 1,
+          duration: 0.8,
           ease: 'power2.out',
           scrollTrigger: {
             trigger: contactRef.current,
-            start: 'top bottom',
-            end: 'top 50%',
-            scrub: true,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
           },
         }
       )

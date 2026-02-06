@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Check, User, GraduationCap, Building, Hash } from 'lucide-react'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 import { Button, Loading } from '@/shared/ui'
 
@@ -12,7 +12,6 @@ interface FormData {
   displayName: string
   studentId: string
   department: string
-  year: string
   generation: string
   bio: string
 }
@@ -27,7 +26,6 @@ export default function RegisterPage() {
     displayName: '',
     studentId: '',
     department: '',
-    year: '',
     generation: '',
     bio: ''
   })
@@ -105,7 +103,6 @@ export default function RegisterPage() {
           display_name: formData.displayName,
           student_id: formData.studentId,
           department: formData.department,
-          year: formData.year,
           generation: formData.generation ? parseInt(formData.generation) : null,
           bio: formData.bio,
           status: 'pending',
@@ -265,44 +262,21 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="year" className="block text-sm font-medium text-white mb-1">
-                      학년 *
-                    </label>
-                    <select
-                      id="year"
-                      name="year"
-                      required
-                      value={formData.year}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
-                    >
-                      <option value="">선택</option>
-                      <option value="1학년">1학년</option>
-                      <option value="2학년">2학년</option>
-                      <option value="3학년">3학년</option>
-                      <option value="4학년">4학년</option>
-                      <option value="대학원생">대학원생</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="generation" className="block text-sm font-medium text-white mb-1">
-                      기수 *
-                    </label>
-                    <input
-                      id="generation"
-                      name="generation"
-                      type="number"
-                      required
-                      min="1"
-                      value={formData.generation}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
-                      placeholder="1"
-                    />
-                  </div>
+                <div>
+                  <label htmlFor="generation" className="block text-sm font-medium text-white mb-1">
+                    기수 *
+                  </label>
+                  <input
+                    id="generation"
+                    name="generation"
+                    type="number"
+                    required
+                    min="1"
+                    value={formData.generation}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
+                    placeholder="1"
+                  />
                 </div>
 
                 <div>

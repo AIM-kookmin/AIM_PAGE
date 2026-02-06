@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Mail, Lock } from 'lucide-react'
 import { APP_NAME } from '@/lib/config'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 
 export default function LoginPage() {

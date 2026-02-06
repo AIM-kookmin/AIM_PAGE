@@ -39,7 +39,6 @@ const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile 
             <p className="text-violet-400/80">{member.generation}기</p>
           )}
           {member.department && <p>{member.department}</p>}
-          {member.year && <p>{member.year}</p>}
         </div>
 
         {/* 소개 */}
@@ -87,36 +86,57 @@ function MembersClient({ executives, regularMembers }: MembersClientProps) {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(heroRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
       )
 
       if (executivesRef.current) {
         gsap.fromTo(executivesRef.current,
-          { x: '-100vw', opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            x: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: executivesRef.current, start: 'top bottom', end: 'top 30%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: executivesRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
 
       if (membersRef.current) {
         gsap.fromTo(membersRef.current,
-          { x: '100vw', opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            x: 0, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: membersRef.current, start: 'top bottom', end: 'top 30%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: membersRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }
 
       if (ctaRef.current) {
         gsap.fromTo(ctaRef.current,
-          { scale: 0.8, opacity: 0 },
+          { y: 40, opacity: 0 },
           {
-            scale: 1, opacity: 1, ease: 'power2.out',
-            scrollTrigger: { trigger: ctaRef.current, start: 'top bottom', end: 'top 50%', scrub: true }
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
           }
         )
       }

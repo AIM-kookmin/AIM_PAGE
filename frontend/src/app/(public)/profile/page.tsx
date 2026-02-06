@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, Key, Save, ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
 import { Button, Card, Text, Title, Subtitle, Loading } from '@/shared/ui'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 import { getMyProfile, updateMemberProfile } from '@/shared/api/supabase'
 import { APP_NAME } from '@/lib/config'
@@ -14,7 +14,6 @@ interface ProfileData {
   studentId: string
   position: string
   department: string
-  year: string
   generation: number
   bio: string
   isPublic: boolean
@@ -39,7 +38,6 @@ export default function ProfilePage() {
     studentId: '',
     position: '',
     department: '',
-    year: '',
     generation: 0,
     bio: '',
     isPublic: true
@@ -90,7 +88,6 @@ export default function ProfilePage() {
           studentId: profile.student_id || '',
           position: profile.position || '',
           department: profile.department || '',
-          year: profile.year || '',
           generation: profile.generation || 0,
           bio: profile.bio || '',
           isPublic: profile.is_public ?? true
@@ -154,7 +151,6 @@ export default function ProfilePage() {
         student_id: profileData.studentId,
         position: profileData.position,
         department: profileData.department,
-        year: profileData.year,
         generation: profileData.generation,
         bio: profileData.bio,
         is_public: profileData.isPublic
@@ -336,19 +332,6 @@ export default function ProfilePage() {
                     onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
                     className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                     placeholder="소프트웨어학부 등"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    학년
-                  </label>
-                  <input
-                    type="text"
-                    value={profileData.year}
-                    onChange={(e) => setProfileData({ ...profileData, year: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
-                    placeholder="1학년, 2학년 등"
                   />
                 </div>
 

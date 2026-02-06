@@ -75,6 +75,14 @@ npm start
 
 # Linting
 npm run lint
+
+# Type checking
+npm run type-check
+
+# Testing
+npm run test                 # Run all tests
+npm run test:watch           # Run tests in watch mode
+npm run test:coverage        # Run tests with coverage report
 ```
 
 ## Environment Variables
@@ -87,6 +95,28 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=[ANON_KEY]
 ```
 
 **Note:** Different Supabase projects for dev and prod environments.
+
+## Code Quality & Git Hooks
+
+The project uses Husky for Git hooks and lint-staged for pre-commit checks:
+
+**Pre-commit checks (automatic):**
+- ESLint auto-fix on staged TypeScript/JavaScript files
+- TypeScript type checking
+- Runs from `frontend/` directory
+
+**Manual checks:**
+```bash
+cd frontend
+npm run lint           # ESLint check
+npm run type-check     # TypeScript validation
+npm run test           # Run Jest tests
+```
+
+Jest is configured with:
+- Test files: `**/__tests__/**/*` or `*.{spec,test}.{js,jsx,ts,tsx}`
+- Coverage threshold: 50% (branches, functions, lines, statements)
+- Path alias: `@/` maps to `src/`
 
 ## Architecture: Feature-Sliced Design (FSD)
 
