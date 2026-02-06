@@ -72,10 +72,10 @@ CREATE TRIGGER calculate_study_post_read_time
 CREATE OR REPLACE FUNCTION public.set_published_at()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW.status = 'published' THEN
-    IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' AND OLD.status != 'published') THEN
-      NEW.published_at := NOW();
-    END IF;
+  -- Only set published_at if status is 'published' AND published_at is NULL
+  -- This preserves manually set or existing published_at values
+  IF NEW.status = 'published' AND NEW.published_at IS NULL THEN
+    NEW.published_at := NOW();
   END IF;
   RETURN NEW;
 END;
