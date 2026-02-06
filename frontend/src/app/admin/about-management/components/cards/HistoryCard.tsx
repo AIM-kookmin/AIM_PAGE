@@ -1,6 +1,7 @@
 'use client'
 
 import { Calendar, Edit, Trash2, Eye, EyeOff } from 'lucide-react'
+import DragHandle from '@/shared/ui/DragHandle'
 import type { AboutHistory } from '@/types/supabase'
 
 interface HistoryCardProps {
@@ -15,17 +16,17 @@ export default function HistoryCard({
   onDelete
 }: HistoryCardProps) {
   return (
-    <div className="group rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300 p-6 hover:shadow-glow-sm hover:-translate-y-1">
-      {/* Header: Year and Order */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-1">
-          <Calendar className="w-5 h-5 text-violet-400" />
-          <span className="text-4xl font-bold text-violet-400">
-            {history.year}
-          </span>
-        </div>
-        <span className="px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-medium">
-          순서: {history.order}
+    <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300 p-6 hover:shadow-glow-sm hover:-translate-y-1">
+      {/* Drag Handle - Top Left, Hidden by Default, Shown on Hover */}
+      <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        <DragHandle />
+      </div>
+
+      {/* Header: Year (Prominent for Grouping Context) */}
+      <div className="flex items-center gap-1 mb-4">
+        <Calendar className="w-5 h-5 text-violet-400" />
+        <span className="text-4xl font-bold text-violet-400">
+          {history.year}
         </span>
       </div>
 

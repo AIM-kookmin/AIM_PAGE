@@ -2,6 +2,7 @@
 
 import { AboutActivity } from '@/types/supabase'
 import { Pencil, Trash2 } from 'lucide-react'
+import DragHandle from '@/shared/ui/DragHandle'
 
 interface AboutActivityCardProps {
   activity: AboutActivity
@@ -27,25 +28,24 @@ export default function AboutActivityCard({ activity, onEdit, onDelete }: AboutA
   const colorClass = colorClasses[colorKey] || colorClasses.violet
 
   return (
-    <div className="group rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1">
+    <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1">
+      {/* Drag Handle */}
+      <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity">
+        <DragHandle />
+      </div>
       {/* Header with Order Badge */}
       <div className="flex items-start justify-between mb-4">
         <div className={`flex items-center justify-center w-16 h-16 rounded-2xl ${colorClass} border`}>
           <span className="text-4xl">{activity.icon}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-white/60">
-            #{activity.order}
-          </span>
-          <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
-            activity.is_active
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-              : 'bg-white/5 text-white/40 border border-white/10'
-          }`}>
-            {activity.is_active ? 'Active' : 'Inactive'}
-          </span>
-        </div>
+        <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
+          activity.is_active
+            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+            : 'bg-white/5 text-white/40 border border-white/10'
+        }`}>
+          {activity.is_active ? 'Active' : 'Inactive'}
+        </span>
       </div>
 
       {/* Content */}

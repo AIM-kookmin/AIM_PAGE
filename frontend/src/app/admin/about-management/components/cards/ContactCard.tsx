@@ -1,6 +1,7 @@
 'use client'
 
 import { Edit2, Trash2, Eye, EyeOff, Mail, Github, Instagram, Phone } from 'lucide-react'
+import DragHandle from '@/shared/ui/DragHandle'
 import type { AboutContact } from '@/types/supabase'
 
 interface ContactCardProps {
@@ -41,9 +42,9 @@ export default function ContactCard({
 
   return (
     <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 overflow-hidden hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1">
-      {/* Order Badge - Top Right */}
-      <div className="absolute top-4 right-4 px-2 py-1 rounded-lg bg-violet-500/10 text-violet-400 text-xs font-medium">
-        #{contact.order}
+      {/* Drag Handle - Top Left */}
+      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <DragHandle />
       </div>
 
       {/* Icon & Label */}

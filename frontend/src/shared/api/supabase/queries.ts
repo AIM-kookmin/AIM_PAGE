@@ -26,6 +26,11 @@ type AboutContactUpdate = Tables['about_contacts']['Update']
 type ActivityInsert = Tables['activities']['Insert']
 type ActivityUpdate = Tables['activities']['Update']
 
+interface OrderUpdate {
+  id: string
+  order: number
+}
+
 export async function getAboutSections(): Promise<AboutSection[]> {
   const supabase = createClient()
   const { data, error } = await supabase
@@ -726,5 +731,77 @@ export async function deleteStudy(id: string): Promise<void> {
     .delete()
     .eq('id', id)
 
+  if (error) throw error
+}
+
+// ============================================================================
+// Batch Order Updates
+// ============================================================================
+
+export async function updateAboutSectionsOrder(
+  updates: OrderUpdate[]
+): Promise<void> {
+  const supabase = createClient()
+
+  const promises = updates.map(({ id, order }) =>
+    supabase
+      .from('about_sections')
+      .update({ order, updated_at: new Date().toISOString() })
+      .eq('id', id)
+  )
+
+  const results = await Promise.all(promises)
+  const error = results.find(r => r.error)?.error
+  if (error) throw error
+}
+
+export async function updateAboutActivitiesOrder(
+  updates: OrderUpdate[]
+): Promise<void> {
+  const supabase = createClient()
+
+  const promises = updates.map(({ id, order }) =>
+    supabase
+      .from('about_activities')
+      .update({ order, updated_at: new Date().toISOString() })
+      .eq('id', id)
+  )
+
+  const results = await Promise.all(promises)
+  const error = results.find(r => r.error)?.error
+  if (error) throw error
+}
+
+export async function updateAboutHistoryOrder(
+  updates: OrderUpdate[]
+): Promise<void> {
+  const supabase = createClient()
+
+  const promises = updates.map(({ id, order }) =>
+    supabase
+      .from('about_history')
+      .update({ order, updated_at: new Date().toISOString() })
+      .eq('id', id)
+  )
+
+  const results = await Promise.all(promises)
+  const error = results.find(r => r.error)?.error
+  if (error) throw error
+}
+
+export async function updateAboutContactsOrder(
+  updates: OrderUpdate[]
+): Promise<void> {
+  const supabase = createClient()
+
+  const promises = updates.map(({ id, order }) =>
+    supabase
+      .from('about_contacts')
+      .update({ order, updated_at: new Date().toISOString() })
+      .eq('id', id)
+  )
+
+  const results = await Promise.all(promises)
+  const error = results.find(r => r.error)?.error
   if (error) throw error
 }

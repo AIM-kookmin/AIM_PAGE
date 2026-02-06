@@ -9,6 +9,7 @@ import {
   getAllAboutActivities, createAboutActivity, updateAboutActivity, deleteAboutActivity,
   getAllAboutHistory, createAboutHistoryItem, updateAboutHistoryItem, deleteAboutHistoryItem,
   getAllAboutContacts, createAboutContact, updateAboutContact, deleteAboutContact,
+  updateAboutSectionsOrder, updateAboutActivitiesOrder, updateAboutHistoryOrder, updateAboutContactsOrder,
 } from '@/shared/api/supabase'
 import type { AboutSection, AboutActivity, AboutHistory, AboutContact } from '@/types/supabase'
 import { TabType, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormData, ContactFormData } from './types'
@@ -16,25 +17,27 @@ import Notification from './components/Notification'
 import TabNavigation from './components/TabNavigation'
 import SectionCard from './components/cards/SectionCard'
 import AboutActivityCard from './components/cards/AboutActivityCard'
-import HistoryCard from './components/cards/HistoryCard'
 import ContactCard from './components/cards/ContactCard'
 import SectionForm from './components/forms/SectionForm'
 import AboutActivityForm from './components/forms/AboutActivityForm'
 import HistoryForm from './components/forms/HistoryForm'
 import ContactForm from './components/forms/ContactForm'
 import DeleteConfirmView from './components/DeleteConfirmView'
+import ReorderableList from './components/ReorderableList'
+import ReorderableHistoryList from './components/ReorderableHistoryList'
+import useReorderWithSave from './hooks/useReorderWithSave'
 
 type FormData = SectionFormData | AboutActivityFormData | HistoryFormData | ContactFormData
 type DataItem = AboutSection | AboutActivity | AboutHistory | AboutContact
 
 const TAB_LABELS: Record<TabType, string> = { sections: '섹션', activities: '활동', history: '연혁', contact: '연락처' }
 
-const getEmptyFormData = (tab: TabType): FormData => {
-  const base = { order: 0 }
+const getEmptyFormData = (tab: TabType, maxOrder: number): FormData => {
+  const base = { order: maxOrder + 1 }
   switch (tab) {
     case 'sections': return { ...base, title: '', content: '' }
     case 'activities': return { ...base, title: '', description: '', icon: '', color: '' }
-    case 'history': return { ...base, year: new Date().getFullYear(), title: '', description: '' }
+    case 'history': return { year: new Date().getFullYear(), title: '', description: '' }
     case 'contact': return { ...base, type: '', label: '', value: '' }
   }
 }
@@ -44,7 +47,7 @@ const itemToFormData = (tab: TabType, item: DataItem): FormData => {
   switch (tab) {
     case 'sections': { const i = item as AboutSection; return { ...base, title: i.title, content: i.content } }
     case 'activities': { const i = item as AboutActivity; return { ...base, title: i.title, description: i.description, icon: i.icon, color: i.color } }
-    case 'history': { const i = item as AboutHistory; return { ...base, year: i.year, title: i.title, description: i.description } }
+    case 'history': { const i = item as AboutHistory; return { year: i.year, title: i.title, description: i.description } }
     case 'contact': { const i = item as AboutContact; return { ...base, type: i.type, label: i.label, value: i.value } }
   }
 }
@@ -57,12 +60,62 @@ export default function AboutManagementPage() {
   const [history, setHistory] = useState<AboutHistory[]>([])
   const [contacts, setContacts] = useState<AboutContact[]>([])
   const [editingItem, setEditingItem] = useState<DataItem | null>(null)
-  const [formData, setFormData] = useState<FormData>(getEmptyFormData('sections'))
-  const [initialFormData, setInitialFormData] = useState<FormData>(getEmptyFormData('sections'))
+  const [formData, setFormData] = useState<FormData>(getEmptyFormData('sections', 0))
+  const [initialFormData, setInitialFormData] = useState<FormData>(getEmptyFormData('sections', 0))
   const [loading, setLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notification, setNotification] = useState<{ show: boolean; type: 'success' | 'error'; title: string; message: string; hiding: boolean }>({ show: false, type: 'success', title: '', message: '', hiding: false })
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
+
+  // Reorder hooks for each tab
+  const sectionsReorder = useReorderWithSave({
+    initialItems: sections,
+    onSave: async (updates: AboutSection[]) => {
+      await updateAboutSectionsOrder(updates)
+      await fetchAllData()
+    },
+  })
+
+  const activitiesReorder = useReorderWithSave({
+    initialItems: activities,
+    onSave: async (updates: AboutActivity[]) => {
+      await updateAboutActivitiesOrder(updates)
+      await fetchAllData()
+    },
+  })
+
+  const historyReorder = useReorderWithSave({
+    initialItems: history,
+    onSave: async (updates: AboutHistory[]) => {
+      await updateAboutHistoryOrder(updates)
+      await fetchAllData()
+    },
+  })
+
+  const contactsReorder = useReorderWithSave({
+    initialItems: contacts,
+    onSave: async (updates: AboutContact[]) => {
+      await updateAboutContactsOrder(updates)
+      await fetchAllData()
+    },
+  })
+
+  // Update reorder hooks when data changes
+  useEffect(() => {
+    sectionsReorder.setItems(sections)
+  }, [sections])
+
+  useEffect(() => {
+    activitiesReorder.setItems(activities)
+  }, [activities])
+
+  useEffect(() => {
+    historyReorder.setItems(history)
+  }, [history])
+
+  useEffect(() => {
+    contactsReorder.setItems(contacts)
+  }, [contacts])
 
   const hasChanges = useMemo(() => JSON.stringify(formData) !== JSON.stringify(initialFormData), [formData, initialFormData])
   const dataMap = { sections, activities, history, contact: contacts }
@@ -85,7 +138,12 @@ export default function AboutManagementPage() {
     setTimeout(() => { setNotification(p => ({ ...p, hiding: true })); setTimeout(() => setNotification({ show: false, type: type, title: '', message: '', hiding: false }), 300) }, 3000)
   }
 
-  const handleAdd = () => { const d = getEmptyFormData(activeTab); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
+  const getMaxOrder = () => {
+    const items = getCurrentItems()
+    return items.length > 0 ? Math.max(...items.map(i => i.order)) : -1
+  }
+
+  const handleAdd = () => { const d = getEmptyFormData(activeTab, getMaxOrder()); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
   const handleEdit = (item: DataItem) => { const d = itemToFormData(activeTab, item); setEditingItem(item); setFormData(d); setInitialFormData(d); setViewMode('edit') }
   const handleDeleteClick = (item: DataItem) => { setEditingItem(item); setViewMode('delete') }
   const handleFormChange = (field: string, value: string | number) => setFormData(p => ({ ...p, [field]: value }))
@@ -156,12 +214,59 @@ export default function AboutManagementPage() {
               <Button onClick={handleAdd}><Plus className="w-5 h-5 mr-2" />{TAB_LABELS[activeTab]} 추가하기</Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {activeTab === 'sections' && sections.map(i => <SectionCard key={i.id} section={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
-              {activeTab === 'activities' && activities.map(i => <AboutActivityCard key={i.id} activity={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
-              {activeTab === 'history' && history.map(i => <HistoryCard key={i.id} history={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
-              {activeTab === 'contact' && contacts.map(i => <ContactCard key={i.id} contact={i} onEdit={() => handleEdit(i)} onDelete={() => handleDeleteClick(i)} />)}
-            </div>
+            <>
+              {activeTab === 'sections' && (
+                <ReorderableList
+                  items={sectionsReorder.items}
+                  onReorder={sectionsReorder.handleReorder}
+                  saveStatus={sectionsReorder.saveStatus}
+                  renderItem={(item) => (
+                    <SectionCard
+                      section={item}
+                      onEdit={() => handleEdit(item)}
+                      onDelete={() => handleDeleteClick(item)}
+                    />
+                  )}
+                />
+              )}
+              {activeTab === 'activities' && (
+                <ReorderableList
+                  items={activitiesReorder.items}
+                  onReorder={activitiesReorder.handleReorder}
+                  saveStatus={activitiesReorder.saveStatus}
+                  renderItem={(item) => (
+                    <AboutActivityCard
+                      activity={item}
+                      onEdit={() => handleEdit(item)}
+                      onDelete={() => handleDeleteClick(item)}
+                    />
+                  )}
+                />
+              )}
+              {activeTab === 'history' && (
+                <ReorderableHistoryList
+                  items={historyReorder.items}
+                  onReorder={historyReorder.handleReorder}
+                  onEdit={handleEdit}
+                  onDelete={handleDeleteClick}
+                  saveStatus={historyReorder.saveStatus}
+                />
+              )}
+              {activeTab === 'contact' && (
+                <ReorderableList
+                  items={contactsReorder.items}
+                  onReorder={contactsReorder.handleReorder}
+                  saveStatus={contactsReorder.saveStatus}
+                  renderItem={(item) => (
+                    <ContactCard
+                      contact={item}
+                      onEdit={() => handleEdit(item)}
+                      onDelete={() => handleDeleteClick(item)}
+                    />
+                  )}
+                />
+              )}
+            </>
           )}
         </>
       )}

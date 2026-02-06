@@ -99,10 +99,6 @@ export default function ContactForm({
       alert(getValueErrorMessage(formData.type))
       return
     }
-    if (formData.order < 0) {
-      alert('순서는 0 이상이어야 합니다.')
-      return
-    }
 
     onSubmit()
   }
@@ -225,24 +221,6 @@ export default function ContactForm({
                     {getValueErrorMessage(formData.type)}
                   </div>
                 )}
-            </div>
-          </div>
-
-          {/* Order Field */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              순서 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={formData.order}
-              onChange={(e) => onChange('order', parseInt(e.target.value) || 0)}
-              min={0}
-              className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition-all"
-              placeholder="0"
-            />
-            <div className="text-xs text-gray-500 mt-1">
-              0 이상의 정수를 입력하세요
             </div>
           </div>
         </form>

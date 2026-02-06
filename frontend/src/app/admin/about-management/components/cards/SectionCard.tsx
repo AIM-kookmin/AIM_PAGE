@@ -2,6 +2,7 @@
 
 import { Edit2, Trash2, Eye, EyeOff } from 'lucide-react'
 import type { AboutSection } from '@/types/supabase'
+import { DragHandle } from '@/shared/ui'
 
 interface SectionCardProps {
   section: AboutSection
@@ -16,9 +17,9 @@ export default function SectionCard({
 }: SectionCardProps) {
   return (
     <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 overflow-hidden hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1 cursor-pointer">
-      {/* Order Badge - Top Right */}
-      <div className="absolute top-4 right-4 px-2 py-1 rounded-lg bg-violet-500/10 text-violet-400 text-xs font-medium">
-        #{section.order}
+      {/* Drag Handle - Top Left */}
+      <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <DragHandle />
       </div>
 
       {/* Title */}
