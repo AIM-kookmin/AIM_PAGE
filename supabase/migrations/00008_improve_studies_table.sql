@@ -45,14 +45,7 @@ CREATE POLICY "allow_public_read_active" ON public.studies
 
 CREATE POLICY "allow_member_read_all" ON public.studies
   FOR SELECT USING (
-    auth.uid() IS NOT NULL AND (
-      visibility = 'public' OR
-      EXISTS (
-        SELECT 1 FROM public.study_members
-        WHERE study_members.study_id = studies.id
-          AND study_members.member_id = auth.uid()
-      )
-    )
+    auth.uid() IS NOT NULL
   );
 
 -- Add comments for documentation
