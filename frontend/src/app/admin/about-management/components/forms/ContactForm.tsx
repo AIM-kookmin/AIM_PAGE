@@ -1,7 +1,8 @@
 'use client'
 
-import { ArrowLeft, Mail, Github, Instagram, Phone } from 'lucide-react'
+import { ArrowLeft, Mail, Github, Instagram } from 'lucide-react'
 import { ContactFormData } from '../../types'
+import type { AboutContact } from '@/types/supabase'
 
 interface ContactFormProps {
   formData: ContactFormData
@@ -11,13 +12,14 @@ interface ContactFormProps {
   isSubmitting: boolean
   hasChanges: boolean
   mode: 'add' | 'edit'
+  existingContacts: AboutContact[]
+  editingContactId?: string
 }
 
 const typeOptions = [
   { value: 'email', label: '이메일', icon: Mail },
   { value: 'github', label: 'GitHub', icon: Github },
   { value: 'instagram', label: 'Instagram', icon: Instagram },
-  { value: 'phone', label: '전화', icon: Phone },
 ]
 
 const validateValue = (type: string, value: string): boolean => {
@@ -70,6 +72,8 @@ export default function ContactForm({
   isSubmitting,
   hasChanges,
   mode,
+  existingContacts,
+  editingContactId,
 }: ContactFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,6 +101,16 @@ export default function ContactForm({
     }
     if (!validateValue(formData.type, formData.value)) {
       alert(getValueErrorMessage(formData.type))
+      return
+    }
+
+    // Check for duplicate type
+    const duplicateType = existingContacts.find(
+      c => c.type === formData.type && c.id !== editingContactId
+    )
+    if (duplicateType) {
+      const typeName = typeOptions.find(t => t.value === formData.type)?.label || formData.type
+      alert(`이미 ${typeName} 타입의 연락처가 존재합니다.`)
       return
     }
 

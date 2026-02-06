@@ -1,4 +1,4 @@
-export type TabType = 'sections' | 'activities' | 'history' | 'contact'
+export type EditContext = 'sections' | 'activities' | 'history' | 'contact'
 export type ViewMode = 'list' | 'add' | 'edit' | 'delete'
 
 export interface SectionFormData {
@@ -25,7 +25,7 @@ export interface ContactFormData {
   type: string
   label: string
   value: string
-  order: number
+  order?: number  // Optional: contacts now sorted by type, not order
 }
 
 // Reorder types

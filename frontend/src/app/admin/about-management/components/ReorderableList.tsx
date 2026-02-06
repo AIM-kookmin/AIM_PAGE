@@ -64,7 +64,7 @@ export default function ReorderableList<T extends { id: string; order: number }>
         axis="y"
         values={items}
         onReorder={onReorder}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="flex flex-col gap-4 max-w-4xl mx-auto"
       >
         {items.map((item) => (
           <Reorder.Item

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, FileText } from 'lucide-react'
 import { Button, Loading } from '@/shared/ui'
 import { APP_NAME } from '@/lib/config'
 import {
@@ -12,9 +11,10 @@ import {
   updateAboutSectionsOrder, updateAboutActivitiesOrder, updateAboutHistoryOrder, updateAboutContactsOrder,
 } from '@/shared/api/supabase'
 import type { AboutSection, AboutActivity, AboutHistory, AboutContact } from '@/types/supabase'
-import { TabType, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormData, ContactFormData } from './types'
+import { EditContext, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormData, ContactFormData } from './types'
 import Notification from './components/Notification'
-import TabNavigation from './components/TabNavigation'
+import HeroPreview from './components/HeroPreview'
+import PreviewSection from './components/PreviewSection'
 import SectionCard from './components/cards/SectionCard'
 import AboutActivityCard from './components/cards/AboutActivityCard'
 import ContactCard from './components/cards/ContactCard'
@@ -30,11 +30,12 @@ import useReorderWithSave from './hooks/useReorderWithSave'
 type FormData = SectionFormData | AboutActivityFormData | HistoryFormData | ContactFormData
 type DataItem = AboutSection | AboutActivity | AboutHistory | AboutContact
 
-const TAB_LABELS: Record<TabType, string> = { sections: '섹션', activities: '활동', history: '연혁', contact: '연락처' }
+const CONTEXT_LABELS: Record<EditContext, string> = { sections: '섹션', activities: '활동', history: '연혁', contact: '연락처' }
+const CONTACT_TYPE_ORDER = { email: 0, github: 1, instagram: 2, phone: 999 }
 
-const getEmptyFormData = (tab: TabType, maxOrder: number): FormData => {
+const getEmptyFormData = (context: EditContext, maxOrder: number): FormData => {
   const base = { order: maxOrder + 1 }
-  switch (tab) {
+  switch (context) {
     case 'sections': return { ...base, title: '', content: '' }
     case 'activities': return { ...base, title: '', description: '', icon: '', color: '' }
     case 'history': return { year: new Date().getFullYear(), title: '', description: '' }
@@ -42,9 +43,9 @@ const getEmptyFormData = (tab: TabType, maxOrder: number): FormData => {
   }
 }
 
-const itemToFormData = (tab: TabType, item: DataItem): FormData => {
+const itemToFormData = (context: EditContext, item: DataItem): FormData => {
   const base = { order: item.order }
-  switch (tab) {
+  switch (context) {
     case 'sections': { const i = item as AboutSection; return { ...base, title: i.title, content: i.content } }
     case 'activities': { const i = item as AboutActivity; return { ...base, title: i.title, description: i.description, icon: i.icon, color: i.color } }
     case 'history': { const i = item as AboutHistory; return { year: i.year, title: i.title, description: i.description } }
@@ -54,7 +55,7 @@ const itemToFormData = (tab: TabType, item: DataItem): FormData => {
 
 export default function AboutManagementPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
-  const [activeTab, setActiveTab] = useState<TabType>('sections')
+  const [editContext, setEditContext] = useState<EditContext>('sections')
   const [sections, setSections] = useState<AboutSection[]>([])
   const [activities, setActivities] = useState<AboutActivity[]>([])
   const [history, setHistory] = useState<AboutHistory[]>([])
@@ -72,32 +73,36 @@ export default function AboutManagementPage() {
     initialItems: sections,
     onSave: async (updates: AboutSection[]) => {
       await updateAboutSectionsOrder(updates)
-      await fetchAllData()
+      // fetchAllData 제거: 로컬 상태가 이미 올바른 순서를 가지고 있음
     },
+    debounceMs: 2000, // 2초 후 저장
   })
 
   const activitiesReorder = useReorderWithSave({
     initialItems: activities,
     onSave: async (updates: AboutActivity[]) => {
       await updateAboutActivitiesOrder(updates)
-      await fetchAllData()
+      // fetchAllData 제거: 로컬 상태가 이미 올바른 순서를 가지고 있음
     },
+    debounceMs: 2000, // 2초 후 저장
   })
 
   const historyReorder = useReorderWithSave({
     initialItems: history,
     onSave: async (updates: AboutHistory[]) => {
       await updateAboutHistoryOrder(updates)
-      await fetchAllData()
+      // fetchAllData 제거: 로컬 상태가 이미 올바른 순서를 가지고 있음
     },
+    debounceMs: 2000, // 2초 후 저장
   })
 
   const contactsReorder = useReorderWithSave({
     initialItems: contacts,
     onSave: async (updates: AboutContact[]) => {
       await updateAboutContactsOrder(updates)
-      await fetchAllData()
+      // fetchAllData 제거: 로컬 상태가 이미 올바른 순서를 가지고 있음
     },
+    debounceMs: 2000, // 2초 후 저장
   })
 
   // Update reorder hooks when data changes
@@ -118,9 +123,28 @@ export default function AboutManagementPage() {
   }, [contacts])
 
   const hasChanges = useMemo(() => JSON.stringify(formData) !== JSON.stringify(initialFormData), [formData, initialFormData])
-  const dataMap = { sections, activities, history, contact: contacts }
-  const getCurrentItems = () => dataMap[activeTab]
   const getItemTitle = (item: DataItem | null) => item ? ('title' in item ? item.title : 'label' in item ? item.label : '') : ''
+
+  const handleAddSection = () => { const d = getEmptyFormData('sections', Math.max(...sections.map(i => i.order), -1)); setEditContext('sections'); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
+  const handleAddActivity = () => { const d = getEmptyFormData('activities', Math.max(...activities.map(i => i.order), -1)); setEditContext('activities'); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
+  const handleAddHistory = () => { const d = getEmptyFormData('history', 0); setEditContext('history'); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
+  const handleAddContact = () => {
+    // Check if all types are used
+    const usedTypes = contacts.map(c => c.type)
+    const availableTypes = ['email', 'github', 'instagram'].filter(t => !usedTypes.includes(t))
+
+    if (availableTypes.length === 0) {
+      notify('error', '추가 불가', '모든 연락처 타입이 이미 등록되어 있습니다.')
+      return
+    }
+
+    const d = getEmptyFormData('contact', Math.max(...contacts.map(i => i.order), -1))
+    setEditContext('contact')
+    setEditingItem(null)
+    setFormData(d)
+    setInitialFormData(d)
+    setViewMode('add')
+  }
 
   useEffect(() => { document.title = `소개 관리 - ${APP_NAME}`; fetchAllData() }, [])
 
@@ -138,13 +162,21 @@ export default function AboutManagementPage() {
     setTimeout(() => { setNotification(p => ({ ...p, hiding: true })); setTimeout(() => setNotification({ show: false, type: type, title: '', message: '', hiding: false }), 300) }, 3000)
   }
 
-  const getMaxOrder = () => {
-    const items = getCurrentItems()
-    return items.length > 0 ? Math.max(...items.map(i => i.order)) : -1
-  }
+  const handleEdit = (item: DataItem) => {
+    // Infer context from item type
+    let context: EditContext
+    if ('content' in item) context = 'sections'
+    else if ('icon' in item) context = 'activities'
+    else if ('year' in item) context = 'history'
+    else context = 'contact'
 
-  const handleAdd = () => { const d = getEmptyFormData(activeTab, getMaxOrder()); setEditingItem(null); setFormData(d); setInitialFormData(d); setViewMode('add') }
-  const handleEdit = (item: DataItem) => { const d = itemToFormData(activeTab, item); setEditingItem(item); setFormData(d); setInitialFormData(d); setViewMode('edit') }
+    setEditContext(context)
+    const d = itemToFormData(context, item)
+    setEditingItem(item)
+    setFormData(d)
+    setInitialFormData(d)
+    setViewMode('edit')
+  }
   const handleDeleteClick = (item: DataItem) => { setEditingItem(item); setViewMode('delete') }
   const handleFormChange = (field: string, value: string | number) => setFormData(p => ({ ...p, [field]: value }))
   const handleCancel = () => hasChanges ? setShowUnsavedDialog(true) : setViewMode('list')
@@ -155,15 +187,15 @@ export default function AboutManagementPage() {
       const isEdit = viewMode === 'edit' && editingItem
       const is_active = isEdit ? editingItem!.is_active : true
 
-      if (activeTab === 'sections') {
+      if (editContext === 'sections') {
         const d = formData as SectionFormData
         if (isEdit) await updateAboutSection(editingItem!.id, { ...d, is_active })
         else await createAboutSection({ ...d, is_active })
-      } else if (activeTab === 'activities') {
+      } else if (editContext === 'activities') {
         const d = formData as AboutActivityFormData
         if (isEdit) await updateAboutActivity(editingItem!.id, { ...d, is_active })
         else await createAboutActivity({ ...d, is_active })
-      } else if (activeTab === 'history') {
+      } else if (editContext === 'history') {
         const d = formData as HistoryFormData
         if (isEdit) await updateAboutHistoryItem(editingItem!.id, { ...d, is_active })
         else await createAboutHistoryItem({ ...d, is_active })
@@ -172,9 +204,9 @@ export default function AboutManagementPage() {
         if (isEdit) await updateAboutContact(editingItem!.id, { ...d, is_active })
         else await createAboutContact({ ...d, is_active })
       }
-      notify('success', isEdit ? '수정 완료' : '생성 완료', `${TAB_LABELS[activeTab]}이(가) 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다.`)
+      notify('success', isEdit ? '수정 완료' : '생성 완료', `${CONTEXT_LABELS[editContext]}이(가) 성공적으로 ${isEdit ? '수정' : '생성'}되었습니다.`)
       await fetchAllData(); setViewMode('list')
-    } catch (e) { console.error(e); notify('error', '오류', `${TAB_LABELS[activeTab]} 저장에 실패했습니다.`) }
+    } catch (e) { console.error(e); notify('error', '오류', `${CONTEXT_LABELS[editContext]} 저장에 실패했습니다.`) }
     finally { setIsSubmitting(false) }
   }
 
@@ -183,8 +215,8 @@ export default function AboutManagementPage() {
     try {
       setIsSubmitting(true)
       const deleteFns = { sections: deleteAboutSection, activities: deleteAboutActivity, history: deleteAboutHistoryItem, contact: deleteAboutContact }
-      await deleteFns[activeTab](editingItem.id)
-      notify('success', '삭제 완료', `${TAB_LABELS[activeTab]}이(가) 삭제되었습니다.`)
+      await deleteFns[editContext](editingItem.id)
+      notify('success', '삭제 완료', `${CONTEXT_LABELS[editContext]}이(가) 삭제되었습니다.`)
       await fetchAllData(); setViewMode('list')
     } catch (e) { console.error(e); notify('error', '오류', '삭제에 실패했습니다.') }
     finally { setIsSubmitting(false) }
@@ -197,90 +229,142 @@ export default function AboutManagementPage() {
   return (
     <div className="min-h-screen bg-black">
       {viewMode === 'list' && (
-        <>
+        <div className="max-w-5xl mx-auto px-6 py-12">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">소개 관리</h1>
-            <p className="text-gray-400">소개 페이지의 각 섹션을 관리할 수 있습니다.</p>
+            <p className="text-gray-400">소개 페이지의 각 섹션을 미리보고 관리할 수 있습니다.</p>
           </div>
-          <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} counts={{ sections: sections.length, activities: activities.length, history: history.length, contact: contacts.length }} />
-          <div className="mb-6">
-            <Button onClick={handleAdd} variant="primary"><Plus className="w-5 h-5 mr-2" />{TAB_LABELS[activeTab]} 추가</Button>
-          </div>
-          {getCurrentItems().length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <div className="w-24 h-24 rounded-full bg-violet-500/10 flex items-center justify-center mb-6"><FileText className="w-12 h-12 text-violet-400" /></div>
-              <h3 className="text-xl font-semibold text-white mb-2">아직 등록된 {TAB_LABELS[activeTab]}이(가) 없습니다</h3>
-              <p className="text-gray-500 text-sm mb-6">첫 번째 {TAB_LABELS[activeTab]}을(를) 추가해보세요</p>
-              <Button onClick={handleAdd}><Plus className="w-5 h-5 mr-2" />{TAB_LABELS[activeTab]} 추가하기</Button>
-            </div>
-          ) : (
-            <>
-              {activeTab === 'sections' && (
-                <ReorderableList
-                  items={sectionsReorder.items}
-                  onReorder={sectionsReorder.handleReorder}
-                  saveStatus={sectionsReorder.saveStatus}
-                  renderItem={(item) => (
-                    <SectionCard
-                      section={item}
-                      onEdit={() => handleEdit(item)}
-                      onDelete={() => handleDeleteClick(item)}
-                    />
-                  )}
-                />
-              )}
-              {activeTab === 'activities' && (
-                <ReorderableList
-                  items={activitiesReorder.items}
-                  onReorder={activitiesReorder.handleReorder}
-                  saveStatus={activitiesReorder.saveStatus}
-                  renderItem={(item) => (
-                    <AboutActivityCard
-                      activity={item}
-                      onEdit={() => handleEdit(item)}
-                      onDelete={() => handleDeleteClick(item)}
-                    />
-                  )}
-                />
-              )}
-              {activeTab === 'history' && (
-                <ReorderableHistoryList
-                  items={historyReorder.items}
-                  onReorder={historyReorder.handleReorder}
-                  onEdit={handleEdit}
-                  onDelete={handleDeleteClick}
-                  saveStatus={historyReorder.saveStatus}
-                />
-              )}
-              {activeTab === 'contact' && (
-                <ReorderableList
-                  items={contactsReorder.items}
-                  onReorder={contactsReorder.handleReorder}
-                  saveStatus={contactsReorder.saveStatus}
-                  renderItem={(item) => (
+
+          <HeroPreview />
+
+          <PreviewSection
+            id="sections-section"
+            title="섹션"
+            description="About 페이지의 주요 콘텐츠 섹션"
+            count={sections.length}
+            onAdd={handleAddSection}
+            addLabel="섹션 추가"
+            saveStatus={sectionsReorder.saveStatus}
+            isEmpty={sections.length === 0}
+            emptyMessage="아직 등록된 섹션이 없습니다"
+          >
+            {sections.length > 0 && (
+              <ReorderableList
+                items={sectionsReorder.items}
+                onReorder={sectionsReorder.handleReorder}
+                saveStatus={sectionsReorder.saveStatus}
+                renderItem={(item) => (
+                  <SectionCard
+                    section={item}
+                    onEdit={() => handleEdit(item)}
+                    onDelete={() => handleDeleteClick(item)}
+                  />
+                )}
+              />
+            )}
+          </PreviewSection>
+
+          <PreviewSection
+            id="activities-section"
+            title="활동"
+            description="클럽 활동 및 이벤트"
+            count={activities.length}
+            onAdd={handleAddActivity}
+            addLabel="활동 추가"
+            saveStatus={activitiesReorder.saveStatus}
+            isEmpty={activities.length === 0}
+            emptyMessage="아직 등록된 활동이 없습니다"
+          >
+            {activities.length > 0 && (
+              <ReorderableList
+                items={activitiesReorder.items}
+                onReorder={activitiesReorder.handleReorder}
+                saveStatus={activitiesReorder.saveStatus}
+                renderItem={(item) => (
+                  <AboutActivityCard
+                    activity={item}
+                    onEdit={() => handleEdit(item)}
+                    onDelete={() => handleDeleteClick(item)}
+                  />
+                )}
+              />
+            )}
+          </PreviewSection>
+
+          <PreviewSection
+            id="history-section"
+            title="연혁"
+            description="클럽의 주요 역사 및 마일스톤"
+            count={history.length}
+            onAdd={handleAddHistory}
+            addLabel="연혁 추가"
+            saveStatus={historyReorder.saveStatus}
+            isEmpty={history.length === 0}
+            emptyMessage="아직 등록된 연혁이 없습니다"
+          >
+            {history.length > 0 && (
+              <ReorderableHistoryList
+                items={historyReorder.items}
+                onReorder={historyReorder.handleReorder}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                saveStatus={historyReorder.saveStatus}
+              />
+            )}
+          </PreviewSection>
+
+          <PreviewSection
+            id="contacts-section"
+            title="연락처"
+            description="클럽 연락 정보 및 소셜 미디어"
+            count={contacts.filter(c => c.type !== 'phone').length}
+            onAdd={handleAddContact}
+            addLabel="연락처 추가"
+            saveStatus="idle"
+            isEmpty={contacts.filter(c => c.type !== 'phone').length === 0}
+            emptyMessage="아직 등록된 연락처가 없습니다"
+          >
+            {contacts.filter(c => c.type !== 'phone').length > 0 && (
+              <div className="flex flex-col gap-4 max-w-4xl mx-auto">
+                {contacts
+                  .filter(c => c.type !== 'phone')
+                  .sort((a, b) => {
+                    const orderA = CONTACT_TYPE_ORDER[a.type as keyof typeof CONTACT_TYPE_ORDER] ?? 999
+                    const orderB = CONTACT_TYPE_ORDER[b.type as keyof typeof CONTACT_TYPE_ORDER] ?? 999
+                    return orderA - orderB
+                  })
+                  .map((contact) => (
                     <ContactCard
-                      contact={item}
-                      onEdit={() => handleEdit(item)}
-                      onDelete={() => handleDeleteClick(item)}
+                      key={contact.id}
+                      contact={contact}
+                      onEdit={() => handleEdit(contact)}
+                      onDelete={() => handleDeleteClick(contact)}
+                      showDragHandle={false}
                     />
-                  )}
-                />
-              )}
-            </>
-          )}
-        </>
+                  ))}
+              </div>
+            )}
+          </PreviewSection>
+        </div>
       )}
 
       {(viewMode === 'add' || viewMode === 'edit') && (
         <>
-          {activeTab === 'sections' && <SectionForm formData={formData as SectionFormData} {...formProps} />}
-          {activeTab === 'activities' && <AboutActivityForm formData={formData as AboutActivityFormData} {...formProps} />}
-          {activeTab === 'history' && <HistoryForm formData={formData as HistoryFormData} {...formProps} />}
-          {activeTab === 'contact' && <ContactForm formData={formData as ContactFormData} {...formProps} />}
+          {editContext === 'sections' && <SectionForm formData={formData as SectionFormData} {...formProps} />}
+          {editContext === 'activities' && <AboutActivityForm formData={formData as AboutActivityFormData} {...formProps} />}
+          {editContext === 'history' && <HistoryForm formData={formData as HistoryFormData} {...formProps} />}
+          {editContext === 'contact' && (
+            <ContactForm
+              formData={formData as ContactFormData}
+              existingContacts={contacts}
+              editingContactId={editingItem?.id}
+              {...formProps}
+            />
+          )}
         </>
       )}
 
-      {viewMode === 'delete' && <DeleteConfirmView itemType={activeTab} itemTitle={getItemTitle(editingItem)} onConfirm={handleDelete} onCancel={() => setViewMode('list')} isDeleting={isSubmitting} />}
+      {viewMode === 'delete' && <DeleteConfirmView itemType={editContext} itemTitle={getItemTitle(editingItem)} onConfirm={handleDelete} onCancel={() => setViewMode('list')} isDeleting={isSubmitting} />}
 
       {showUnsavedDialog && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">

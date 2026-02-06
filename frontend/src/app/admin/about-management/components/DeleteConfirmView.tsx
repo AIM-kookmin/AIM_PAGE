@@ -2,17 +2,17 @@
 
 import { AlertTriangle } from 'lucide-react'
 import { Button } from '@/shared/ui/Button'
-import type { TabType } from '../types'
+import type { EditContext } from '../types'
 
 interface DeleteConfirmViewProps {
-  itemType: TabType
+  itemType: EditContext
   itemTitle: string
   onConfirm: () => void
   onCancel: () => void
   isDeleting: boolean
 }
 
-const typeLabels: Record<TabType, string> = {
+const _typeLabels: Record<EditContext, string> = {
   sections: '섹션',
   activities: '활동',
   history: '히스토리',

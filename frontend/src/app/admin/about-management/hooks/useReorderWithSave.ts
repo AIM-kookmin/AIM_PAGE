@@ -73,9 +73,15 @@ export default function useReorderWithSave<T extends { id: string; order: number
   // Handle reorder with optimistic update and debounced save
   const handleReorder = useCallback(
     (newOrder: T[]) => {
+      // CRITICAL: Update order values based on new array position
+      const reorderedItems = newOrder.map((item, index) => ({
+        ...item,
+        order: index,
+      }))
+
       // Optimistic UI update
-      setItems(newOrder)
-      pendingItemsRef.current = newOrder
+      setItems(reorderedItems)
+      pendingItemsRef.current = reorderedItems
 
       // Clear existing debounce timer
       if (debounceTimerRef.current) {

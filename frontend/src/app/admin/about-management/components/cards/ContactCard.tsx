@@ -8,6 +8,7 @@ interface ContactCardProps {
   contact: AboutContact
   onEdit: () => void
   onDelete: () => void
+  showDragHandle?: boolean
 }
 
 const typeIcons = {
@@ -35,7 +36,8 @@ const getContactLink = (type: string, value: string): string | null => {
 export default function ContactCard({
   contact,
   onEdit,
-  onDelete
+  onDelete,
+  showDragHandle = false
 }: ContactCardProps) {
   const IconComponent = typeIcons[contact.type as keyof typeof typeIcons] || Mail
   const link = getContactLink(contact.type, contact.value)
@@ -43,9 +45,11 @@ export default function ContactCard({
   return (
     <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 overflow-hidden hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1">
       {/* Drag Handle - Top Left */}
-      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <DragHandle />
-      </div>
+      {showDragHandle && (
+        <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+          <DragHandle />
+        </div>
+      )}
 
       {/* Icon & Label */}
       <div className="flex items-start gap-3 mb-3">

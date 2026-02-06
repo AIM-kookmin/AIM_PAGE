@@ -73,7 +73,7 @@ export default function ReorderableHistoryList({
                 axis="y"
                 values={yearItems}
                 onReorder={(newOrder) => handleYearGroupReorder(year, newOrder)}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="flex flex-col gap-4 max-w-4xl mx-auto"
               >
                 {yearItems.map(item => (
                   <Reorder.Item
