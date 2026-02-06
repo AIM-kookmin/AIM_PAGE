@@ -14,7 +14,6 @@ interface EditMemberData {
   student_id: string
   position: string
   department: string
-  year: string
   generation: number
   bio: string
   is_public: boolean
@@ -52,7 +51,6 @@ export default function MemberManagement() {
     student_id: '',
     position: '',
     department: '',
-    year: '',
     generation: 0,
     bio: '',
     is_public: true,
@@ -179,7 +177,6 @@ export default function MemberManagement() {
       student_id: '',
       position: '',
       department: '',
-      year: '',
       generation: 0,
       bio: '',
       is_public: true,
@@ -198,7 +195,6 @@ export default function MemberManagement() {
       student_id: member.student_id || '',
       position: member.position || '',
       department: member.department || '',
-      year: member.year || '',
       generation: member.generation || 0,
       bio: member.bio || '',
       is_public: member.is_public ?? true,
@@ -217,7 +213,6 @@ export default function MemberManagement() {
       student_id: '',
       position: '',
       department: '',
-      year: '',
       generation: 0,
       bio: '',
       is_public: true,
@@ -510,9 +505,9 @@ export default function MemberManagement() {
   }
 
   const downloadCsvTemplate = () => {
-    const template = `email,name,display_name,student_id,position,department,year,generation,is_public
-kim123@kookmin.ac.kr,김철수,철수,20241234,부원,소프트웨어학부,2,3,true
-lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,true`
+    const template = `email,name,display_name,student_id,position,department,generation,is_public
+kim123@kookmin.ac.kr,김철수,철수,20241234,부원,소프트웨어학부,3,true
+lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,2,true`
     
     const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
@@ -949,22 +944,6 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
               </div>
 
               <div>
-            <label className="block text-white font-medium mb-2">학년</label>
-                <select
-              value={formData.year}
-              onChange={(e) => setFormData({...formData, year: e.target.value})}
-              className="w-full bg-gray-700 border border-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-                >
-                  <option value="">선택해주세요</option>
-                  <option value="1학년">1학년</option>
-                  <option value="2학년">2학년</option>
-                  <option value="3학년">3학년</option>
-                  <option value="4학년">4학년</option>
-                  <option value="대학원생">대학원생</option>
-                </select>
-              </div>
-
-              <div>
             <label className="block text-white font-medium mb-2">기수</label>
             <input
               type="number"
@@ -1045,7 +1024,7 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,3,2,
             </Text>
             <ul className="text-sm text-gray-300 space-y-1 list-disc list-inside">
               <li><strong>필수:</strong> email, name</li>
-              <li><strong>선택:</strong> displayName, studentId, position, department, year, generation, role, isPublic</li>
+              <li><strong>선택:</strong> displayName, studentId, position, department, generation, role, isPublic</li>
             </ul>
             <Text variant="muted" size="sm" className="mt-3">
               💡 초기 비밀번호는 이메일 주소의 @ 앞부분으로 자동 설정됩니다.

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getPublishedStudyPosts } from '@/shared/api/supabase/queries.server'
+import { getPublishedStudies } from '@/shared/api/supabase/queries.server'
 import StudiesClient from './StudiesClient'
 
 export const revalidate = 60
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function StudiesPage() {
-  const posts = await getPublishedStudyPosts()
+  const studies = await getPublishedStudies()
 
-  return <StudiesClient posts={posts} />
+  return <StudiesClient studies={studies} />
 }

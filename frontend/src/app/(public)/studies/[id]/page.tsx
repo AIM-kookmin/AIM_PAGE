@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { ArrowLeft, Calendar, User } from 'lucide-react'
 import { getStudyPostById } from '@/shared/api/supabase'
 import type { StudyPostWithAuthor } from '@/types/supabase'
 import { APP_NAME } from '@/lib/config'
@@ -69,21 +70,31 @@ export default function StudyPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black selection:bg-violet-500/30">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[20px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[20px] mix-blend-screen" />
+    <div className="min-h-screen bg-black selection:bg-violet-500 selection:text-white overflow-hidden">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(-20%, -20%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(20%, 20%)',
+          }}
+        />
       </div>
 
       <div className="relative pt-32 pb-12 md:pt-48 md:pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link 
-            href="/studies" 
-            className="inline-flex items-center text-sm text-gray-400 hover:text-violet-400 transition-colors mb-8"
+          <Link
+            href="/studies"
+            className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-violet-400 transition-colors mb-8"
           >
-            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <ArrowLeft className="w-4 h-4" />
             목록으로 돌아가기
           </Link>
           
@@ -103,13 +114,14 @@ export default function StudyPostPage() {
               {post.title}
             </h1>
 
-            <div className="flex items-center justify-between border-t border-white/10 pt-6 mt-6">
+            <div className="flex items-center justify-between border-t border-white/5 pt-6 mt-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-bold text-lg">
+                <div className="w-10 h-10 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 font-bold text-lg">
                   {post.author?.display_name?.[0] || 'A'}
                 </div>
                 <div>
-                  <div className="text-white font-medium">
+                  <div className="flex items-center gap-2 text-white font-medium">
+                    <User className="w-4 h-4 text-gray-500" />
                     {post.author?.display_name || 'Unknown'}
                   </div>
                   <div className="text-sm text-gray-500">
@@ -117,7 +129,8 @@ export default function StudyPostPage() {
                   </div>
                 </div>
               </div>
-              <time className="text-sm text-gray-500 font-mono">
+              <time className="flex items-center gap-2 text-sm text-gray-500">
+                <Calendar className="w-4 h-4" />
                 {formatDate(post.created_at)}
               </time>
             </div>
@@ -156,11 +169,9 @@ export default function StudyPostPage() {
         </Card>
       </div>
 
-      <footer className="relative border-t border-white/10 bg-black/50 backdrop-blur-xl py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-500 text-sm">
-            &copy; 2024 AIM (AI Monsters). All rights reserved.
-          </p>
+      <footer className="relative z-10 border-t border-white/5 py-12">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-gray-600 text-sm">&copy; 2025 AIM (AI Monsters). All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -1,127 +1,229 @@
 'use client'
 
-import Link from 'next/link'
-import { Card, Text } from '@/shared/ui'
-import type { StudyPostWithAuthor } from '@/types/supabase'
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Calendar, Users } from 'lucide-react'
+import type { Study } from '@/types/database'
+import StudyDetailModal from './components/StudyDetailModal'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface StudiesClientProps {
-  posts: StudyPostWithAuthor[]
+  studies: Study[]
 }
 
-export default function StudiesClient({ posts }: StudiesClientProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+export default function StudiesClient({ studies }: StudiesClientProps) {
+  const mainRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  const [selectedStudy, setSelectedStudy] = useState<Study | null>(null)
 
-  const getExcerpt = (content: string, maxLength: number = 150) => {
-    const text = content
-      .replace(/[#*`\[\]()]/g, '')
-      .replace(/\n/g, ' ')
-      .trim()
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(heroRef.current,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }
+      )
 
-    if (text.length <= maxLength) return text
-    return text.substring(0, maxLength) + '...'
-  }
+      if (listRef.current) {
+        gsap.fromTo(listRef.current,
+          { y: 40, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: listRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none'
+            }
+          }
+        )
+      }
+    }, mainRef)
+
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-black selection:bg-violet-500/30">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] bg-violet-600/20 rounded-full blur-[20px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[20%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[20px] mix-blend-screen" />
+    <div ref={mainRef} className="min-h-screen bg-black overflow-hidden selection:bg-violet-500 selection:text-white">
+      {/* Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div
+          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(20%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(-20%, 30%)',
+          }}
+        />
       </div>
 
-      <div className="relative pt-32 pb-16 md:pt-48 md:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              스터디
-            </span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-            AIM 부원들의 깊이 있는 학습 기록.
-            <br className="hidden md:block" />
-            기술을 탐구하고 지식을 공유하는 공간입니다.
-          </p>
+      <main className="relative z-10">
+        {/* Hero */}
+        <section ref={heroRef} className="min-h-[50vh] flex items-center justify-center pt-20 px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+                Studies
+              </span>
+            </h1>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              AIM 부원들의 깊이 있는 학습 기록
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />
+          </div>
+        </section>
+
+        {/* Studies List */}
+        <section ref={listRef} className="py-24 px-4">
+          <div className="max-w-5xl mx-auto">
+            {studies.length === 0 ? (
+              <div className="text-center p-12 rounded-2xl bg-white/[0.02] border border-white/5">
+                <p className="text-gray-500 text-lg">등록된 스터디가 없습니다.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {studies.map((study) => (
+                  <StudyListItem
+                    key={study.id}
+                    study={study}
+                    onClick={() => setSelectedStudy(study)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-white/5 py-12">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-gray-600 text-sm">&copy; 2025 AIM (AI Monsters). All rights reserved.</p>
         </div>
-      </div>
+      </footer>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        {posts.length === 0 ? (
-          <Card variant="glass" className="p-12 text-center max-w-2xl mx-auto">
-            <Text className="text-gray-400 text-lg">등록된 스터디 포스트가 없습니다.</Text>
-          </Card>
+      {/* Study Detail Modal */}
+      <StudyDetailModal
+        study={selectedStudy}
+        isOpen={!!selectedStudy}
+        onClose={() => setSelectedStudy(null)}
+      />
+    </div>
+  )
+}
+
+interface StudyListItemProps {
+  study: Study
+  onClick: () => void
+}
+
+function StudyListItem({ study, onClick }: StudyListItemProps) {
+  const getStatusBadge = (status: Study['status']) => {
+    const badges = {
+      recruiting: { text: '모집중', color: 'bg-green-500/10 border-green-500/20 text-green-400' },
+      active: { text: '진행중', color: 'bg-blue-500/10 border-blue-500/20 text-blue-400' },
+      completed: { text: '완료', color: 'bg-gray-500/10 border-gray-500/20 text-gray-400' },
+      cancelled: { text: '취소', color: 'bg-red-500/10 border-red-500/20 text-red-400' },
+    }
+    return badges[status]
+  }
+
+  const getDifficultyBadge = (difficulty: Study['difficulty']) => {
+    const badges = {
+      beginner: { text: '초급', color: 'bg-green-500/10 border-green-500/20 text-green-400' },
+      intermediate: { text: '중급', color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' },
+      advanced: { text: '고급', color: 'bg-red-500/10 border-red-500/20 text-red-400' },
+    }
+    return badges[difficulty]
+  }
+
+  const formatDateRange = (startDate: string | null, endDate: string | null) => {
+    if (!startDate && !endDate) return null
+
+    const formatDate = (dateString: string) => {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'short',
+      })
+    }
+
+    if (startDate && endDate) {
+      return `${formatDate(startDate)} - ${formatDate(endDate)}`
+    }
+    if (startDate) {
+      return `${formatDate(startDate)} -`
+    }
+    return formatDate(endDate!)
+  }
+
+  const images = study.images && study.images.length > 0 ? study.images : [study.cover_url].filter((url): url is string => Boolean(url))
+  const thumbnail = images.length > 0 ? images[0] : null
+  const statusBadge = getStatusBadge(study.status)
+  const difficultyBadge = getDifficultyBadge(study.difficulty)
+  const dateRange = formatDateRange(study.start_date, study.end_date)
+  const participantCount = study.participants ? study.participants.length : 0
+
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-6 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-violet-500/30 hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group text-left"
+    >
+      {/* Thumbnail */}
+      <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden bg-white/5 border border-white/5">
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={study.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/studies/${post.id}`}
-                className="block group"
-              >
-                <Card variant="glass" className="h-full p-0 overflow-hidden transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] group-hover:border-violet-500/50">
-                  <div className="relative aspect-video overflow-hidden bg-white/5">
-                    {post.cover_url ? (
-                      <img
-                        src={post.cover_url}
-                        alt={post.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white/10 text-4xl font-bold">
-                        AIM
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-
-                  <div className="p-6">
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {post.tags?.map((tagItem) => (
-                        <span
-                          key={tagItem.tag.id}
-                          className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-medium text-violet-400 ring-1 ring-inset ring-violet-500/20"
-                        >
-                          #{tagItem.tag.name}
-                        </span>
-                      ))}
-                    </div>
-
-                    <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-violet-400 transition-colors">
-                      {post.title}
-                    </h3>
-
-                    <p className="text-gray-400 text-sm mb-6 line-clamp-3 leading-relaxed">
-                      {getExcerpt(post.content_md)}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
-                      <span className="text-sm font-medium text-gray-300">
-                        {post.author?.display_name || 'Unknown'}
-                      </span>
-                      <span className="text-xs text-gray-500 font-mono">
-                        {formatDate(post.created_at)}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-violet-500/20 text-xl font-bold">AIM</span>
           </div>
         )}
       </div>
 
-      <footer className="relative border-t border-white/10 bg-black/50 backdrop-blur-xl py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-500 text-sm">
-            &copy; 2024 AIM (AI Monsters). All rights reserved.
-          </p>
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-lg md:text-xl font-bold text-white truncate group-hover:text-violet-300 transition-colors mb-1">
+          {study.title}
+        </h3>
+        <div className="flex items-center gap-3 flex-wrap text-sm text-gray-400">
+          {dateRange && (
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" />
+              {dateRange}
+            </span>
+          )}
+          {participantCount > 0 && (
+            <span className="flex items-center gap-1">
+              <Users className="w-3.5 h-3.5" />
+              {participantCount}명
+            </span>
+          )}
         </div>
-      </footer>
-    </div>
+      </div>
+
+      {/* Badges */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <span className={`px-2.5 py-1 rounded-full border text-xs font-medium ${statusBadge.color}`}>
+          {statusBadge.text}
+        </span>
+        <span className={`px-2.5 py-1 rounded-full border text-xs font-medium ${difficultyBadge.color}`}>
+          {difficultyBadge.text}
+        </span>
+      </div>
+    </button>
   )
 }
