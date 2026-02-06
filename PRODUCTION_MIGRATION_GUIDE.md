@@ -14,14 +14,17 @@ column studies.start_date does not exist
 다음 마이그레이션들이 production에 적용되어야 합니다:
 
 1. **00008_improve_studies_table.sql** ⭐ (start_date 추가)
-2. **00009_improve_study_posts_table.sql**
-3. **00010_add_study_members_table.sql**
-4. **00011_add_link_to_activities.sql**
-5. **00012_remove_year_from_member_profiles.sql**
-6. **00013_secure_storage_policies.sql**
-7. **00014_add_study_images_participants.sql**
-8. **00015_remove_studies_category.sql**
-9. **00016_make_public_buckets.sql**
+2. **00009_improve_study_posts_table.sql** (study_posts 개선)
+3. **00010_add_study_members_table.sql** (study_members 테이블 생성)
+4. **00011_add_link_to_activities.sql** (활동 링크 필드)
+5. **00012_remove_year_from_member_profiles.sql** (멤버 프로필 정리)
+6. **00013_secure_storage_policies.sql** (스토리지 보안)
+7. **00014_add_study_images_participants.sql** (스터디 이미지/참여자)
+8. **00015_remove_studies_category.sql** (카테고리 제거)
+9. **00016_make_public_buckets.sql** (버킷 공개 설정)
+10. **00017_update_studies_rls_policy.sql** ⭐ (RLS 정책 업데이트)
+
+**✅ 마이그레이션 의존성 해결됨** - 올바른 순서로 적용되도록 수정 완료
 
 ## 🚀 적용 방법
 
