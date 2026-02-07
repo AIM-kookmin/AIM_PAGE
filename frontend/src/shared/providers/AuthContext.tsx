@@ -44,9 +44,25 @@ function mapSupabaseUser(supabaseUser: SupabaseUser | null): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
+
+  const checkAdminStatus = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.rpc('is_admin')
+      if (error) {
+        console.error('Failed to check admin status:', error)
+        setIsAdmin(false)
+        return
+      }
+      setIsAdmin(data === true)
+    } catch (error) {
+      console.error('Failed to check admin status:', error)
+      setIsAdmin(false)
+    }
+  }, [supabase])
 
   useEffect(() => {
     const initSession = async () => {
@@ -54,6 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { session: initialSession } } = await supabase.auth.getSession()
         setSession(initialSession)
         setUser(mapSupabaseUser(initialSession?.user ?? null))
+
+        if (initialSession?.user) {
+          await checkAdminStatus()
+        }
       } catch (error) {
         console.error('Failed to get initial session:', error)
       } finally {
@@ -68,6 +88,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(newSession)
         setUser(mapSupabaseUser(newSession?.user ?? null))
 
+        if (newSession?.user) {
+          await checkAdminStatus()
+        } else {
+          setIsAdmin(false)
+        }
+
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
           router.refresh()
         }
@@ -77,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, router])
+  }, [supabase, router, checkAdminStatus])
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -143,7 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     isAuthenticated: !!session && !!user,
-    isAdmin: user?.role === 'admin',
+    isAdmin,
     isLoading,
     getSession,
   }
