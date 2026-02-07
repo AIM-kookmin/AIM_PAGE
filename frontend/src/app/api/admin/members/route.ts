@@ -115,6 +115,27 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 })
     }
 
+    // First, get the member_profile id
+    const { data: profile } = await getSupabaseAdmin()
+      .from('member_profiles')
+      .select('id')
+      .eq('user_id', userId)
+      .single()
+
+    if (profile) {
+      // Delete all study_posts authored by this member
+      const { error: postsError } = await getSupabaseAdmin()
+        .from('study_posts')
+        .delete()
+        .eq('author_id', profile.id)
+
+      if (postsError) {
+        console.error('Study posts deletion failed:', postsError)
+        return NextResponse.json({ error: 'Failed to delete user posts' }, { status: 400 })
+      }
+    }
+
+    // Delete member profile
     const { error: profileError } = await getSupabaseAdmin()
       .from('member_profiles')
       .delete()
@@ -122,8 +143,10 @@ export async function DELETE(request: NextRequest) {
 
     if (profileError) {
       console.error('Profile deletion failed:', profileError)
+      return NextResponse.json({ error: 'Failed to delete profile' }, { status: 400 })
     }
 
+    // Delete auth user
     const { error: authError } = await getSupabaseAdmin().auth.admin.deleteUser(userId)
 
     if (authError) {
