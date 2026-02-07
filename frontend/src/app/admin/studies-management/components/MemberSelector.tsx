@@ -81,7 +81,9 @@ export default function MemberSelector({
       {selectedMembers.length > 0 && (
         <div className="flex flex-wrap gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
           {selectedMembers.map(memberName => {
-            const isActive = members.some(m => m.display_name === memberName)
+            // Don't mark as inactive while loading - wait for data first
+            const isActive = loading || members.some(m => m.display_name === memberName)
+            const showInactive = !loading && !members.some(m => m.display_name === memberName)
             return (
               <div
                 key={memberName}
@@ -91,11 +93,12 @@ export default function MemberSelector({
                     : 'bg-gray-500/10 border-gray-500/30 text-gray-400 opacity-60'
                 }`}
               >
-                <span>{memberName}{!isActive && ' (비활성)'}</span>
+                <span>{memberName}{showInactive && ' (비활성)'}</span>
                 <button
                   type="button"
                   onClick={() => removeMember(memberName)}
                   className="hover:bg-violet-500/30 rounded-full p-0.5 transition-colors duration-200"
+                  disabled={loading}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
