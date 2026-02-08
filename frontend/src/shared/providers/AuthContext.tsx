@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/shared/api/supabase/client'
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js'
@@ -47,7 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
 
   const checkAdminStatus = useCallback(async () => {
     try {
@@ -71,8 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(initialSession)
         setUser(mapSupabaseUser(initialSession?.user ?? null))
 
+        // admin 체크는 로딩을 막지 않도록 비동기로 실행
         if (initialSession?.user) {
-          await checkAdminStatus()
+          checkAdminStatus()
         }
       } catch (error) {
         console.error('Failed to get initial session:', error)
@@ -89,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mapSupabaseUser(newSession?.user ?? null))
 
         if (newSession?.user) {
-          await checkAdminStatus()
+          checkAdminStatus()
         } else {
           setIsAdmin(false)
         }
@@ -103,7 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, router, checkAdminStatus])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -146,8 +149,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut()
+    // 즉시 UI 상태 초기화
+    setUser(null)
+    setSession(null)
+    setIsAdmin(false)
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
     router.push('/')
+    router.refresh()
   }, [supabase, router])
 
   const getSession = useCallback(async () => {
