@@ -50,20 +50,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const supabaseRef = useRef(createClient())
   const supabase = supabaseRef.current
 
-  const checkAdminStatus = useCallback(async () => {
+  const checkProfileAndAdmin = useCallback(async (userId: string) => {
     try {
-      const { data, error } = await supabase.rpc('is_admin')
+      const { data: profile, error } = await supabase
+        .from('member_profiles')
+        .select('status, position')
+        .eq('user_id', userId)
+        .maybeSingle()
+
       if (error) {
-        console.error('Failed to check admin status:', error)
+        console.error('Failed to check profile:', error)
         setIsAdmin(false)
         return
       }
-      setIsAdmin(data === true)
+
+      // 프로필이 없으면 → 미가입 상태 → /register로 리다이렉트
+      if (!profile) {
+        setIsAdmin(false)
+        router.push('/register')
+        return
+      }
+
+      // 가입 대기 중 → /pending으로 리다이렉트
+      if (profile.status === 'pending') {
+        setIsAdmin(false)
+        router.push('/pending')
+        return
+      }
+
+      // 거절된 계정 → 로그아웃
+      if (profile.status === 'rejected') {
+        setIsAdmin(false)
+        try { await supabase.auth.signOut() } catch {}
+        router.push('/login?error=rejected')
+        return
+      }
+
+      // active 계정만 관리자 여부 체크
+      const adminPositions = ['운영진', '관리자', '회장']
+      setIsAdmin(profile.status === 'active' && adminPositions.includes(profile.position ?? ''))
     } catch (error) {
-      console.error('Failed to check admin status:', error)
+      console.error('Failed to check profile:', error)
       setIsAdmin(false)
     }
-  }, [supabase])
+  }, [supabase, router])
 
   useEffect(() => {
     const initSession = async () => {
@@ -72,9 +102,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(initialSession)
         setUser(mapSupabaseUser(initialSession?.user ?? null))
 
-        // admin 체크는 로딩을 막지 않도록 비동기로 실행
+        // profile/admin 체크는 로딩을 막지 않도록 비동기로 실행
         if (initialSession?.user) {
-          checkAdminStatus()
+          checkProfileAndAdmin(initialSession.user.id)
         }
       } catch (error) {
         console.error('Failed to get initial session:', error)
@@ -91,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mapSupabaseUser(newSession?.user ?? null))
 
         if (newSession?.user) {
-          checkAdminStatus()
+          checkProfileAndAdmin(newSession.user.id)
         } else {
           setIsAdmin(false)
         }
