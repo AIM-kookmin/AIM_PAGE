@@ -48,10 +48,12 @@ BEGIN
     UPDATE public.studies
     SET current_members = current_members + 1
     WHERE id = NEW.study_id;
+    RETURN NEW;
   ELSIF TG_OP = 'DELETE' THEN
     UPDATE public.studies
     SET current_members = GREATEST(0, current_members - 1)
     WHERE id = OLD.study_id;
+    RETURN OLD;
   ELSIF TG_OP = 'UPDATE' THEN
     IF NEW.status = 'active' AND OLD.status != 'active' THEN
       UPDATE public.studies
@@ -62,8 +64,8 @@ BEGIN
       SET current_members = GREATEST(0, current_members - 1)
       WHERE id = NEW.study_id;
     END IF;
+    RETURN NEW;
   END IF;
-  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

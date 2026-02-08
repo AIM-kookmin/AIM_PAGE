@@ -28,6 +28,7 @@ CREATE INDEX IF NOT EXISTS idx_studies_is_recruiting ON public.studies(is_recrui
 CREATE INDEX IF NOT EXISTS idx_studies_order ON public.studies("order" DESC);
 
 -- Add trigger for updated_at
+DROP TRIGGER IF EXISTS set_studies_updated_at ON public.studies;
 CREATE TRIGGER set_studies_updated_at
   BEFORE UPDATE ON public.studies
   FOR EACH ROW

@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Mail, Lock } from 'lucide-react'
 import { APP_NAME } from '@/lib/config'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 
 export default function LoginPage() {
@@ -18,7 +19,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     document.title = `Login - ${APP_NAME}`
-    
+
     const params = new URLSearchParams(window.location.search)
     const errorParam = params.get('error')
     if (errorParam === 'rejected') {
@@ -77,36 +78,48 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black overflow-hidden">
+      {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-violet-600/20 rounded-full blur-[20px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/15 rounded-full blur-[15px]" />
+        <div
+          className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
+            transform: 'translate(-30%, -30%)',
+          }}
+        />
+        <div
+          className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%)',
+            transform: 'translate(30%, 30%)',
+          }}
+        />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center py-12 sm:px-6 lg:px-8 min-h-screen">
+      <div className="relative z-10 flex flex-col justify-center py-12 px-4 min-h-screen">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <Link href="/" className="flex justify-center text-2xl font-bold text-white mb-8">
-            <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+          <Link href="/" className="flex justify-center mb-8">
+            <span className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
               AIM
             </span>
-            <span className="ml-2 text-gray-400">AI Monsters</span>
           </Link>
-          <h2 className="text-center text-3xl font-extrabold text-white">
+          <h1 className="text-center text-3xl font-bold text-white mb-2">
             로그인
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-400">
+          </h1>
+          <p className="text-center text-gray-500">
             AIM 부원이신가요?{' '}
-            <Link href="/register" className="font-medium text-primary-400 hover:text-primary-300 transition-colors">
+            <Link href="/register" className="text-violet-400 hover:text-violet-300 transition-colors">
               회원가입
             </Link>
           </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white/5 backdrop-blur-xl py-8 px-4 border border-white/10 sm:rounded-2xl sm:px-10">
-            
+          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+
             {error && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
+              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                 <p className="text-red-400 text-sm text-center">{error}</p>
               </div>
             )}
@@ -126,62 +139,69 @@ export default function LoginPage() {
 
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
+                <div className="w-full border-t border-white/5"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-black text-gray-500">또는 이메일로 로그인</span>
+                <span className="px-4 bg-black text-gray-600">또는</span>
               </div>
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
                   이메일
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
-                  placeholder="your.email@kookmin.ac.kr"
-                />
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    placeholder="your.email@kookmin.ac.kr"
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-2">
                   비밀번호
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50"
-                  placeholder="비밀번호를 입력하세요"
-                />
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    placeholder="비밀번호를 입력하세요"
+                  />
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 px-4 bg-violet-500 hover:bg-violet-400 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? '로그인 중...' : '로그인'}
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-500">
-                문의: <a href="mailto:aim@kookmin.ac.kr" className="text-primary-400 hover:underline">aim@kookmin.ac.kr</a>
-              </p>
-            </div>
+            <p className="mt-6 text-center text-sm text-gray-600">
+              문의:{' '}
+              <a href="mailto:aim.club@kookmin.ac.kr" className="text-violet-400 hover:text-violet-300">
+                aim.club@kookmin.ac.kr
+              </a>
+            </p>
           </div>
         </div>
       </div>

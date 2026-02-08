@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/shared/api/supabase/client'
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js'
@@ -44,9 +44,56 @@ function mapSupabaseUser(supabaseUser: SupabaseUser | null): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
+
+  const checkProfileAndAdmin = useCallback(async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('member_profiles')
+        .select('status, position')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (error) {
+        console.error('Failed to check profile:', error)
+        setIsAdmin(false)
+        return
+      }
+
+      // 프로필이 없으면 → 미가입 상태 → /register로 리다이렉트
+      if (!profile) {
+        setIsAdmin(false)
+        router.push('/register')
+        return
+      }
+
+      // 가입 대기 중 → /pending으로 리다이렉트
+      if (profile.status === 'pending') {
+        setIsAdmin(false)
+        router.push('/pending')
+        return
+      }
+
+      // 거절된 계정 → 로그아웃
+      if (profile.status === 'rejected') {
+        setIsAdmin(false)
+        try { await supabase.auth.signOut() } catch {}
+        router.push('/login?error=rejected')
+        return
+      }
+
+      // active 계정만 관리자 여부 체크
+      const adminPositions = ['운영진', '관리자', '회장']
+      setIsAdmin(profile.status === 'active' && adminPositions.includes(profile.position ?? ''))
+    } catch (error) {
+      console.error('Failed to check profile:', error)
+      setIsAdmin(false)
+    }
+  }, [supabase, router])
 
   useEffect(() => {
     const initSession = async () => {
@@ -54,6 +101,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { session: initialSession } } = await supabase.auth.getSession()
         setSession(initialSession)
         setUser(mapSupabaseUser(initialSession?.user ?? null))
+
+        // profile/admin 체크는 로딩을 막지 않도록 비동기로 실행
+        if (initialSession?.user) {
+          checkProfileAndAdmin(initialSession.user.id)
+        }
       } catch (error) {
         console.error('Failed to get initial session:', error)
       } finally {
@@ -68,6 +120,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(newSession)
         setUser(mapSupabaseUser(newSession?.user ?? null))
 
+        if (newSession?.user) {
+          checkProfileAndAdmin(newSession.user.id)
+        } else {
+          setIsAdmin(false)
+        }
+
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
           router.refresh()
         }
@@ -77,7 +135,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const signIn = useCallback(async (email: string, password: string) => {
     try {
@@ -95,8 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const signUp = useCallback(async (
-    email: string, 
-    password: string, 
+    email: string,
+    password: string,
     metadata?: { name?: string }
   ) => {
     try {
@@ -120,8 +179,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const logout = useCallback(async () => {
-    await supabase.auth.signOut()
+    // 즉시 UI 상태 초기화
+    setUser(null)
+    setSession(null)
+    setIsAdmin(false)
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Sign out error:', error)
+    }
     router.push('/')
+    router.refresh()
   }, [supabase, router])
 
   const getSession = useCallback(async () => {
@@ -143,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     isAuthenticated: !!session && !!user,
-    isAdmin: user?.role === 'admin',
+    isAdmin,
     isLoading,
     getSession,
   }

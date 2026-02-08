@@ -55,11 +55,6 @@ export function MemberCard({ member, onEdit, onDelete, className = '' }: MemberC
             {member.generation}기
           </Text>
         )}
-        {member.year && (
-          <Text variant="muted" size="sm">
-            {member.year}
-          </Text>
-        )}
         {member.position && (
           <Text variant="muted" size="sm">
             {member.position}

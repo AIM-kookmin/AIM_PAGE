@@ -8,6 +8,7 @@ import type {
   Activity,
   StudyPostWithAuthor,
 } from '@/types/supabase'
+import type { Study } from '@/types/database'
 
 export async function getAboutSections(): Promise<AboutSection[]> {
   const supabase = await createClient()
@@ -148,4 +149,25 @@ export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
   })
 
   return data as StudyPostWithAuthor[]
+}
+
+/**
+ * Fetches all published studies.
+ *
+ * @returns Promise<Study[]> Array of published studies
+ * @throws Error if the Supabase query fails
+ *
+ * @example
+ * const studies = await getPublishedStudies()
+ */
+export async function getPublishedStudies(): Promise<Study[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('studies')
+    .select('*')
+    .eq('visibility', 'public')
+    .order('start_date', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []) as Study[]
 }

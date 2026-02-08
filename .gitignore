@@ -77,6 +77,7 @@ backend/prisma/migrations/
 
 # Database dump files
 *.sql
+!supabase/migrations/*.sql
 *.dump
 *.backup
 
@@ -285,3 +286,12 @@ backend/scripts/*.result
 # - 업로드된 사용자 파일
 # - 백업 파일들
 # ============================================
+
+# Claude Code local configuration
+.claude/
+.mcp.json
+.omc/
+
+# Temporary files
+nul
+view/

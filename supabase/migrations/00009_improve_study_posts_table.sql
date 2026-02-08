@@ -72,7 +72,9 @@ CREATE TRIGGER calculate_study_post_read_time
 CREATE OR REPLACE FUNCTION public.set_published_at()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF NEW.status = 'published' AND OLD.status != 'published' THEN
+  -- Only set published_at if status is 'published' AND published_at is NULL
+  -- This preserves manually set or existing published_at values
+  IF NEW.status = 'published' AND NEW.published_at IS NULL THEN
     NEW.published_at := NOW();
   END IF;
   RETURN NEW;
@@ -82,7 +84,7 @@ $$ LANGUAGE plpgsql;
 -- Trigger to set published_at
 DROP TRIGGER IF EXISTS set_study_post_published_at ON public.study_posts;
 CREATE TRIGGER set_study_post_published_at
-  BEFORE UPDATE ON public.study_posts
+  BEFORE INSERT OR UPDATE ON public.study_posts
   FOR EACH ROW
   EXECUTE FUNCTION public.set_published_at();
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/shared/api/supabase/client'
@@ -13,18 +14,23 @@ interface AdminLayoutClientProps {
 
 export default function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
   const router = useRouter()
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
 
   const handleLogout = async () => {
     if (confirm('로그아웃하시겠습니까?')) {
-      await supabase.auth.signOut()
+      try {
+        await supabaseRef.current.auth.signOut()
+      } catch (error) {
+        console.error('Sign out error:', error)
+      }
       router.push('/login')
+      router.refresh()
     }
   }
 
   return (
-    <div className="h-screen bg-black overflow-hidden">
-      
+    <div className="min-h-screen bg-black">
+
       {/* 관리자 네비게이션 */}
       <nav className="fixed inset-x-0 top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5 h-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,14 +52,14 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
                 >
                   멤버 관리
                 </Link>
-                <Link 
-                  href="/admin/activities" 
+                <Link
+                  href="/admin/activities-management"
                   className="text-white/70 hover:text-violet-400 font-medium transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]"
                 >
                   활동 관리
                 </Link>
                 <Link 
-                  href="/admin/studies" 
+                  href="/admin/studies-management" 
                   className="text-white/70 hover:text-violet-400 font-medium transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]"
                 >
                   스터디 관리
@@ -94,10 +100,10 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
       </nav>
 
       {/* 사이드바 (모바일에서는 숨김) */}
-      <div className="flex pt-16 h-screen">
-        <aside className="hidden lg:flex lg:flex-shrink-0">
-          <div className="flex flex-col w-64">
-            <div className="flex flex-col flex-grow bg-black/50 backdrop-blur-lg border-r border-white/5 pt-5 pb-4 overflow-y-auto h-full">
+      <div className="flex pt-16 min-h-screen">
+        <aside className="hidden lg:flex lg:flex-shrink-0 lg:fixed lg:left-0 lg:top-16 lg:bottom-0">
+          <div className="flex flex-col w-64 h-full">
+            <div className="flex flex-col flex-grow bg-black/50 backdrop-blur-lg border-r border-white/5 pt-5 pb-4 overflow-y-auto">
               <div className="flex items-center flex-shrink-0 px-4 mb-2">
                 <h2 className="text-lg font-medium text-white">관리 메뉴</h2>
               </div>
@@ -121,13 +127,13 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
                   👥 멤버 관리
                 </Link>
                 <Link
-                  href="/admin/activities"
+                  href="/admin/activities-management"
                   className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-white/70 hover:bg-white/5 hover:text-violet-400 transition-all duration-300"
                 >
                   🎯 활동 관리
                 </Link>
                 <Link
-                  href="/admin/studies"
+                  href="/admin/studies-management"
                   className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-white/70 hover:bg-white/5 hover:text-violet-400 transition-all duration-300"
                 >
                   📚 스터디 관리
@@ -144,7 +150,7 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
         </aside>
 
         {/* 메인 콘텐츠 */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none bg-black h-full">
+        <main className="flex-1 lg:ml-64 bg-black">
           <div className="py-6">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {children}

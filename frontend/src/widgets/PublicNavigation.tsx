@@ -1,15 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@/app/providers/AuthContext'
+import { useAuth } from '@/shared/providers/AuthContext'
 
 export default function PublicNavigation() {
   const { logout, isAuthenticated, isAdmin } = useAuth()
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm('로그아웃하시겠습니까?')) {
-      logout()
-      alert('로그아웃되었습니다.')
+      await logout()
     }
   }
 

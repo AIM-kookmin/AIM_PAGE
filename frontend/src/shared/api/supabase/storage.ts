@@ -34,6 +34,21 @@ export async function uploadFile(
   return path
 }
 
+/**
+ * Generate a secure proxy URL that routes through the API
+ * This prevents exposing Supabase Storage URLs directly
+ * @param bucket - Storage bucket name
+ * @param path - File path within the bucket
+ * @returns Proxy URL in format: /api/images/{bucket}/{path}
+ */
+export function getSecureUrl(bucket: StorageBucket, path: string): string {
+  return `/api/images/${bucket}/${path}`
+}
+
+/**
+ * @deprecated Use getSecureUrl instead for better security
+ * This exposes the Supabase Storage URL directly
+ */
 export function getPublicUrl(bucket: StorageBucket, path: string): string {
   const supabase = createClient()
   const { data } = supabase.storage.from(bucket).getPublicUrl(path)
@@ -56,7 +71,17 @@ export async function uploadMemberAvatar(
   const ext = file.name.split('.').pop()
   const path = `avatars/${userId}.${ext}`
   await uploadFile('members', path, file)
-  return getPublicUrl('members', path)
+  return getSecureUrl('members', path)
+}
+
+export async function uploadActivityCover(
+  activityId: string,
+  file: File
+): Promise<string> {
+  const ext = file.name.split('.').pop()
+  const path = `covers/${activityId}_${Date.now()}.${ext}`
+  await uploadFile('activities', path, file)
+  return getSecureUrl('activities', path)
 }
 
 export async function uploadActivityImages(
@@ -64,15 +89,15 @@ export async function uploadActivityImages(
   files: File[]
 ): Promise<string[]> {
   const urls: string[] = []
-  
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
     const ext = file.name.split('.').pop()
     const path = `${activityId}/${Date.now()}_${i}.${ext}`
     await uploadFile('activities', path, file)
-    urls.push(getPublicUrl('activities', path))
+    urls.push(getSecureUrl('activities', path))
   }
-  
+
   return urls
 }
 
@@ -83,5 +108,22 @@ export async function uploadStudyCover(
   const ext = file.name.split('.').pop()
   const path = `covers/${studyId}.${ext}`
   await uploadFile('studies', path, file)
-  return getPublicUrl('studies', path)
+  return getSecureUrl('studies', path)
+}
+
+export async function uploadStudyImages(
+  studyId: string,
+  files: File[]
+): Promise<string[]> {
+  const urls: string[] = []
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    const ext = file.name.split('.').pop()
+    const path = `${studyId}/${Date.now()}_${i}.${ext}`
+    await uploadFile('studies', path, file)
+    urls.push(getSecureUrl('studies', path))
+  }
+
+  return urls
 }
