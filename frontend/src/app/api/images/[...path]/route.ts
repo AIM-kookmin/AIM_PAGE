@@ -14,16 +14,6 @@ export async function GET(
   try {
     const supabase = await createClient()
 
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
     // Construct the file path
     const bucket = params.path[0] // e.g., 'activities'
     const filePath = params.path.slice(1).join('/') // e.g., 'covers/filename.jpg'
@@ -35,28 +25,51 @@ export async function GET(
       )
     }
 
-    // Generate a signed URL (valid for 1 hour)
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(filePath, 3600) // 3600 seconds = 1 hour
+    // Public buckets: activities, studies
+    // Private buckets: members (requires authentication)
+    const publicBuckets = ['activities', 'studies']
+    const isPublicBucket = publicBuckets.includes(bucket)
 
-    if (error) {
-      console.error('Error generating signed URL:', error)
-      return NextResponse.json(
-        { error: 'Failed to generate signed URL' },
-        { status: 500 }
-      )
+    if (!isPublicBucket) {
+      // For private buckets (e.g., members), check authentication
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+      if (authError || !user) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        )
+      }
     }
 
-    if (!data?.signedUrl) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      )
-    }
+    // For public buckets, use public URL
+    // For private buckets, generate signed URL
+    if (isPublicBucket) {
+      const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
+      return NextResponse.redirect(data.publicUrl)
+    } else {
+      // Generate a signed URL (valid for 1 hour)
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .createSignedUrl(filePath, 3600)
 
-    // Redirect to the signed URL
-    return NextResponse.redirect(data.signedUrl)
+      if (error) {
+        console.error('Error generating signed URL:', error)
+        return NextResponse.json(
+          { error: 'Failed to generate signed URL' },
+          { status: 500 }
+        )
+      }
+
+      if (!data?.signedUrl) {
+        return NextResponse.json(
+          { error: 'File not found' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.redirect(data.signedUrl)
+    }
   } catch (error) {
     console.error('Error in image API route:', error)
     return NextResponse.json(

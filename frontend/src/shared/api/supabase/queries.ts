@@ -133,6 +133,7 @@ export async function getPublicMembers(): Promise<MemberProfile[]> {
     .from('member_profiles')
     .select('*')
     .eq('is_public', true)
+    .eq('status', 'active')
     .order('generation', { ascending: true })
     .order('display_name', { ascending: true })
 
