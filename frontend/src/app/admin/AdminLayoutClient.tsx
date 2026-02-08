@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/shared/api/supabase/client'
@@ -13,12 +14,17 @@ interface AdminLayoutClientProps {
 
 export default function AdminLayoutClient({ children, user }: AdminLayoutClientProps) {
   const router = useRouter()
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
 
   const handleLogout = async () => {
     if (confirm('로그아웃하시겠습니까?')) {
-      await supabase.auth.signOut()
+      try {
+        await supabaseRef.current.auth.signOut()
+      } catch (error) {
+        console.error('Sign out error:', error)
+      }
       router.push('/login')
+      router.refresh()
     }
   }
 
