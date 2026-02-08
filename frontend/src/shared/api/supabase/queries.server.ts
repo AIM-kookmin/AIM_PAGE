@@ -65,6 +65,7 @@ export async function getPublicMembers(): Promise<MemberProfile[]> {
     .from('member_profiles')
     .select('*')
     .eq('is_public', true)
+    .eq('status', 'active')
 
   if (error) throw error
   return data ?? []
@@ -75,6 +76,7 @@ export async function getActivities(): Promise<Activity[]> {
   const { data, error } = await supabase
     .from('activities')
     .select('*')
+    .eq('is_active', true)
     .order('date', { ascending: false })
     .limit(50)
 
@@ -166,6 +168,7 @@ export async function getPublishedStudies(): Promise<Study[]> {
     .from('studies')
     .select('*')
     .eq('visibility', 'public')
+    .in('status', ['active', 'completed'])
     .order('start_date', { ascending: false })
 
   if (error) throw error
