@@ -168,7 +168,7 @@ export async function getPublishedStudies(): Promise<Study[]> {
     .from('studies')
     .select('*')
     .eq('visibility', 'public')
-    .in('status', ['active', 'completed'])
+    .in('status', ['active', 'completed', 'recruiting'])
     .order('start_date', { ascending: false })
 
   if (error) throw error
