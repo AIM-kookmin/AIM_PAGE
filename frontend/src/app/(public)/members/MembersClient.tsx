@@ -4,7 +4,7 @@ import { memo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Github, Linkedin, ChevronRight } from 'lucide-react'
+import { Github, Linkedin, Instagram, Globe, ChevronRight } from 'lucide-react'
 import type { MemberProfile } from '@/types/supabase'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -16,59 +16,95 @@ interface MembersClientProps {
 
 const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile }) {
   return (
-    <div className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300">
-      <div className="flex flex-col items-center text-center">
-        {/* 프로필 이미지 */}
-        <div className="w-20 h-20 bg-violet-500/10 border border-violet-500/20 rounded-full flex items-center justify-center mb-4 group-hover:bg-violet-500/20 group-hover:scale-110 transition-all duration-300">
-          <span className="text-violet-400 text-2xl font-bold">
+    <div className="group p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-[0_0_20px_-5px_rgba(139,92,246,0.15)] transition-all duration-300">
+      <div className="flex gap-5 items-start">
+        {/* 왼쪽: 프로필 이미지 */}
+        <div className="shrink-0 w-20 h-20 bg-gradient-to-br from-violet-500/20 to-indigo-500/20 border border-violet-500/30 rounded-full flex items-center justify-center group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all duration-300">
+          <span className="text-violet-300 text-2xl font-bold">
             {member.display_name.charAt(0)}
           </span>
         </div>
 
-        {/* 기본 정보 */}
-        <h3 className="text-lg font-bold text-white mb-1 group-hover:text-violet-300 transition-colors">
-          {member.display_name}
-        </h3>
-        <p className="text-violet-400 text-sm font-medium mb-3">
-          {member.position || '부원'}
-        </p>
+        {/* 오른쪽: 정보 */}
+        <div className="min-w-0 flex-1">
+          {/* 이름 */}
+          <h3 className="text-lg font-bold text-white mb-1 group-hover:text-violet-300 transition-colors truncate">
+            {member.display_name}
+          </h3>
 
-        {/* 세부 정보 */}
-        <div className="space-y-1 text-sm text-gray-500 mb-4">
-          {member.generation && (
-            <p className="text-violet-400/80">{member.generation}기</p>
+          {/* 기수, 직책 */}
+          <div className="flex items-center gap-2 text-sm mb-2 flex-wrap">
+            {member.generation && (
+              <span className="text-violet-400 font-medium">{member.generation}기</span>
+            )}
+            {member.generation && member.position && (
+              <span className="text-gray-600">·</span>
+            )}
+            {member.position && (
+              <span className="text-violet-400/80">{member.position}</span>
+            )}
+          </div>
+
+          {/* 학부 */}
+          {member.department && (
+            <p className="text-gray-500 text-sm mb-2 truncate">{member.department}</p>
           )}
-          {member.department && <p>{member.department}</p>}
-        </div>
 
-        {/* 소개 */}
-        {member.bio && (
-          <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2">
-            {member.bio}
-          </p>
-        )}
-
-        {/* 연락처 */}
-        <div className="flex gap-3 mt-auto">
-          {member.links && typeof member.links === 'object' && 'github' in member.links && member.links.github && (
-            <a
-              href={`https://github.com/${member.links.github}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-8 h-8 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-300"
-            >
-              <Github className="w-4 h-4" />
-            </a>
+          {/* 자기소개 */}
+          {member.bio && (
+            <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 mb-3">
+              {member.bio}
+            </p>
           )}
-          {member.links && typeof member.links === 'object' && 'linkedin' in member.links && member.links.linkedin && (
-            <a
-              href={`https://linkedin.com/in/${member.links.linkedin}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-8 h-8 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-300"
-            >
-              <Linkedin className="w-4 h-4" />
-            </a>
+
+          {/* 연락처 */}
+          {(member.links && typeof member.links === 'object' &&
+            (('github' in member.links && member.links.github) ||
+             ('linkedin' in member.links && member.links.linkedin) ||
+             ('instagram' in member.links && member.links.instagram) ||
+             ('blog' in member.links && member.links.blog))) && (
+            <div className="flex gap-2">
+              {member.links && typeof member.links === 'object' && 'github' in member.links && member.links.github && (
+                <a
+                  href={`https://github.com/${member.links.github}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {member.links && typeof member.links === 'object' && 'linkedin' in member.links && member.links.linkedin && (
+                <a
+                  href={`https://linkedin.com/in/${member.links.linkedin}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                >
+                  <Linkedin className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {member.links && typeof member.links === 'object' && 'instagram' in member.links && member.links.instagram && (
+                <a
+                  href={`https://instagram.com/${member.links.instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                >
+                  <Instagram className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {member.links && typeof member.links === 'object' && 'blog' in member.links && member.links.blog && typeof member.links.blog === 'string' && (
+                <a
+                  href={member.links.blog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -196,9 +232,9 @@ function MembersClient({ executives, regularMembers }: MembersClientProps) {
             {/* 운영진 */}
             {executives.length > 0 && (
               <section ref={executivesRef} className="py-24 px-4">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-bold text-white text-center mb-12">운영진</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {executives.map(member => (
                       <MemberCard key={member.id} member={member} />
                     ))}
@@ -212,7 +248,7 @@ function MembersClient({ executives, regularMembers }: MembersClientProps) {
               <section ref={membersRef} className="py-24 px-4">
                 <div className="max-w-7xl mx-auto">
                   <h2 className="text-3xl font-bold text-white text-center mb-12">부원</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {regularMembers.map(member => (
                       <MemberCard key={member.id} member={member} />
                     ))}

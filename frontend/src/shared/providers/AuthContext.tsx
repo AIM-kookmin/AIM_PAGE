@@ -14,13 +14,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null
-  /** @deprecated Supabase handles tokens internally. Use getSession() if needed. */
-  token: string | null
-  /** @deprecated Use signIn methods instead */
-  login: (token: string, user: User) => void
   logout: () => Promise<void>
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-  signUp: (email: string, password: string, metadata?: { name?: string }) => Promise<{ error: Error | null }>
   isAuthenticated: boolean
   isAdmin: boolean
   isLoading: boolean
@@ -138,46 +132,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) {
-        return { error: new Error(error.message) }
-      }
-      return { error: null }
-    } catch (err) {
-      return { error: err instanceof Error ? err : new Error('Unknown error') }
-    }
-  }, [supabase])
-
-  const signUp = useCallback(async (
-    email: string,
-    password: string,
-    metadata?: { name?: string }
-  ) => {
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: metadata?.name ?? email.split('@')[0],
-            role: 'member',
-          },
-        },
-      })
-      if (error) {
-        return { error: new Error(error.message) }
-      }
-      return { error: null }
-    } catch (err) {
-      return { error: err instanceof Error ? err : new Error('Unknown error') }
-    }
-  }, [supabase])
-
   const logout = useCallback(async () => {
     // 즉시 UI 상태 초기화
     setUser(null)
@@ -197,19 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return currentSession
   }, [supabase])
 
-  /** @deprecated Use signIn() instead */
-  const login = useCallback((_token: string, newUser: User) => {
-    console.warn('login() is deprecated. Use signIn() for Supabase authentication.')
-    setUser(newUser)
-  }, [])
-
   const value: AuthContextType = {
     user,
-    token: session?.access_token ?? null,
-    login,
     logout,
-    signIn,
-    signUp,
     isAuthenticated: !!session && !!user,
     isAdmin,
     isLoading,

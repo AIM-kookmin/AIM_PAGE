@@ -2,12 +2,22 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, Key, Save, ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
+import { CheckCircle, XCircle, Github, Linkedin, Instagram, Globe } from 'lucide-react'
 import { Button, Card, Text, Title, Subtitle, Loading } from '@/shared/ui'
 import { useAuth } from '@/shared/providers/AuthContext'
-import { createClient } from '@/shared/api/supabase/client'
 import { getMyProfile, updateMemberProfile } from '@/shared/api/supabase'
 import { APP_NAME } from '@/lib/config'
+import {
+  normalizeGitHub,
+  normalizeLinkedIn,
+  normalizeInstagram,
+  normalizeBlog,
+  validateGitHub,
+  validateLinkedIn,
+  validateInstagram,
+  validateBlog,
+  type MemberLinks
+} from '@/shared/lib/socialLinks'
 
 interface ProfileData {
   displayName: string
@@ -17,12 +27,7 @@ interface ProfileData {
   generation: number
   bio: string
   isPublic: boolean
-}
-
-interface PasswordData {
-  currentPassword: string
-  newPassword: string
-  confirmPassword: string
+  links: MemberLinks
 }
 
 export default function ProfilePage() {
@@ -30,9 +35,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile')
-  const supabase = createClient()
-  
+
   const [profileData, setProfileData] = useState<ProfileData>({
     displayName: '',
     studentId: '',
@@ -40,13 +43,8 @@ export default function ProfilePage() {
     department: '',
     generation: 0,
     bio: '',
-    isPublic: true
-  })
-
-  const [passwordData, setPasswordData] = useState<PasswordData>({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    isPublic: true,
+    links: { github: '', linkedin: '', instagram: '', blog: '' }
   })
 
   const [notification, setNotification] = useState<{
@@ -90,7 +88,13 @@ export default function ProfilePage() {
           department: profile.department || '',
           generation: profile.generation || 0,
           bio: profile.bio || '',
-          isPublic: profile.is_public ?? true
+          isPublic: profile.is_public ?? true,
+          links: {
+            github: (profile.links as MemberLinks)?.github || '',
+            linkedin: (profile.links as MemberLinks)?.linkedin || '',
+            instagram: (profile.links as MemberLinks)?.instagram || '',
+            blog: (profile.links as MemberLinks)?.blog || '',
+          }
         })
       } else {
         // 프로필이 없는 경우 기본값 (Auth user 정보 사용)
@@ -140,12 +144,40 @@ export default function ProfilePage() {
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!user) return
 
     try {
       setSaving(true)
-      
+
+      // Normalize social links
+      const normalizedGithub = normalizeGitHub(profileData.links.github || '')
+      const normalizedLinkedin = normalizeLinkedIn(profileData.links.linkedin || '')
+      const normalizedInstagram = normalizeInstagram(profileData.links.instagram || '')
+      const normalizedBlog = normalizeBlog(profileData.links.blog || '')
+
+      // Validate non-empty links
+      if (normalizedGithub && !validateGitHub(normalizedGithub)) {
+        showNotification('error', '오류', 'GitHub 사용자명이 올바르지 않습니다.')
+        setSaving(false)
+        return
+      }
+      if (normalizedLinkedin && !validateLinkedIn(normalizedLinkedin)) {
+        showNotification('error', '오류', 'LinkedIn 사용자명이 올바르지 않습니다.')
+        setSaving(false)
+        return
+      }
+      if (normalizedInstagram && !validateInstagram(normalizedInstagram)) {
+        showNotification('error', '오류', 'Instagram 사용자명이 올바르지 않습니다.')
+        setSaving(false)
+        return
+      }
+      if (normalizedBlog && !validateBlog(normalizedBlog)) {
+        showNotification('error', '오류', '블로그 URL이 올바르지 않습니다.')
+        setSaving(false)
+        return
+      }
+
       const updates = {
         display_name: profileData.displayName,
         student_id: profileData.studentId,
@@ -153,11 +185,17 @@ export default function ProfilePage() {
         department: profileData.department,
         generation: profileData.generation,
         bio: profileData.bio,
-        is_public: profileData.isPublic
+        is_public: profileData.isPublic,
+        links: {
+          github: normalizedGithub,
+          linkedin: normalizedLinkedin,
+          instagram: normalizedInstagram,
+          blog: normalizedBlog
+        }
       }
 
       const updatedProfile = await updateMemberProfile(user.id, updates)
-      
+
       if (updatedProfile) {
         showNotification('success', '저장 완료', '프로필이 성공적으로 업데이트되었습니다.')
       } else {
@@ -166,45 +204,6 @@ export default function ProfilePage() {
     } catch (error) {
       console.error('프로필 저장 오류:', error)
       showNotification('error', '오류', '프로필 저장 중 오류가 발생했습니다.')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      showNotification('error', '비밀번호 불일치', '새 비밀번호가 일치하지 않습니다.')
-      return
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      showNotification('error', '비밀번호 오류', '비밀번호는 최소 6자 이상이어야 합니다.')
-      return
-    }
-
-    try {
-      setSaving(true)
-      
-      // Supabase Auth 비밀번호 업데이트
-      const { error } = await supabase.auth.updateUser({
-        password: passwordData.newPassword
-      })
-      
-      if (!error) {
-        showNotification('success', '변경 완료', '비밀번호가 성공적으로 변경되었습니다.')
-        setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        })
-      } else {
-        throw error
-      }
-    } catch (error) {
-      console.error('비밀번호 변경 오류:', error)
-      showNotification('error', '변경 실패', error instanceof Error ? error.message : '비밀번호 변경에 실패했습니다.')
     } finally {
       setSaving(false)
     }
@@ -247,39 +246,12 @@ export default function ProfilePage() {
             </span>
           </Title>
           <Subtitle className="text-gray-400">
-            내 프로필 정보를 관리하고 비밀번호를 변경할 수 있습니다
+            프로필 정보를 관리하세요
           </Subtitle>
         </div>
 
-        {/* 탭 */}
-        <div className="flex space-x-2 mb-6">
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-              activeTab === 'profile'
-                ? 'bg-violet-500 text-white'
-                : 'bg-white/[0.02] text-gray-400 hover:bg-white/[0.05] border border-white/5 hover:border-violet-500/30'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            프로필 정보
-          </button>
-          <button
-            onClick={() => setActiveTab('password')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-              activeTab === 'password'
-                ? 'bg-violet-500 text-white'
-                : 'bg-white/[0.02] text-gray-400 hover:bg-white/[0.05] border border-white/5 hover:border-violet-500/30'
-            }`}
-          >
-            <Key className="w-4 h-4" />
-            비밀번호 변경
-          </button>
-        </div>
-
-        {/* 프로필 정보 탭 */}
-        {activeTab === 'profile' && (
-          <Card className="p-8">
+        {/* 프로필 정보 */}
+        <Card className="p-8">
             <form onSubmit={handleProfileSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -316,10 +288,14 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={profileData.position}
-                    onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-xl text-gray-400 placeholder-gray-600 cursor-not-allowed opacity-60"
                     placeholder="부원, 운영진 등"
+                    disabled
+                    readOnly
                   />
+                  <p className="text-gray-500 text-xs mt-2">
+                    * 직책은 관리자만 변경할 수 있습니다
+                  </p>
                 </div>
 
                 <div>
@@ -375,6 +351,86 @@ export default function ProfilePage() {
                     </span>
                   </label>
                 </div>
+
+                {/* 소셜 링크 */}
+                <div className="md:col-span-2 pt-6 mt-6 border-t border-white/5">
+                  <h3 className="text-sm font-medium text-gray-400 mb-4">소셜 링크</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    {/* GitHub */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <Github className="w-4 h-4" /> GitHub
+                      </label>
+                      <input
+                        type="text"
+                        value={profileData.links.github}
+                        onChange={(e) => setProfileData({
+                          ...profileData,
+                          links: { ...profileData.links, github: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                        placeholder="username"
+                      />
+                      <p className="text-xs text-gray-600 mt-1">사용자명만 입력</p>
+                    </div>
+
+                    {/* LinkedIn */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <Linkedin className="w-4 h-4" /> LinkedIn
+                      </label>
+                      <input
+                        type="text"
+                        value={profileData.links.linkedin}
+                        onChange={(e) => setProfileData({
+                          ...profileData,
+                          links: { ...profileData.links, linkedin: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                        placeholder="username"
+                      />
+                      <p className="text-xs text-gray-600 mt-1">사용자명만 입력</p>
+                    </div>
+
+                    {/* Instagram */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <Instagram className="w-4 h-4" /> Instagram
+                      </label>
+                      <input
+                        type="text"
+                        value={profileData.links.instagram}
+                        onChange={(e) => setProfileData({
+                          ...profileData,
+                          links: { ...profileData.links, instagram: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                        placeholder="username"
+                      />
+                      <p className="text-xs text-gray-600 mt-1">사용자명만 입력</p>
+                    </div>
+
+                    {/* Blog */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <Globe className="w-4 h-4" /> Blog
+                      </label>
+                      <input
+                        type="text"
+                        value={profileData.links.blog}
+                        onChange={(e) => setProfileData({
+                          ...profileData,
+                          links: { ...profileData.links, blog: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                        placeholder="https://blog.example.com"
+                      />
+                      <p className="text-xs text-gray-600 mt-1">전체 URL 입력</p>
+                    </div>
+
+                  </div>
+                </div>
               </div>
 
               <div className="mt-8 flex justify-end space-x-4">
@@ -395,85 +451,6 @@ export default function ProfilePage() {
               </div>
             </form>
           </Card>
-        )}
-
-        {/* 비밀번호 변경 탭 */}
-        {activeTab === 'password' && (
-          <Card className="p-8">
-            <form onSubmit={handlePasswordSubmit}>
-              <div className="max-w-md space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    현재 비밀번호 *
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.currentPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors disabled:opacity-50"
-                    placeholder="현재 비밀번호 (무시됨)"
-                    disabled
-                  />
-                  <p className="text-gray-500 text-xs mt-2">
-                    * 로그인된 상태에서는 현재 비밀번호 확인 없이 변경 가능합니다.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    새 비밀번호 *
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
-                    placeholder="새 비밀번호 (최소 6자)"
-                    required
-                    minLength={6}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
-                    새 비밀번호 확인 *
-                  </label>
-                  <input
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/5 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
-                    placeholder="새 비밀번호 확인"
-                    required
-                    minLength={6}
-                  />
-                  {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
-                    <p className="mt-2 text-sm text-red-400">
-                      비밀번호가 일치하지 않습니다.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-8 flex justify-end space-x-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}
-                >
-                  취소
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={saving || passwordData.newPassword !== passwordData.confirmPassword}
-                >
-                  {saving ? '변경 중...' : '비밀번호 변경'}
-                </Button>
-              </div>
-            </form>
-          </Card>
-        )}
       </main>
 
       {/* 알림 */}
