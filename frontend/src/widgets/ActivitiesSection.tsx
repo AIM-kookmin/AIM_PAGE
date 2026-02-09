@@ -64,25 +64,20 @@ const ActivityItem = memo(function ActivityItem({ activity, index }: { activity:
         <div className="py-8 md:py-12 px-4 md:px-8 flex items-center justify-between gap-8">
           <div className="flex items-center gap-6 md:gap-12 flex-1">
             <span className="text-white/30 text-sm font-mono w-8">{activity.number}</span>
-            
+
             <div className="flex-1">
               <h3 className="text-2xl md:text-4xl font-bold text-white group-hover:text-violet-400 transition-colors duration-300">
                 {activity.title}
               </h3>
-              
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.p
-                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-white/60 text-base md:text-lg max-w-2xl overflow-hidden"
-                  >
-                    {activity.description}
-                  </motion.p>
-                )}
-              </AnimatePresence>
+
+              <motion.p
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                transition={{ duration: 0.3 }}
+                className="text-white/60 text-base md:text-lg max-w-2xl whitespace-pre-line"
+              >
+                {activity.description}
+              </motion.p>
             </div>
           </div>
 

@@ -80,7 +80,7 @@ const TimelineItem = memo(function TimelineItem({ achievement, index }: { achiev
                 animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
                 transition={{ duration: 0.2 }}
-                className="text-white/60 overflow-hidden"
+                className="text-white/60 overflow-hidden whitespace-pre-line"
               >
                 {achievement.description}
               </motion.p>
