@@ -71,6 +71,7 @@ export interface Study {
   current_members: number
   is_recruiting: boolean
   difficulty: 'beginner' | 'intermediate' | 'advanced'
+  level: '입문' | '중급' | '심화' | '응용' // Korean difficulty level
   schedule: string | null
   meeting_type: 'offline' | 'online' | 'hybrid'
   cover_url: string | null
@@ -96,6 +97,7 @@ export interface StudyInsert {
   max_members?: number
   is_recruiting?: boolean
   difficulty?: Study['difficulty']
+  level?: Study['level']
   schedule?: string
   meeting_type?: Study['meeting_type']
   cover_url?: string
@@ -119,6 +121,7 @@ export interface StudyUpdate {
   max_members?: number
   is_recruiting?: boolean
   difficulty?: Study['difficulty']
+  level?: Study['level']
   schedule?: string
   meeting_type?: Study['meeting_type']
   cover_url?: string

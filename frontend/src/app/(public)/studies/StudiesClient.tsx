@@ -115,13 +115,14 @@ function StudyListItem({ study, onClick }: StudyListItemProps) {
     return badges[status]
   }
 
-  const getDifficultyBadge = (difficulty: Study['difficulty']) => {
+  const getDifficultyBadge = (level: Study['level']) => {
     const badges = {
-      beginner: { text: '초급', color: 'bg-green-500/10 border-green-500/20 text-green-400' },
-      intermediate: { text: '중급', color: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' },
-      advanced: { text: '고급', color: 'bg-red-500/10 border-red-500/20 text-red-400' },
+      '입문': { text: '입문', color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
+      '중급': { text: '중급', color: 'bg-blue-500/10 border-blue-500/20 text-blue-400' },
+      '심화': { text: '심화', color: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+      '응용': { text: '응용', color: 'bg-rose-500/10 border-rose-500/20 text-rose-400' },
     }
-    return badges[difficulty]
+    return badges[level]
   }
 
   const formatDateRange = (startDate: string | null, endDate: string | null) => {
@@ -147,7 +148,7 @@ function StudyListItem({ study, onClick }: StudyListItemProps) {
   const images = study.images && study.images.length > 0 ? study.images : [study.cover_url].filter((url): url is string => Boolean(url))
   const thumbnail = images.length > 0 ? images[0] : null
   const statusBadge = getStatusBadge(study.status)
-  const difficultyBadge = getDifficultyBadge(study.difficulty)
+  const difficultyBadge = getDifficultyBadge(study.level)
   const dateRange = formatDateRange(study.start_date, study.end_date)
   const participantCount = study.participants ? study.participants.length : 0
 
