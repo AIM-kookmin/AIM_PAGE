@@ -89,7 +89,7 @@ export default function StudyCard({
 
         {/* Description */}
         {study.content && (
-          <p className="text-sm text-gray-400 line-clamp-2">
+          <p className="text-sm text-gray-400 line-clamp-2 whitespace-pre-line">
             {study.content}
           </p>
         )}

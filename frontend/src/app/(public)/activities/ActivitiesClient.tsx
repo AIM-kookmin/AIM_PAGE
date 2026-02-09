@@ -140,7 +140,7 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
                         </h3>
 
                         {activity.description && (
-                          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3">
+                          <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 whitespace-pre-line">
                             {activity.description}
                           </p>
                         )}

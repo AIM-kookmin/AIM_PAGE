@@ -9,6 +9,7 @@ import { createClient } from '@/shared/api/supabase/client'
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
+  const [contactEmail, setContactEmail] = useState('aim.club@kookmin.ac.kr')
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
   const supabase = createClient()
@@ -23,7 +24,22 @@ export default function LoginPage() {
     } else if (errorParam === 'auth_failed') {
       setError('인증에 실패했습니다. 다시 시도해주세요.')
     }
-  }, [])
+
+    // Fetch contact email from database
+    const fetchContactEmail = async () => {
+      const { data } = await supabase
+        .from('about_contacts')
+        .select('value')
+        .eq('label', 'Email')
+        .maybeSingle()
+
+      if (data?.value) {
+        setContactEmail(data.value)
+      }
+    }
+
+    fetchContactEmail()
+  }, [supabase])
 
   useEffect(() => {
     const checkUserStatus = async () => {
@@ -122,8 +138,8 @@ export default function LoginPage() {
 
             <p className="mt-6 text-center text-sm text-gray-600">
               문의:{' '}
-              <a href="mailto:aim.club@kookmin.ac.kr" className="text-violet-400 hover:text-violet-300">
-                aim.club@kookmin.ac.kr
+              <a href={`mailto:${contactEmail}`} className="text-violet-400 hover:text-violet-300">
+                {contactEmail}
               </a>
             </p>
           </div>

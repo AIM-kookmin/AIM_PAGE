@@ -228,7 +228,7 @@ export default function ActivityDetailModal({
             {/* Description */}
             {activity.description && (
               <div className="animate-reveal">
-                <p className="text-base text-white/80 leading-relaxed whitespace-pre-wrap">
+                <p className="text-base text-white/80 leading-relaxed whitespace-pre-line">
                   {activity.description}
                 </p>
               </div>

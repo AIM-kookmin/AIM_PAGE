@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { BookOpen, Code, Users, Trophy, Mail, Github, Instagram, MapPin } from 'lucide-react'
+import { BookOpen, Code, Users, Trophy, Mail, Github, Instagram, MapPin, Check } from 'lucide-react'
 import type {
   AboutSection,
   AboutActivity,
@@ -59,6 +59,7 @@ export default function AboutClient({
   const activitiesRef = useRef<HTMLDivElement>(null)
   const historyRef = useRef<HTMLDivElement>(null)
   const contactRef = useRef<HTMLDivElement>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -148,7 +149,50 @@ export default function AboutClient({
 
   const getContactIcon = (label: string) => {
     const IconComponent = contactIconMap[label] || Mail
-    return <IconComponent className="w-5 h-5 text-violet-400" />
+    return <IconComponent className="w-7 h-7 text-violet-400" />
+  }
+
+  const isEmailContact = (label: string): boolean => {
+    const lowerLabel = label.toLowerCase()
+    return lowerLabel.includes('email') || lowerLabel.includes('이메일')
+  }
+
+  const isLinkContact = (label: string): boolean => {
+    const linkLabels = ['github', 'GitHub', '깃허브', 'instagram', 'Instagram', '인스타그램']
+    return linkLabels.includes(label)
+  }
+
+  const getContactHref = (label: string, value: string): string => {
+    const lowerLabel = label.toLowerCase()
+    if (lowerLabel.includes('github') || lowerLabel.includes('깃')) {
+      return value.startsWith('http') ? value : `https://github.com/${value}`
+    }
+    if (lowerLabel.includes('instagram') || lowerLabel.includes('인스타')) {
+      return value.startsWith('http') ? value : `https://instagram.com/${value}`
+    }
+    return ''
+  }
+
+  const handleCopyEmail = async (contactId: string, email: string) => {
+    try {
+      await navigator.clipboard.writeText(email)
+      setCopiedId(contactId)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy email:', err)
+    }
+  }
+
+  const handleContactClick = (contact: AboutContact) => {
+    const isEmail = isEmailContact(contact.label)
+    const isLink = isLinkContact(contact.label)
+
+    if (isEmail) {
+      handleCopyEmail(contact.id, contact.value)
+    } else if (isLink) {
+      const href = getContactHref(contact.label, contact.value)
+      window.open(href, '_blank', 'noopener,noreferrer')
+    }
   }
 
   return (
@@ -200,7 +244,7 @@ export default function AboutClient({
                       <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-violet-300 transition-colors">
                         {section.title}
                       </h2>
-                      <p className="text-gray-400 text-lg leading-relaxed">
+                      <p className="text-gray-400 text-lg leading-relaxed whitespace-pre-line">
                         {section.content}
                       </p>
                     </div>
@@ -233,7 +277,7 @@ export default function AboutClient({
                       <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition-colors">
                         {activity.title}
                       </h3>
-                      <p className="text-gray-500 leading-relaxed">
+                      <p className="text-gray-500 leading-relaxed whitespace-pre-line">
                         {activity.description}
                       </p>
                     </div>
@@ -257,7 +301,7 @@ export default function AboutClient({
               <div className="absolute left-8 top-0 bottom-0 w-px bg-gradient-to-b from-violet-500 via-violet-500/50 to-transparent" />
 
               <div className="space-y-12">
-                {history.map((item, index) => (
+                {history.map((item) => (
                   <div key={item.id} className="relative pl-20 group">
                     {/* Timeline dot */}
                     <div className="absolute left-6 top-1 w-5 h-5 rounded-full bg-black border-2 border-violet-500 group-hover:bg-violet-500 group-hover:scale-125 transition-all duration-300" />
@@ -270,7 +314,7 @@ export default function AboutClient({
                         {item.title}
                       </h3>
                     </div>
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 whitespace-pre-line">
                       {item.description}
                     </p>
                   </div>
@@ -288,21 +332,51 @@ export default function AboutClient({
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-16">
               Contact
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {contacts.map((contact) => (
-                <div
-                  key={contact.id}
-                  className="group flex items-center gap-4 p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/20 transition-colors">
-                    {getContactIcon(contact.label)}
+            <div className="flex justify-center items-center gap-8 flex-wrap">
+              {contacts.map((contact) => {
+                const isCopied = copiedId === contact.id
+                const isEmail = isEmailContact(contact.label)
+
+                return (
+                  <div key={contact.id} className="relative group">
+                    {/* Tooltip */}
+                    <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20">
+                      <div className="bg-black/90 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-xl whitespace-nowrap">
+                        <p className="text-white text-sm font-medium">{contact.value}</p>
+                        {isEmail && !isCopied && (
+                          <p className="text-gray-400 text-xs mt-1">클릭하여 복사</p>
+                        )}
+                        {isEmail && isCopied && (
+                          <p className="text-green-400 text-xs mt-1 flex items-center gap-1 justify-center">
+                            <Check className="w-3 h-3" />
+                            복사됨!
+                          </p>
+                        )}
+                      </div>
+                      {/* Arrow */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+                        <div className="w-2 h-2 bg-black/90 border-r border-b border-white/10 rotate-45" />
+                      </div>
+                    </div>
+
+                    {/* Icon Button */}
+                    <button
+                      onClick={() => handleContactClick(contact)}
+                      className="relative w-16 h-16 rounded-full bg-white/[0.02] border border-white/10 hover:border-violet-500/50 hover:bg-white/[0.04] transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.5)] flex items-center justify-center cursor-pointer"
+                    >
+                      {getContactIcon(contact.label)}
+
+                      {/* Glow ring on hover */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-xl" />
+                    </button>
+
+                    {/* Label below */}
+                    <p className="text-center text-gray-500 text-sm mt-3 group-hover:text-violet-400 transition-colors">
+                      {contact.label}
+                    </p>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-gray-500 text-sm mb-1">{contact.label}</p>
-                    <p className="text-white font-medium truncate">{contact.value}</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </section>

@@ -57,7 +57,7 @@ export default function ActivityCard({
         </h3>
 
         {activity.description && (
-          <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-3 flex-1">
+          <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-3 flex-1 whitespace-pre-line">
             {activity.description}
           </p>
         )}

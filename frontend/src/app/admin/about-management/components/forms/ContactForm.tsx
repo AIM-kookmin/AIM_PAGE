@@ -27,7 +27,8 @@ const validateValue = (type: string, value: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
   }
   if (type === 'github' || type === 'instagram') {
-    return value.startsWith('https://')
+    // Accept both username and full URL
+    return value.trim().length > 0
   }
   if (type === 'phone') {
     return /^[\d\s\-+()]+$/.test(value)
@@ -40,9 +41,9 @@ const getValuePlaceholder = (type: string): string => {
     case 'email':
       return '예: aim@kookmin.ac.kr'
     case 'github':
-      return '예: https://github.com/AIM-kookmin'
+      return '예: AIM-kookmin 또는 https://github.com/AIM-kookmin'
     case 'instagram':
-      return '예: https://instagram.com/aim_kookmin'
+      return '예: aim_kookmin 또는 https://instagram.com/aim_kookmin'
     case 'phone':
       return '예: 02-910-4000'
     default:
@@ -56,7 +57,7 @@ const getValueErrorMessage = (type: string): string => {
       return '올바른 이메일 형식이 아닙니다.'
     case 'github':
     case 'instagram':
-      return 'URL은 https://로 시작해야 합니다.'
+      return '값을 입력해주세요.'
     case 'phone':
       return '올바른 전화번호 형식이 아닙니다. (숫자, 공백, -, +, () 허용)'
     default:

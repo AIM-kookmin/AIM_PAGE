@@ -41,6 +41,7 @@ export default function StudiesManagementPage() {
     title: '',
     status: 'recruiting' as Study['status'],
     visibility: 'public' as Study['visibility'],
+    level: '입문' as '입문' | '중급' | '심화' | '응용',
     start_date: '',
     end_date: '',
     content: '',
@@ -127,6 +128,7 @@ export default function StudiesManagementPage() {
       title: '',
       status: 'recruiting' as Study['status'],
       visibility: 'public' as Study['visibility'],
+      level: '입문' as '입문' | '중급' | '심화' | '응용',
       start_date: '',
       end_date: '',
       content: '',
@@ -150,6 +152,7 @@ export default function StudiesManagementPage() {
       title: study.title,
       status: study.status,
       visibility: study.visibility,
+      level: (study.level || '입문') as '입문' | '중급' | '심화' | '응용',
       start_date: study.start_date || '',
       end_date: study.end_date || '',
       content: study.content || '',
@@ -280,6 +283,7 @@ export default function StudiesManagementPage() {
         title: formData.title,
         status: formData.status,
         visibility: formData.visibility,
+        level: formData.level,
         start_date: formData.start_date,
         end_date: formData.end_date,
         content: formData.content || undefined,
@@ -439,6 +443,29 @@ export default function StudiesManagementPage() {
                           <option key={vis.value} value={vis.value} className="bg-gray-900 text-white">{vis.label}</option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Level Selector */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3">
+                      난이도 <span className="text-red-400">*</span>
+                    </label>
+                    <div className="grid grid-cols-4 gap-3">
+                      {(['입문', '중급', '심화', '응용'] as const).map((level) => (
+                        <button
+                          key={level}
+                          type="button"
+                          onClick={() => setFormData({...formData, level})}
+                          className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                            formData.level === level
+                              ? 'bg-violet-500 text-white shadow-lg hover:bg-violet-600'
+                              : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+                          }`}
+                        >
+                          {level}
+                        </button>
+                      ))}
                     </div>
                   </div>
 

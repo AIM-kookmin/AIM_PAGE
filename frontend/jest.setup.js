@@ -106,6 +106,12 @@ jest.mock('@/shared/ui/ScrollReveal', () => {
   return { __esModule: true, default: ScrollReveal }
 })
 
+// Mock Lenis
+jest.mock('lenis/react', () => ({
+  ReactLenis: ({ children }) => children,
+  useLenis: () => null,
+}))
+
 // Suppress console errors in tests
 global.console = {
   ...console,
