@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { BookOpen, Code, Users, Trophy, Mail, Github, Instagram, MapPin } from 'lucide-react'
+import { BookOpen, Code, Users, Trophy, Mail, Github, Instagram, MapPin, ExternalLink } from 'lucide-react'
 import type {
   AboutSection,
   AboutActivity,
@@ -12,6 +12,40 @@ import type {
 } from '@/types/supabase'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Helper functions for contact links
+const isLinkContact = (label: string): boolean => {
+  const normalizedLabel = label.toLowerCase()
+  return normalizedLabel.includes('email') ||
+         normalizedLabel.includes('이메일') ||
+         normalizedLabel.includes('github') ||
+         normalizedLabel.includes('깃허브') ||
+         normalizedLabel.includes('instagram') ||
+         normalizedLabel.includes('인스타그램')
+}
+
+const getContactHref = (label: string, value: string): string => {
+  const normalizedLabel = label.toLowerCase()
+
+  // Email
+  if (normalizedLabel.includes('email') || normalizedLabel.includes('이메일')) {
+    return `mailto:${value}`
+  }
+
+  // GitHub
+  if (normalizedLabel.includes('github') || normalizedLabel.includes('깃허브')) {
+    if (value.startsWith('http')) return value
+    return `https://github.com/${value}`
+  }
+
+  // Instagram
+  if (normalizedLabel.includes('instagram') || normalizedLabel.includes('인스타그램')) {
+    if (value.startsWith('http')) return value
+    return `https://instagram.com/${value}`
+  }
+
+  return ''
+}
 
 interface AboutClientProps {
   sections: AboutSection[]
@@ -289,20 +323,46 @@ export default function AboutClient({
               Contact
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {contacts.map((contact) => (
-                <div
-                  key={contact.id}
-                  className="group flex items-center gap-4 p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/20 transition-colors">
-                    {getContactIcon(contact.label)}
+              {contacts.map((contact) => {
+                const isLink = isLinkContact(contact.label)
+                const href = isLink ? getContactHref(contact.label, contact.value) : ''
+
+                const content = (
+                  <>
+                    <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-500/20 transition-colors">
+                      {getContactIcon(contact.label)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-gray-500 text-sm mb-1">{contact.label}</p>
+                      <p className="text-white font-medium break-words">{contact.value}</p>
+                    </div>
+                    {isLink && (
+                      <div className="flex-shrink-0">
+                        <ExternalLink className="w-4 h-4 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    )}
+                  </>
+                )
+
+                return isLink ? (
+                  <a
+                    key={contact.id}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-4 p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] cursor-pointer transition-all duration-300"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <div
+                    key={contact.id}
+                    className="group flex items-center gap-4 p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-violet-500/30 hover:bg-white/[0.04] transition-all duration-300"
+                  >
+                    {content}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-gray-500 text-sm mb-1">{contact.label}</p>
-                    <p className="text-white font-medium truncate">{contact.value}</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </section>
