@@ -200,7 +200,7 @@ export default function AboutClient({
                       <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-violet-300 transition-colors">
                         {section.title}
                       </h2>
-                      <p className="text-gray-400 text-lg leading-relaxed">
+                      <p className="text-gray-400 text-lg leading-relaxed whitespace-pre-line">
                         {section.content}
                       </p>
                     </div>
@@ -233,7 +233,7 @@ export default function AboutClient({
                       <h3 className="text-xl font-bold text-white mb-2 group-hover:text-violet-300 transition-colors">
                         {activity.title}
                       </h3>
-                      <p className="text-gray-500 leading-relaxed">
+                      <p className="text-gray-500 leading-relaxed whitespace-pre-line">
                         {activity.description}
                       </p>
                     </div>
@@ -270,7 +270,7 @@ export default function AboutClient({
                         {item.title}
                       </h3>
                     </div>
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 whitespace-pre-line">
                       {item.description}
                     </p>
                   </div>
