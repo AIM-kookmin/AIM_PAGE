@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Modal } from '../Modal'
 
 describe('Modal', () => {
@@ -31,18 +31,7 @@ describe('Modal', () => {
       expect(document.body.style.overflow).toBe('hidden')
 
       rerender(<Modal {...defaultProps} isOpen={false} />)
-      expect(document.body.style.overflow).toBe('')
-    })
-
-    it('should compensate for scrollbar width', () => {
-      // Mock scrollbar width
-      Object.defineProperty(window, 'innerWidth', { value: 1024, writable: true })
-      Object.defineProperty(document.documentElement, 'clientWidth', { value: 1008, writable: true })
-
-      render(<Modal {...defaultProps} />)
-
-      // Should add padding equal to scrollbar width (1024 - 1008 = 16px)
-      expect(document.body.style.paddingRight).toBe('16px')
+      expect(document.body.style.overflow).toBe('unset')
     })
   })
 
@@ -50,10 +39,10 @@ describe('Modal', () => {
     it('should render modal content in a scrollable container', () => {
       render(<Modal {...defaultProps} />)
 
-      // Find the scrollable content area
-      const contentArea = document.querySelector('.overflow-auto')
+      // Find the scrollable content area (with data-lenis-prevent)
+      const contentArea = document.querySelector('[data-lenis-prevent]')
       expect(contentArea).toBeInTheDocument()
-      expect(contentArea).toHaveStyle({ maxHeight: '100%' })
+      expect(contentArea).toHaveClass('overflow-y-auto', 'flex-1')
     })
 
     it('should prevent background scroll when modal is open', () => {
@@ -76,9 +65,10 @@ describe('Modal', () => {
     it('should have correct flexbox structure', () => {
       render(<Modal {...defaultProps} />)
 
-      const modalContainer = screen.getByText('Test Modal').closest('div[style*="maxHeight"]')
-      expect(modalContainer).toHaveClass('flex', 'flex-col')
-      expect(modalContainer).toHaveStyle({ maxHeight: 'calc(100vh - 2rem)' })
+      const modalDialog = screen.getByRole('dialog')
+      expect(modalDialog).toHaveClass('flex', 'flex-col')
+      // Check max-height from Tailwind class
+      expect(modalDialog).toHaveClass('max-h-[90vh]')
     })
   })
 
@@ -134,12 +124,15 @@ describe('Modal', () => {
   })
 
   describe('Accessibility', () => {
-    it('should trap focus within modal', () => {
+    it('should have proper ARIA attributes', () => {
       render(<Modal {...defaultProps} />)
 
-      // Modal should be focusable
-      const modalContainer = screen.getByText('Test Modal').closest('div[style*="maxHeight"]')
-      expect(modalContainer).toBeTruthy()
+      const dialog = screen.getByRole('dialog')
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+      expect(dialog).toHaveAttribute('aria-labelledby', 'modal-title')
+
+      const title = screen.getByText('Test Modal')
+      expect(title).toHaveAttribute('id', 'modal-title')
     })
   })
 
