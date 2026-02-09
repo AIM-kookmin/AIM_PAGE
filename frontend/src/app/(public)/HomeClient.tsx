@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Hero from '@/widgets/Hero'
 import ActivitiesSection from '@/widgets/ActivitiesSection'
+import MembersSection from '@/widgets/MembersSection'
 import AchievementsTimeline from '@/widgets/AchievementsTimeline'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -24,6 +25,15 @@ interface HomeClientProps {
     icon: string
     order: number
   }>
+  members: Array<{
+    id: string
+    display_name: string
+    position: string | null
+    department: string | null
+    generation: number | null
+    one_liner: string | null
+    avatar_url: string | null
+  }>
   achievements: Array<{
     id: string
     year: number
@@ -33,9 +43,10 @@ interface HomeClientProps {
   }>
 }
 
-function HomeClient({ heroData, activities, achievements }: HomeClientProps) {
+function HomeClient({ heroData, activities, members, achievements }: HomeClientProps) {
   const mainRef = useRef<HTMLDivElement>(null)
   const activitiesRef = useRef<HTMLDivElement>(null)
+  const membersRef = useRef<HTMLDivElement>(null)
   const achievementsRef = useRef<HTMLDivElement>(null)
   const ctaRef = useRef<HTMLDivElement>(null)
 
@@ -56,6 +67,25 @@ function HomeClient({ heroData, activities, achievements }: HomeClientProps) {
             start: 'top bottom',
             end: 'top 20%',
             scrub: true,
+          },
+        }
+      )
+
+      gsap.fromTo(
+        membersRef.current,
+        {
+          y: 50,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: membersRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
           },
         }
       )
@@ -110,6 +140,10 @@ function HomeClient({ heroData, activities, achievements }: HomeClientProps) {
 
       <div ref={activitiesRef} style={{ perspective: '1000px' }}>
         <ActivitiesSection activities={activities} />
+      </div>
+
+      <div ref={membersRef}>
+        <MembersSection members={members} />
       </div>
 
       <div ref={achievementsRef} style={{ perspective: '1000px' }}>
