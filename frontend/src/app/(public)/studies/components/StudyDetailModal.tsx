@@ -358,7 +358,7 @@ export default function StudyDetailModal({
               <div className="animate-reveal">
                 <h3 className="text-sm font-semibold text-white/80 mb-3">소개</h3>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-base text-white/80 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-base text-white/80 leading-relaxed whitespace-pre-line">
                     {study.description || study.content}
                   </p>
                 </div>

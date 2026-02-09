@@ -28,7 +28,7 @@ export default function SectionCard({
       </h3>
 
       {/* Content Preview */}
-      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem]">
+      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem] whitespace-pre-line">
         {section.content}
       </p>
 

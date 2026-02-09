@@ -36,7 +36,7 @@ export default function HistoryCard({
       </h3>
 
       {/* Description */}
-      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem]">
+      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 mb-4 min-h-[2.5rem] whitespace-pre-line">
         {history.description}
       </p>
 

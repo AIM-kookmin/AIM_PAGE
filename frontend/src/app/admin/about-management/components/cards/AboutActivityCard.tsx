@@ -53,7 +53,7 @@ export default function AboutActivityCard({ activity, onEdit, onDelete }: AboutA
         <h3 className="text-lg font-semibold text-white mb-2 line-clamp-1">
           {activity.title}
         </h3>
-        <p className="text-sm text-white/60 line-clamp-2">
+        <p className="text-sm text-white/60 line-clamp-2 whitespace-pre-line">
           {activity.description}
         </p>
       </div>

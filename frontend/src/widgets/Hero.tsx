@@ -143,7 +143,7 @@ function Hero({ data }: HeroProps) {
         </h1>
 
         <motion.p
-          className="text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed"
+          className="text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed whitespace-pre-line"
           initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
           whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, amount: 0.1 }}
