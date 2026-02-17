@@ -508,8 +508,10 @@ export default function MemberManagement() {
     const template = `email,name,display_name,student_id,position,department,generation,is_public
 kim123@kookmin.ac.kr,김철수,철수,20241234,부원,소프트웨어학부,3,true
 lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,2,true`
-    
-    const blob = new Blob([template], { type: 'text/csv;charset=utf-8;' })
+
+    // UTF-8 BOM을 추가하여 Excel에서 한글이 정상적으로 표시되도록 함
+    const BOM = '\uFEFF'
+    const blob = new Blob([BOM + template], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
     link.download = 'member_template.csv'

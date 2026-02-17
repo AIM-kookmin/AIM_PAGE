@@ -189,6 +189,36 @@ export interface Database {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          id: string
+          question: string
+          answer: string
+          order: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          question: string
+          answer: string
+          order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          question?: string
+          answer?: string
+          order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       member_profiles: {
         Row: {
           id: string
@@ -492,6 +522,7 @@ export type AboutActivity = Database['public']['Tables']['about_activities']['Ro
 export type AboutHistory = Database['public']['Tables']['about_history']['Row']
 export type AboutContact = Database['public']['Tables']['about_contacts']['Row']
 export type RecruitNotice = Database['public']['Tables']['recruit_notices']['Row']
+export type FAQ = Database['public']['Tables']['faqs']['Row']
 export type MemberProfile = Database['public']['Tables']['member_profiles']['Row']
 export type Activity = Database['public']['Tables']['activities']['Row']
 export type StudyPost = Database['public']['Tables']['study_posts']['Row']
