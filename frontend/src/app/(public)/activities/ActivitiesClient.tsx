@@ -80,12 +80,12 @@ export default function ActivitiesClient({ activities }: ActivitiesClientProps) 
         {/* Hero */}
         <section ref={heroRef} className="min-h-[50vh] flex items-center justify-center pt-20 px-4">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                 Activities
               </span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
               AIM의 다양한 활동과 이벤트를 확인해보세요
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />

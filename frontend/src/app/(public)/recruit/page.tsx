@@ -240,12 +240,12 @@ export default function RecruitPage() {
                   )}
                 </div>
 
-                <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
                   <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                     AIM
                   </span>
                   <br />
-                  <span className="text-3xl md:text-4xl text-gray-300 font-normal">
+                  <span className="text-2xl sm:text-3xl md:text-4xl text-gray-300 font-normal">
                     {recruitNotice.title}
                   </span>
                 </h1>

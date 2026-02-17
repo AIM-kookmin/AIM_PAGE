@@ -437,9 +437,9 @@ function NoticesSection({
   )
 
   return (
-    <div className="grid grid-cols-12 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
       {/* 왼쪽: 공고 목록 */}
-      <div className="col-span-4">
+      <div className="lg:col-span-4">
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
           <Title level={3} className="text-white mb-4">공고 목록</Title>
           <div className="space-y-3">
@@ -511,7 +511,7 @@ function NoticesSection({
       </div>
 
       {/* 오른쪽: 미리보기 또는 편집 폼 */}
-      <div className="col-span-8">
+      <div className="lg:col-span-8">
         {viewMode === 'preview' && selectedNotice ? (
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
             <div className="flex items-start justify-between mb-6">
@@ -669,7 +669,7 @@ function NoticesSection({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white font-medium mb-2">지원 대상</label>
                   <input
@@ -733,7 +733,7 @@ function NoticesSection({
               </div>
 
               {/* 날짜 및 설정 */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white font-medium mb-2">모집 시작일 *</label>
                   <input
@@ -797,9 +797,9 @@ function FaqsSection({
   handleSaveFaq
 }: any) {
   return (
-    <div className="grid grid-cols-12 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
       {/* 왼쪽: FAQ 목록 */}
-      <div className="col-span-4">
+      <div className="lg:col-span-4">
         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
           <Title level={3} className="text-white mb-4">FAQ 목록</Title>
           <div className="space-y-3">
@@ -888,7 +888,7 @@ function FaqsSection({
       </div>
 
       {/* 오른쪽: 미리보기 또는 편집 폼 */}
-      <div className="col-span-8">
+      <div className="lg:col-span-8">
         {viewMode === 'preview' && selectedFaq ? (
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8">
             <div className="flex items-start justify-between mb-6">

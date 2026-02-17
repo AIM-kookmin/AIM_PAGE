@@ -174,7 +174,7 @@ export default function StudyDetailModal({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -182,13 +182,13 @@ export default function StudyDetailModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-4xl max-h-[90vh] bg-gray-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="relative w-full max-w-full sm:max-w-4xl max-h-[95vh] sm:max-h-[90vh] bg-gray-900/90 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white hover:bg-black/70 hover:border-white/20 hover:rotate-90 transition-all duration-300 group"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-3 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 text-white hover:bg-black/70 hover:border-white/20 hover:rotate-90 transition-all duration-300 group"
           aria-label="Close modal"
         >
           <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -213,14 +213,14 @@ export default function StudyDetailModal({
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-black/70 hover:border-white/20 transition-all duration-300 group z-10"
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-black/70 hover:border-white/20 transition-all duration-300 group z-10"
                       aria-label="Previous image"
                     >
                       <ChevronLeft className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-black/70 hover:border-white/20 transition-all duration-300 group z-10"
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white hover:bg-black/70 hover:border-white/20 transition-all duration-300 group z-10"
                       aria-label="Next image"
                     >
                       <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -232,10 +232,10 @@ export default function StudyDetailModal({
                         <button
                           key={idx}
                           onClick={() => setCurrentImageIndex(idx)}
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          className={`h-2 rounded-full transition-all duration-300 ${
                             idx === currentImageIndex
                               ? 'bg-violet-400 w-6'
-                              : 'bg-white/30 hover:bg-white/50'
+                              : 'bg-white/30 hover:bg-white/50 w-2'
                           }`}
                           aria-label={`Go to image ${idx + 1}`}
                         />
@@ -267,19 +267,19 @@ export default function StudyDetailModal({
           </div>
 
           {/* Content Section */}
-          <div ref={contentRef} className="p-8 space-y-6">
+          <div ref={contentRef} className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
             {/* Title */}
             <div className="animate-reveal">
               <h2
                 id="modal-title"
-                className="text-3xl md:text-4xl font-bold text-white leading-tight"
+                className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight"
               >
                 {study.title}
               </h2>
             </div>
 
             {/* Metadata Grid */}
-            <div className="animate-reveal grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="animate-reveal grid grid-cols-1 gap-3 sm:gap-4">
               {/* Period */}
               {formatDateRange(study.start_date, study.end_date) && (
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">

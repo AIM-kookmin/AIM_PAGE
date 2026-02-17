@@ -1,6 +1,6 @@
 'use client'
 
-import { Edit2, Trash2, Eye, EyeOff, Mail, Github, Instagram, Phone } from 'lucide-react'
+import { Edit2, Trash2, Eye, EyeOff, Mail, Github, Instagram, Phone, ChevronUp, ChevronDown } from 'lucide-react'
 import DragHandle from '@/shared/ui/DragHandle'
 import type { AboutContact } from '@/types/supabase'
 
@@ -9,6 +9,10 @@ interface ContactCardProps {
   onEdit: () => void
   onDelete: () => void
   showDragHandle?: boolean
+  onMoveUp?: () => void
+  onMoveDown?: () => void
+  isFirst?: boolean
+  isLast?: boolean
 }
 
 const typeIcons = {
@@ -37,17 +41,57 @@ export default function ContactCard({
   contact,
   onEdit,
   onDelete,
-  showDragHandle = false
+  showDragHandle = false,
+  onMoveUp,
+  onMoveDown,
+  isFirst = false,
+  isLast = false
 }: ContactCardProps) {
   const IconComponent = typeIcons[contact.type as keyof typeof typeIcons] || Mail
   const link = getContactLink(contact.type, contact.value)
 
   return (
     <div className="group relative rounded-2xl bg-white/[0.02] border border-white/5 p-6 transition-all duration-300 overflow-hidden hover:border-violet-500/30 hover:bg-white/[0.04] hover:shadow-glow-sm hover:-translate-y-1">
-      {/* Drag Handle - Top Left */}
+      {/* Drag Handle - Top Left - Desktop Only */}
       {showDragHandle && (
-        <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="hidden md:block absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
           <DragHandle />
+        </div>
+      )}
+
+      {/* Mobile Reorder Buttons - Top Right */}
+      {(onMoveUp || onMoveDown) && (
+        <div className="md:hidden absolute top-3 right-3 flex gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onMoveUp?.()
+            }}
+            disabled={isFirst}
+            className={`p-2 rounded-lg transition-all duration-200 ${
+              isFirst
+                ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                : 'bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/30 text-violet-400'
+            }`}
+            aria-label="위로 이동"
+          >
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onMoveDown?.()
+            }}
+            disabled={isLast}
+            className={`p-2 rounded-lg transition-all duration-200 ${
+              isLast
+                ? 'bg-white/5 text-white/20 cursor-not-allowed'
+                : 'bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/30 text-violet-400'
+            }`}
+            aria-label="아래로 이동"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
         </div>
       )}
 

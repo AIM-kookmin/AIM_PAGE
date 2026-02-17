@@ -218,7 +218,7 @@ export default function ImageCropModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -226,26 +226,27 @@ export default function ImageCropModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-4xl bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+      <div className="relative w-full max-w-full sm:max-w-4xl bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-violet-500/10">
-              <Crop className="w-5 h-5 text-violet-400" />
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-white/10">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-violet-500/10">
+              <Crop className="w-4 h-4 sm:w-5 sm:h-5 text-violet-400" />
             </div>
-            <h2 className="text-xl font-bold text-white">이미지 자르기</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white">이미지 자르기</h2>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="p-2 rounded-lg hover:bg-white/5 transition-colors duration-200"
+            className="p-3 rounded-lg hover:bg-white/5 transition-colors duration-200"
+            aria-label="닫기"
           >
             <X className="w-5 h-5 text-white/60 hover:text-white" />
           </button>
         </div>
 
         {/* Crop Area */}
-        <div data-lenis-prevent className="relative w-full h-[500px] bg-black">
+        <div data-lenis-prevent className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] bg-black">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -272,17 +273,17 @@ export default function ImageCropModal({
         </div>
 
         {/* Controls */}
-        <div className="px-6 py-5 space-y-5 border-t border-white/10">
+        <div className="px-4 py-4 sm:px-6 sm:py-5 space-y-4 sm:space-y-5 border-t border-white/10">
           {/* Aspect Ratio */}
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <label className="text-sm font-medium text-white/80">비율</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {ASPECT_RATIOS.map((ratio) => (
                 <button
                   key={ratio.label}
                   type="button"
                   onClick={() => setAspectRatio(ratio.value)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  className={`px-3 py-2 sm:px-4 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 ${
                     aspectRatio === ratio.value
                       ? 'bg-violet-500 text-white shadow-glow-primary'
                       : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
@@ -338,18 +339,18 @@ export default function ImageCropModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-white/10 bg-white/[0.02]">
+        <div className="flex items-center justify-end gap-2 sm:gap-3 px-4 py-3 sm:px-6 sm:py-4 border-t border-white/10 bg-white/[0.02]">
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2.5 rounded-xl font-medium text-white/80 hover:text-white bg-white/5 hover:bg-white/10 transition-all duration-200"
+            className="px-4 py-2.5 sm:px-6 rounded-xl text-sm sm:text-base font-medium text-white/80 hover:text-white bg-white/5 hover:bg-white/10 transition-all duration-200"
           >
             취소
           </button>
           <button
             type="button"
             onClick={handleApplyCrop}
-            className="px-6 py-2.5 rounded-xl font-medium text-white bg-violet-500 hover:bg-violet-600 shadow-lg hover:shadow-glow-primary transition-all duration-200"
+            className="px-4 py-2.5 sm:px-6 rounded-xl text-sm sm:text-base font-medium text-white bg-violet-500 hover:bg-violet-600 shadow-lg hover:shadow-glow-primary transition-all duration-200"
           >
             적용
           </button>

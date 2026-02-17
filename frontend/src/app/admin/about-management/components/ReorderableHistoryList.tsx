@@ -47,6 +47,21 @@ export default function ReorderableHistoryList({
     onReorder(allItems)
   }
 
+  const handleMoveUp = (year: number, index: number) => {
+    if (index === 0) return
+    const yearItems = [...groupedByYear[year]]
+    ;[yearItems[index - 1], yearItems[index]] = [yearItems[index], yearItems[index - 1]]
+    handleYearGroupReorder(year, yearItems)
+  }
+
+  const handleMoveDown = (year: number, index: number) => {
+    const yearItems = groupedByYear[year]
+    if (index === yearItems.length - 1) return
+    const newYearItems = [...yearItems]
+    ;[newYearItems[index], newYearItems[index + 1]] = [newYearItems[index + 1], newYearItems[index]]
+    handleYearGroupReorder(year, newYearItems)
+  }
+
   return (
     <div>
       {/* SaveIndicator in top-right */}
@@ -75,7 +90,7 @@ export default function ReorderableHistoryList({
                 onReorder={(newOrder) => handleYearGroupReorder(year, newOrder)}
                 className="flex flex-col gap-4 max-w-4xl mx-auto"
               >
-                {yearItems.map(item => (
+                {yearItems.map((item, index) => (
                   <Reorder.Item
                     key={item.id}
                     value={item}
@@ -89,6 +104,10 @@ export default function ReorderableHistoryList({
                       history={item}
                       onEdit={() => onEdit(item)}
                       onDelete={() => onDelete(item)}
+                      onMoveUp={() => handleMoveUp(year, index)}
+                      onMoveDown={() => handleMoveDown(year, index)}
+                      isFirst={index === 0}
+                      isLast={index === yearItems.length - 1}
                     />
                   </Reorder.Item>
                 ))}
