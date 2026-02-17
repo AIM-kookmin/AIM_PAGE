@@ -28,7 +28,8 @@ import {
   getActiveRecruitNotice,
   getAllRecruitNotices,
 } from '@/shared/api/supabase'
-import type { RecruitNotice } from '@/types/supabase'
+import { createClient } from '@/shared/api/supabase/client'
+import type { RecruitNotice, FAQ } from '@/types/supabase'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -39,6 +40,7 @@ export default function RecruitPage() {
   const [pastRecruits, setPastRecruits] = useState<RecruitNotice[]>([])
   const [loadingPast, setLoadingPast] = useState(false)
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null)
+  const [faqs, setFaqs] = useState<FAQ[]>([])
 
   const mainRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
@@ -47,32 +49,12 @@ export default function RecruitPage() {
   const ctaRef = useRef<HTMLDivElement>(null)
   const faqRef = useRef<HTMLDivElement>(null)
 
-  const faqData = [
-    {
-      question: "프로그래밍을 전혀 모르는데 지원할 수 있나요?",
-      answer: "네! 열정과 의지만 있다면 충분합니다. 기초부터 차근차근 알려드리며, 멘토링 시스템을 통해 단계별로 학습할 수 있도록 도와드립니다."
-    },
-    {
-      question: "다른 동아리와 중복 가입이 가능한가요?",
-      answer: "가능하지만, AIM 활동에 적극적으로 참여할 수 있는지 고려해주세요. 정기 모임과 프로젝트 활동에 충분한 시간을 투자할 수 있어야 합니다."
-    },
-    {
-      question: "학과 제한이 있나요?",
-      answer: "없습니다! 모든 학과 학생을 환영합니다. 오히려 다양한 전공 배경의 학생들이 모여 더 창의적인 아이디어와 프로젝트가 나올 수 있습니다."
-    },
-    {
-      question: "활동비가 있나요?",
-      answer: "기본 활동비는 없으며, 필요시 동아리에서 지원합니다. 대회 참가비, 교육 자료비 등은 동아리 예산으로 지원됩니다."
-    },
-    {
-      question: "면접은 어떤 식으로 진행되나요?",
-      answer: "개별 면접으로 20분 내외 진행됩니다. 지원 동기, 관심 분야, 활동 계획 등에 대해 편안한 대화 형식으로 이루어집니다."
-    },
-  ]
+  const supabase = createClient()
 
   useEffect(() => {
     document.title = 'Recruit - AIM: AI Monsters'
     fetchActiveRecruitNotice()
+    fetchFaqs()
   }, [])
 
   useEffect(() => {
@@ -164,6 +146,21 @@ export default function RecruitPage() {
       console.error('모집 공고 조회 오류:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchFaqs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .eq('is_active', true)
+        .order('order', { ascending: true })
+
+      if (error) throw error
+      setFaqs(data || [])
+    } catch (error) {
+      console.error('FAQ 조회 오류:', error)
     }
   }
 
@@ -415,46 +412,48 @@ export default function RecruitPage() {
             )}
 
             {/* FAQ Section */}
-            <section ref={faqRef} className="py-24 px-4">
-              <div className="max-w-3xl mx-auto">
-                <div className="flex items-center gap-4 mb-12 justify-center">
-                  <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                    <HelpCircle className="w-6 h-6 text-violet-400" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-white">자주 묻는 질문</h2>
-                </div>
-
-                <div className="space-y-4">
-                  {faqData.map((faq, index) => (
-                    <div
-                      key={index}
-                      className="rounded-xl bg-white/[0.02] border border-white/5 overflow-hidden"
-                    >
-                      <button
-                        onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
-                        className="w-full flex items-center justify-between p-6 text-left hover:bg-white/[0.02] transition-colors"
-                      >
-                        <span className="text-white font-medium pr-4">{faq.question}</span>
-                        <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 flex-shrink-0 ${openFaqIndex === index ? 'rotate-180' : ''}`} />
-                      </button>
-                      {openFaqIndex === index && (
-                        <div className="px-6 pb-6">
-                          <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
-                        </div>
-                      )}
+            {faqs.length > 0 && (
+              <section ref={faqRef} className="py-24 px-4">
+                <div className="max-w-3xl mx-auto">
+                  <div className="flex items-center gap-4 mb-12 justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                      <HelpCircle className="w-6 h-6 text-violet-400" />
                     </div>
-                  ))}
-                </div>
+                    <h2 className="text-3xl font-bold text-white">자주 묻는 질문</h2>
+                  </div>
 
-                <p className="text-center text-gray-500 mt-8">
-                  더 궁금한 점이 있으시면{' '}
-                  <a href="mailto:aim.club@kookmin.ac.kr" className="text-violet-400 hover:text-violet-300">
-                    aim.club@kookmin.ac.kr
-                  </a>
-                  로 문의해주세요
-                </p>
-              </div>
-            </section>
+                  <div className="space-y-4">
+                    {faqs.map((faq, index) => (
+                      <div
+                        key={faq.id}
+                        className="rounded-xl bg-white/[0.02] border border-white/5 overflow-hidden"
+                      >
+                        <button
+                          onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                          className="w-full flex items-center justify-between p-6 text-left hover:bg-white/[0.02] transition-colors"
+                        >
+                          <span className="text-white font-medium pr-4">{faq.question}</span>
+                          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 flex-shrink-0 ${openFaqIndex === index ? 'rotate-180' : ''}`} />
+                        </button>
+                        {openFaqIndex === index && (
+                          <div className="px-6 pb-6">
+                            <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-center text-gray-500 mt-8">
+                    더 궁금한 점이 있으시면{' '}
+                    <a href="mailto:aim2024@kookmin.ac.kr" className="text-violet-400 hover:text-violet-300">
+                      aim2024@kookmin.ac.kr
+                    </a>
+                    로 문의해주세요
+                  </p>
+                </div>
+              </section>
+            )}
           </>
         ) : (
           /* No Active Recruit */
