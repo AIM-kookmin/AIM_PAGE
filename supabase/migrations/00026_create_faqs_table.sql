@@ -22,13 +22,7 @@ CREATE POLICY "FAQs are viewable by everyone"
 CREATE POLICY "Admins can do everything with FAQs"
   ON public.faqs
   FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.member_profiles
-      WHERE user_id = auth.uid()
-      AND role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- Add index for ordering
 CREATE INDEX IF NOT EXISTS faqs_order_idx ON public.faqs ("order");
