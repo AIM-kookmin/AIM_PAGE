@@ -243,3 +243,31 @@ export interface StudyMemberWithProfile extends StudyMember {
     generation: number | null
   }
 }
+
+// ============================================================================
+// FAQs
+// ============================================================================
+
+export interface FAQ {
+  id: string
+  question: string
+  answer: string
+  order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface FAQInsert {
+  question: string
+  answer: string
+  order?: number
+  is_active?: boolean
+}
+
+export interface FAQUpdate {
+  question?: string
+  answer?: string
+  order?: number
+  is_active?: boolean
+}
