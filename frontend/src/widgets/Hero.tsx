@@ -94,7 +94,7 @@ function Hero({ data }: HeroProps) {
         </motion.div>
 
         <h1 className="text-center mb-8">
-          <span className="block text-7xl md:text-9xl lg:text-[12rem] font-black tracking-tighter">
+          <span className="block text-4xl sm:text-6xl md:text-8xl lg:text-9xl xl:text-[12rem] font-black tracking-tighter">
             {titleLetters.map((letter, i) => (
               <motion.span
                 key={`title-${i}`}
@@ -117,8 +117,8 @@ function Hero({ data }: HeroProps) {
               </motion.span>
             ))}
           </span>
-          
-          <span className="block text-2xl md:text-4xl lg:text-5xl font-bold text-white/80 tracking-wide mt-4">
+
+          <span className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white/80 tracking-wide mt-4">
             {subtitleWords.map((word, i) => (
               <motion.span
                 key={`subtitle-${i}`}
@@ -143,7 +143,7 @@ function Hero({ data }: HeroProps) {
         </h1>
 
         <motion.p
-          className="text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed whitespace-pre-line"
+          className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl text-center mb-12 leading-relaxed whitespace-pre-line px-4"
           initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
           whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, amount: 0.1 }}

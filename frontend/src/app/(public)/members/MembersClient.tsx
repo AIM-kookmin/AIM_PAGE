@@ -69,9 +69,9 @@ const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile 
                   href={`https://github.com/${member.links.github}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                  className="w-10 h-10 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
                 >
-                  <Github className="w-3.5 h-3.5" />
+                  <Github className="w-4 h-4" />
                 </a>
               )}
               {member.links && typeof member.links === 'object' && 'linkedin' in member.links && member.links.linkedin && (
@@ -79,9 +79,9 @@ const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile 
                   href={`https://linkedin.com/in/${member.links.linkedin}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                  className="w-10 h-10 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
                 >
-                  <Linkedin className="w-3.5 h-3.5" />
+                  <Linkedin className="w-4 h-4" />
                 </a>
               )}
               {member.links && typeof member.links === 'object' && 'instagram' in member.links && member.links.instagram && (
@@ -89,9 +89,9 @@ const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile 
                   href={`https://instagram.com/${member.links.instagram}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                  className="w-10 h-10 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
                 >
-                  <Instagram className="w-3.5 h-3.5" />
+                  <Instagram className="w-4 h-4" />
                 </a>
               )}
               {member.links && typeof member.links === 'object' && 'blog' in member.links && member.links.blog && typeof member.links.blog === 'string' && (
@@ -99,9 +99,9 @@ const MemberCard = memo(function MemberCard({ member }: { member: MemberProfile 
                   href={member.links.blog}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-7 h-7 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
+                  className="w-10 h-10 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center text-gray-500 hover:text-violet-400 hover:border-violet-500/30 transition-all duration-200"
                 >
-                  <Globe className="w-3.5 h-3.5" />
+                  <Globe className="w-4 h-4" />
                 </a>
               )}
             </div>
@@ -205,12 +205,12 @@ function MembersClient({ executives, regularMembers }: MembersClientProps) {
         {/* Hero */}
         <section ref={heroRef} className="min-h-[50vh] flex items-center justify-center pt-20 px-4">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
               <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                 Members
               </span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
               AIM 동아리의 멋진 부원들을 소개합니다
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-violet-500 to-indigo-500 mx-auto mt-8 rounded-full" />
