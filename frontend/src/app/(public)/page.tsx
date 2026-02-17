@@ -11,8 +11,7 @@ async function getHomePageData() {
   const [
     { data: heroSections },
     { data: activities },
-    { data: achievementsData },
-    { data: members }
+    { data: achievementsData }
   ] = await Promise.all([
     supabase
       .from('about_sections')
@@ -32,15 +31,7 @@ async function getHomePageData() {
       .select('id, year, title, description')
       .eq('is_active', true)
       .order('year', { ascending: false })
-      .limit(10),
-    supabase
-      .from('member_profiles')
-      .select('id, display_name, position, department, generation, one_liner, avatar_url')
-      .eq('status', 'active')
-      .eq('is_public', true)
-      .order('generation', { ascending: false })
-      .order('display_name')
-      .limit(8)
+      .limit(10)
   ])
 
   // Transform achievements to match expected type
@@ -68,19 +59,17 @@ async function getHomePageData() {
     } : undefined,
     activities: activities || [],
     achievements,
-    members: members || [],
   }
 }
 
 export default async function HomePage() {
-  const { heroData, activities, achievements, members } = await getHomePageData()
+  const { heroData, activities, achievements } = await getHomePageData()
 
   return (
     <HomeClient
       heroData={heroData}
       activities={activities}
       achievements={achievements}
-      members={members}
     />
   )
 }
