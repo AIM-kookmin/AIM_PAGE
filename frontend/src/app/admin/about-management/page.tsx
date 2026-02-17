@@ -253,11 +253,12 @@ export default function AboutManagementPage() {
                 items={sectionsReorder.items}
                 onReorder={sectionsReorder.handleReorder}
                 saveStatus={sectionsReorder.saveStatus}
-                renderItem={(item) => (
+                renderItem={(item: AboutSection, handlers?: any) => (
                   <SectionCard
                     section={item}
                     onEdit={() => handleEdit(item)}
                     onDelete={() => handleDeleteClick(item)}
+                    {...handlers}
                   />
                 )}
               />
@@ -280,11 +281,12 @@ export default function AboutManagementPage() {
                 items={activitiesReorder.items}
                 onReorder={activitiesReorder.handleReorder}
                 saveStatus={activitiesReorder.saveStatus}
-                renderItem={(item) => (
+                renderItem={(item: AboutActivity, handlers?: any) => (
                   <AboutActivityCard
                     activity={item}
                     onEdit={() => handleEdit(item)}
                     onDelete={() => handleDeleteClick(item)}
+                    {...handlers}
                   />
                 )}
               />

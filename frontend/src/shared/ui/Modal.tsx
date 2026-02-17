@@ -73,7 +73,7 @@ export const Modal: React.FC<ModalProps> = ({
   const modalContent = (
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-lg z-50 flex items-center justify-center p-2 sm:p-4 md:p-8"
       onClick={handleBackgroundClick}
       style={{ backdropFilter: 'blur(8px) saturate(150%)' }}
     >
@@ -81,20 +81,20 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`bg-gray-800 border border-gray-700 rounded-2xl w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] flex flex-col overflow-hidden`}
+        className={`bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl md:rounded-2xl w-full ${maxWidthClasses[maxWidth]} max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] flex flex-col overflow-hidden`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - Fixed */}
-        <div className="px-6 py-4 border-b border-gray-700 flex-shrink-0">
-          <h2 id="modal-title" className="text-2xl font-bold text-white">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-700 flex-shrink-0">
+          <h2 id="modal-title" className="text-xl sm:text-2xl font-bold text-white">
             {title}
           </h2>
         </div>
 
         {/* Content - Scrollable */}
-        <div data-lenis-prevent className="overflow-y-auto flex-1 px-6 py-6">
+        <div data-lenis-prevent className="overflow-y-auto flex-1 px-4 py-4 sm:px-6 sm:py-6">
           {onSubmit ? (
-            <form onSubmit={handleSubmit} className="space-y-6" id="modal-form">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6" id="modal-form">
               {children}
             </form>
           ) : (
@@ -103,8 +103,8 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Footer - Fixed */}
-        <div className="px-6 py-4 border-t border-gray-700 flex-shrink-0">
-          <div className="flex justify-end space-x-3">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-700 flex-shrink-0">
+          <div className="flex justify-end space-x-2 sm:space-x-3">
             {showCancelButton && (
               <Button type="button" onClick={onClose} variant="ghost">
                 {cancelText}

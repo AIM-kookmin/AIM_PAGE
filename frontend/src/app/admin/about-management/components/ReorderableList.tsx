@@ -7,7 +7,7 @@ import SaveIndicator, { type SaveStatus } from './SaveIndicator'
 interface ReorderableListProps<T extends { id: string; order: number }> {
   items: T[]
   onReorder: (items: T[]) => void
-  renderItem: (item: T) => React.ReactNode
+  renderItem: (item: T, handlers?: { onMoveUp: () => void; onMoveDown: () => void; isFirst: boolean; isLast: boolean }) => React.ReactNode
   saveStatus: SaveStatus
   onKeyboardMove?: (fromIndex: number, direction: 'up' | 'down') => void
 }
@@ -20,6 +20,20 @@ export default function ReorderableList<T extends { id: string; order: number }>
   onKeyboardMove,
 }: ReorderableListProps<T>) {
   const itemRefs = useRef<Map<string, HTMLLIElement>>(new Map())
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return
+    const newItems = [...items]
+    ;[newItems[index - 1], newItems[index]] = [newItems[index], newItems[index - 1]]
+    onReorder(newItems)
+  }
+
+  const handleMoveDown = (index: number) => {
+    if (index === items.length - 1) return
+    const newItems = [...items]
+    ;[newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]]
+    onReorder(newItems)
+  }
 
   // Keyboard handler for Alt+Up/Down
   useEffect(() => {
@@ -66,7 +80,7 @@ export default function ReorderableList<T extends { id: string; order: number }>
         onReorder={onReorder}
         className="flex flex-col gap-4 max-w-4xl mx-auto"
       >
-        {items.map((item) => (
+        {items.map((item, index) => (
           <Reorder.Item
             key={item.id}
             value={item}
@@ -83,7 +97,12 @@ export default function ReorderableList<T extends { id: string; order: number }>
               }
             }}
           >
-            {renderItem(item)}
+            {renderItem(item, {
+              onMoveUp: () => handleMoveUp(index),
+              onMoveDown: () => handleMoveDown(index),
+              isFirst: index === 0,
+              isLast: index === items.length - 1
+            })}
           </Reorder.Item>
         ))}
       </Reorder.Group>

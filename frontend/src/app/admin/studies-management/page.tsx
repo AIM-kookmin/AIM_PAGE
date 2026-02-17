@@ -66,6 +66,7 @@ export default function StudiesManagementPage() {
     message: '',
     hiding: false
   })
+  const [showPreview, setShowPreview] = useState(true)
 
   useEffect(() => {
     document.title = '스터디 관리 - AIM: AI Monsters'
@@ -384,8 +385,18 @@ export default function StudiesManagementPage() {
           </div>
         </div>
 
+        {/* Mobile Preview Toggle */}
+        <div className="max-w-[1800px] mx-auto px-8 pt-8 pb-4">
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className="lg:hidden w-full px-4 py-3 bg-violet-500 text-white rounded-xl hover:bg-violet-400 transition-colors font-medium"
+          >
+            {showPreview ? '미리보기 숨기기' : '미리보기 보기'}
+          </button>
+        </div>
+
         {/* Split Screen Layout */}
-        <div className="max-w-[1800px] mx-auto p-8">
+        <div className="max-w-[1800px] mx-auto px-8 pb-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left: Form */}
             <div className="space-y-6">
@@ -451,7 +462,7 @@ export default function StudiesManagementPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-3">
                       난이도 <span className="text-red-400">*</span>
                     </label>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {(['입문', '중급', '심화', '응용'] as const).map((level) => (
                         <button
                           key={level}
@@ -557,7 +568,7 @@ export default function StudiesManagementPage() {
             </div>
 
             {/* Right: Live Preview */}
-            <div>
+            <div className={showPreview ? 'block' : 'hidden lg:block'}>
               <StudyPreview
                 formData={formData}
                 images={images}

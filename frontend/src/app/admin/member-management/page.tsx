@@ -120,6 +120,18 @@ export default function MemberManagement() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && viewMode === 'list') {
+        setViewMode('card')
+      }
+    }
+
+    handleResize() // Check on mount
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [viewMode])
+
   const fetchMembers = async () => {
     try {
       const [activeData, pendingData] = await Promise.all([
@@ -710,11 +722,13 @@ lee456@kookmin.ac.kr,이영희,영희,20231111,운영진,인공지능학부,2,tr
         <div className="flex gap-3">
           {activeTab === 'active' && (
             <>
-              <ViewToggle
-                currentView={viewMode}
-                views={viewOptions}
-                onViewChange={(view) => setViewMode(view as 'card' | 'list')}
-              />
+              <div className="hidden md:flex">
+                <ViewToggle
+                  currentView={viewMode}
+                  views={viewOptions}
+                  onViewChange={(view) => setViewMode(view as 'card' | 'list')}
+                />
+              </div>
               <Button onClick={openCsvModal} variant="secondary">
                 📄 .csv로 추가
               </Button>
