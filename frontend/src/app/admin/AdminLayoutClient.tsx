@@ -81,14 +81,20 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
                 >
                   활동 관리
                 </Link>
-                <Link 
-                  href="/admin/studies-management" 
+                <Link
+                  href="/admin/studies-management"
                   className="text-white/70 hover:text-violet-400 font-medium transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]"
                 >
                   스터디 관리
                 </Link>
-                <Link 
-                  href="/admin/recruit-management" 
+                <Link
+                  href="/admin/news-management"
+                  className="text-white/70 hover:text-violet-400 font-medium transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]"
+                >
+                  뉴스 관리
+                </Link>
+                <Link
+                  href="/admin/recruit-management"
                   className="text-white/70 hover:text-violet-400 font-medium transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]"
                 >
                   모집 공고 관리
@@ -235,6 +241,12 @@ export default function AdminLayoutClient({ children, user }: AdminLayoutClientP
                   className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-white/70 hover:bg-white/5 hover:text-violet-400 transition-all duration-300"
                 >
                   📚 스터디 관리
+                </Link>
+                <Link
+                  href="/admin/news-management"
+                  className="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-white/70 hover:bg-white/5 hover:text-violet-400 transition-all duration-300"
+                >
+                  📰 뉴스 관리
                 </Link>
                 <Link
                   href="/admin/recruit-management"
