@@ -1,6 +1,6 @@
 import { createClient } from './client'
 
-export type StorageBucket = 'members' | 'activities' | 'studies'
+export type StorageBucket = 'members' | 'activities' | 'studies' | 'news'
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_FILE_SIZE = 5 * 1024 * 1024
@@ -123,6 +123,33 @@ export async function uploadStudyImages(
     const path = `${studyId}/${Date.now()}_${i}.${ext}`
     await uploadFile('studies', path, file)
     urls.push(getSecureUrl('studies', path))
+  }
+
+  return urls
+}
+
+export async function uploadNewsThumbnail(
+  newsId: string,
+  file: File
+): Promise<string> {
+  const ext = file.name.split('.').pop()
+  const path = `thumbnails/${newsId}_${Date.now()}.${ext}`
+  await uploadFile('news', path, file)
+  return getSecureUrl('news', path)
+}
+
+export async function uploadNewsCardImages(
+  newsId: string,
+  files: File[]
+): Promise<string[]> {
+  const urls: string[] = []
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    const ext = file.name.split('.').pop()
+    const path = `${newsId}/${Date.now()}_${i}.${ext}`
+    await uploadFile('news', path, file)
+    urls.push(getSecureUrl('news', path))
   }
 
   return urls

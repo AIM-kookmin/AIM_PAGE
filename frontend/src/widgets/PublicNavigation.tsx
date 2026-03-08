@@ -57,6 +57,9 @@ export default function PublicNavigation() {
               <Link href="/studies" className="text-white/70 hover:text-violet-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]">
                 스터디
               </Link>
+              <Link href="/news" className="text-white/70 hover:text-violet-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]">
+                뉴스
+              </Link>
               <Link href="/recruit" className="text-white/70 hover:text-violet-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]">
                 모집
               </Link>
@@ -168,6 +171,13 @@ export default function PublicNavigation() {
                 className="block px-4 py-3 text-white/70 hover:text-violet-400 hover:bg-white/5 rounded-lg transition-all duration-300"
               >
                 스터디
+              </Link>
+              <Link
+                href="/news"
+                onClick={closeMobileMenu}
+                className="block px-4 py-3 text-white/70 hover:text-violet-400 hover:bg-white/5 rounded-lg transition-all duration-300"
+              >
+                뉴스
               </Link>
               <Link
                 href="/recruit"
