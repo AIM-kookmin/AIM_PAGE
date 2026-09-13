@@ -1,41 +1,24 @@
-'use client'
-
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { ArrowLeft, Calendar, User } from 'lucide-react'
-import { getStudyPostById } from '@/shared/api/supabase'
-import type { StudyPostWithAuthor } from '@/types/supabase'
-import { APP_NAME } from '@/lib/config'
-import { Card, Loading } from '@/shared/ui'
+import { getStudyPostById } from '@/shared/api/supabase/queries.server'
+import { APP_NAME } from '@/shared/config/app'
+import { Card } from '@/shared/ui/Card'
 import ReactMarkdown from 'react-markdown'
 
-export default function StudyPostPage() {
-  const params = useParams()
-  const postId = params?.id as string
-  const [post, setPost] = useState<StudyPostWithAuthor | null>(null)
-  const [loading, setLoading] = useState(true)
+interface StudyPostPageProps {
+  params: { id: string }
+}
 
-  const fetchPost = async () => {
-    try {
-      const data = await getStudyPostById(postId)
-      if (data) {
-        setPost(data)
-        document.title = `${data.title} - ${APP_NAME}`
-      }
-    } catch (error) {
-      console.error('스터디 포스트 로딩 실패:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+export async function generateMetadata({ params }: StudyPostPageProps): Promise<Metadata> {
+  const post = await getStudyPostById(params.id)
+  return { title: post ? `${post.title} - ${APP_NAME}` : `포스트를 찾을 수 없습니다 - ${APP_NAME}` }
+}
 
-  useEffect(() => {
-    if (postId) {
-      fetchPost()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId])
+export default async function StudyPostPage({ params }: StudyPostPageProps) {
+  const post = await getStudyPostById(params.id)
+  if (!post) notFound()
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -44,29 +27,6 @@ export default function StudyPostPage() {
       month: 'long',
       day: 'numeric'
     })
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <Loading />
-      </div>
-    )
-  }
-
-  if (!post) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="max-w-4xl w-full px-4">
-          <Card variant="glass" className="p-12 text-center">
-            <h1 className="text-2xl font-bold text-white mb-4">포스트를 찾을 수 없습니다</h1>
-            <Link href="/studies" className="text-violet-400 hover:text-violet-300 hover:underline transition-colors">
-              스터디 목록으로 돌아가기
-            </Link>
-          </Card>
-        </div>
-      </div>
-    )
   }
 
   return (

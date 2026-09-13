@@ -39,12 +39,12 @@ export default function PublicNavigation() {
                 className="h-8 w-auto object-contain"
               />
               <span className="text-xl font-bold text-white">AIM</span>
-              <span className="text-sm text-gray-400 ml-1">AI Monsters</span>
+              <span className="hidden text-sm text-gray-400 ml-1 sm:inline">AI Monsters</span>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
             {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4">
               <Link href="/about" className="text-white/70 hover:text-violet-400 transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]">
                 소개
               </Link>
@@ -68,13 +68,13 @@ export default function PublicNavigation() {
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-3 text-white/70 hover:text-white transition-colors"
+              className="lg:hidden p-3 text-white/70 hover:text-white transition-colors"
               aria-label="메뉴 열기"
             >
               <Menu className="w-6 h-6" />
             </button>
             {isAuthenticated ? (
-              <div className="flex items-center space-x-3">
+              <div className="hidden lg:flex items-center space-x-3">
                 {isAdmin && (
                   <Link 
                     href="/admin" 

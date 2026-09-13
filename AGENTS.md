@@ -7,7 +7,7 @@
   - `guides/`: Developer guides (Deployment, Config)
   - `architecture/`: Architecture decisions (FSD, Database)
 - **Frontend**: `frontend/` (Next.js 14)
-- **Backend**: `backend/` (Deprecated, migrating to Supabase)
+- **Backend**: Supabase; the legacy `backend/` directory has been removed.
 
 ## 🏗️ Architecture (FSD + Supabase)
 - **Pattern**: Feature-Sliced Design (See `docs/architecture/FSD_STRUCTURE.md`)
@@ -17,9 +17,11 @@
 
 ## 💻 Commands
 ```bash
-npm run dev              # Run frontend + backend
+npm run dev              # Frontend (Next.js :3000)
 npm run dev:frontend     # Frontend only (Next.js :3000)
-# Backend commands are deprecated but available for reference
+npm run type-check       # Frontend TypeScript check
+npm test                 # Frontend Jest tests
+# In frontend/: npm run test:db runs isolated profile permission migration tests.
 ```
 
 ## 📝 Code Style
@@ -29,6 +31,7 @@ npm run dev:frontend     # Frontend only (Next.js :3000)
 - **Comments**: Korean comments allowed. JSDoc for exports.
 
 ## 🚀 Key Files for Context
-- `frontend/lib/supabase/client.ts` - Supabase client (to be created)
+- `frontend/src/shared/api/supabase/client.ts` - Browser Supabase client
+- `frontend/src/shared/api/supabase/server.ts` - Request-scoped server Supabase client
 - `docs/architecture/FSD_STRUCTURE.md` - Folder structure rules
 - `docs/plans/SUPABASE_MIGRATION.md` - Migration roadmap
