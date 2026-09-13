@@ -1,4 +1,5 @@
 import { createClient } from './client'
+import { withStudyPostAuthors } from './study-posts'
 import type {
   Database,
   AboutSection,
@@ -228,14 +229,13 @@ export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
     .from('study_posts')
     .select(`
       *,
-      author:member_profiles!author_id(id, display_name, avatar_url),
       tags:study_post_tags(tag:tags(id, name))
     `)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return (data ?? []) as StudyPostWithAuthor[]
+  return withStudyPostAuthors(supabase, (data ?? []) as Omit<StudyPostWithAuthor, 'author'>[])
 }
 
 export async function getStudyPostById(id: string): Promise<StudyPostWithAuthor | null> {
@@ -244,14 +244,15 @@ export async function getStudyPostById(id: string): Promise<StudyPostWithAuthor 
     .from('study_posts')
     .select(`
       *,
-      author:member_profiles!author_id(id, display_name, avatar_url),
       tags:study_post_tags(tag:tags(id, name))
     `)
     .eq('id', id)
     .maybeSingle()
 
   if (error) throw error
-  return data as StudyPostWithAuthor | null
+  if (!data) return null
+  const [post] = await withStudyPostAuthors(supabase, [data as Omit<StudyPostWithAuthor, 'author'>])
+  return post
 }
 
 export async function getMyProfile(): Promise<MemberProfile | null> {
@@ -272,7 +273,10 @@ export async function getMyProfile(): Promise<MemberProfile | null> {
 
 export async function updateMemberProfile(
   userId: string,
-  updates: Partial<MemberProfile>
+  updates: Partial<Pick<MemberProfile,
+    'display_name' | 'student_id' | 'department' | 'generation' | 'bio' |
+    'one_liner' | 'avatar_url' | 'links' | 'is_public'
+  >>
 ): Promise<MemberProfile | null> {
   const supabase = createClient()
   const { data, error } = await supabase

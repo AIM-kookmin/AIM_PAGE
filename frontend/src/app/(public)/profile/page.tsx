@@ -6,7 +6,7 @@ import { CheckCircle, XCircle, Github, Linkedin, Instagram, Globe } from 'lucide
 import { Button, Card, Text, Title, Subtitle, Loading } from '@/shared/ui'
 import { useAuth } from '@/shared/providers/AuthContext'
 import { getMyProfile, updateMemberProfile } from '@/shared/api/supabase'
-import { APP_NAME } from '@/lib/config'
+import { APP_NAME } from '@/shared/config/app'
 import {
   normalizeGitHub,
   normalizeLinkedIn,
@@ -181,7 +181,6 @@ export default function ProfilePage() {
       const updates = {
         display_name: profileData.displayName,
         student_id: profileData.studentId,
-        position: profileData.position,
         department: profileData.department,
         generation: profileData.generation,
         bio: profileData.bio,

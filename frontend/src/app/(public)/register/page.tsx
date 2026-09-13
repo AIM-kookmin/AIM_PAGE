@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Check, User, GraduationCap, Building, Hash } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
 import { Button, Loading } from '@/shared/ui'
@@ -45,17 +45,26 @@ export default function RegisterPage() {
         return
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('member_profiles')
         .select('id, status')
         .eq('user_id', user.id)
         .maybeSingle()
+
+      if (profileError) {
+        setError('회원 상태를 확인할 수 없습니다. 잠시 후 다시 시도해주세요.')
+        setStep('check')
+        return
+      }
 
       if (profile) {
         if (profile.status === 'pending') {
           router.push('/pending')
         } else if (profile.status === 'active') {
           router.push('/profile')
+        } else if (profile.status === 'rejected') {
+          await supabase.auth.signOut()
+          router.replace('/login?error=rejected')
         }
       } else {
         setFormData(prev => ({

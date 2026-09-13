@@ -4,11 +4,16 @@ on:
   push:
     branches:
       - main
-      - develop
+      - dev
+      - prod
   pull_request:
     branches:
       - main
-      - develop
+      - dev
+      - prod
+
+permissions:
+  contents: read
 
 jobs:
   lint-and-typecheck:
@@ -30,11 +35,19 @@ jobs:
       
       - name: Run ESLint
         working-directory: ./frontend
-        run: npm run lint || true
+        run: npm run lint
       
       - name: Type Check
         working-directory: ./frontend
-        run: npx tsc --noEmit || true
+        run: npm run type-check
+
+      - name: Unit tests
+        working-directory: ./frontend
+        run: npm test -- --ci --runInBand
+
+      - name: Profile permission migration tests
+        working-directory: ./frontend
+        run: npm run test:db
 
   build-test:
     name: Build Test
@@ -58,5 +71,6 @@ jobs:
         working-directory: ./frontend
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Build-only placeholders also allow PRs from forks to run without secrets.
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key

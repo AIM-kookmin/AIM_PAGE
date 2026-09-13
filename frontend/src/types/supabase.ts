@@ -9,6 +9,51 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      news: {
+        Row: {
+          id: string
+          title: string
+          subtitle: string | null
+          category: '공지' | '행사' | '성과' | '소식' | '기타'
+          date: string
+          thumbnail_url: string | null
+          card_images: string[]
+          link: string | null
+          is_active: boolean
+          order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          subtitle?: string | null
+          category: '공지' | '행사' | '성과' | '소식' | '기타'
+          date: string
+          thumbnail_url?: string | null
+          card_images?: string[]
+          link?: string | null
+          is_active?: boolean
+          order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          subtitle?: string | null
+          category?: '공지' | '행사' | '성과' | '소식' | '기타'
+          date?: string
+          thumbnail_url?: string | null
+          card_images?: string[]
+          link?: string | null
+          is_active?: boolean
+          order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       about_sections: {
         Row: {
           id: string
@@ -366,7 +411,7 @@ export interface Database {
             foreignKeyName: "study_posts_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
-            referencedRelation: "member_profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
@@ -529,6 +574,6 @@ export type StudyPost = Database['public']['Tables']['study_posts']['Row']
 export type Tag = Database['public']['Tables']['tags']['Row']
 
 export interface StudyPostWithAuthor extends StudyPost {
-  author: MemberProfile | null
+  author: Pick<MemberProfile, 'id' | 'display_name' | 'avatar_url'> | null
   tags: Array<{ tag: { id: string; name: string } }>
 }

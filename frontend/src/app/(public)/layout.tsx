@@ -1,6 +1,5 @@
-'use client'
-
 import PublicNavigation from '@/widgets/PublicNavigation'
+import SmoothScroll from '@/shared/ui/SmoothScroll'
 
 export default function PublicLayout({
   children,
@@ -10,7 +9,9 @@ export default function PublicLayout({
   return (
     <div className="min-h-screen bg-black">
       <PublicNavigation />
-      <main>{children}</main>
+      <SmoothScroll>
+        <main>{children}</main>
+      </SmoothScroll>
     </div>
   )
 }

@@ -44,9 +44,8 @@ export async function getNewsById(id: string): Promise<News | null> {
 
 export async function createNews(newsData: NewsInsert): Promise<News> {
   const supabase = createClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase
-    .from('news') as any)
+  const { data, error } = await supabase
+    .from('news')
     .insert(newsData)
     .select()
     .single()
@@ -57,9 +56,8 @@ export async function createNews(newsData: NewsInsert): Promise<News> {
 
 export async function updateNews(id: string, updates: NewsUpdate): Promise<News> {
   const supabase = createClient()
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase
-    .from('news') as any)
+  const { data, error } = await supabase
+    .from('news')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()

@@ -64,7 +64,7 @@ export default function Notification({
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 bg-gray-900/95 backdrop-blur-xl border ${colors.border} rounded-xl p-4 w-96 shadow-2xl transition-all duration-300 ${
+      className={`fixed top-4 right-4 z-50 bg-gray-900/95 backdrop-blur-xl border ${colors.border} rounded-xl p-4 w-96 max-w-[calc(100vw-2rem)] shadow-2xl transition-all duration-300 ${
         hiding ? 'animate-slide-out-right opacity-0 translate-x-4' : 'animate-slide-in-right'
       }`}
     >
@@ -83,7 +83,7 @@ export default function Notification({
           )}
         </div>
         <button
-          onClick={onClose}
+          onClick={onClose} aria-label="알림 닫기"
           className="p-1 hover:bg-white/5 rounded-lg transition-colors duration-200"
         >
           <X className="w-4 h-4 text-gray-500 hover:text-gray-400" />

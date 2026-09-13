@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { APP_NAME } from '@/lib/config'
+import { APP_NAME } from '@/shared/config/app'
 import { useAuth } from '@/shared/providers/AuthContext'
 import { createClient } from '@/shared/api/supabase/client'
+import { getSafeRedirectPath } from '@/shared/lib/redirect'
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
@@ -21,8 +22,10 @@ export default function LoginPage() {
     const errorParam = params.get('error')
     if (errorParam === 'rejected') {
       setError('가입이 승인되지 않았습니다. 운영진에게 문의해주세요.')
-    } else if (errorParam === 'auth_failed') {
+    } else if (errorParam === 'auth_failed' || errorParam === 'no_code') {
       setError('인증에 실패했습니다. 다시 시도해주세요.')
+    } else if (errorParam === 'profile_failed') {
+      setError('회원 상태를 확인할 수 없습니다. 잠시 후 다시 시도해주세요.')
     }
 
     // Fetch contact email from database
@@ -45,18 +48,27 @@ export default function LoginPage() {
     const checkUserStatus = async () => {
       if (authLoading || !user) return
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('member_profiles')
         .select('status')
         .eq('user_id', user.id)
         .maybeSingle()
 
+      if (profileError) {
+        setError('회원 상태를 확인할 수 없습니다. 잠시 후 다시 시도해주세요.')
+        return
+      }
+
       if (!profile) {
-        router.push('/register')
+        router.replace('/register')
       } else if (profile.status === 'pending') {
-        router.push('/pending')
+        router.replace('/pending')
       } else if (profile.status === 'active') {
-        router.push('/')
+        const next = new URLSearchParams(window.location.search).get('next')
+        router.replace(getSafeRedirectPath(next))
+      } else if (profile.status === 'rejected') {
+        await supabase.auth.signOut()
+        setError('가입이 승인되지 않았습니다. 운영진에게 문의해주세요.')
       }
     }
 
@@ -65,10 +77,13 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setError(null)
+    const next = getSafeRedirectPath(new URLSearchParams(window.location.search).get('next'))
+    const callbackUrl = new URL('/auth/callback', window.location.origin)
+    callbackUrl.searchParams.set('next', next)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+        redirectTo: callbackUrl.toString()
       }
     })
     if (error) {

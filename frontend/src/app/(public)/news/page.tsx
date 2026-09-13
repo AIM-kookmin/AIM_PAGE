@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getActiveNews } from '@/entities/news/api/queries.server'
+import { getActiveNews } from '@/entities/news/server'
 import NewsClient from './NewsClient'
 
 export const revalidate = 60

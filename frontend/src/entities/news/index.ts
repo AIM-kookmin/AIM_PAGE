@@ -8,4 +8,3 @@ export {
   updateNews,
   deleteNews,
 } from './api/queries'
-export { getActiveNews } from './api/queries.server'

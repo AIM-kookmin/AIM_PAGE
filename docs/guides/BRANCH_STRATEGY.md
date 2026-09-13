@@ -1,50 +1,41 @@
-# AIM Page - Git Branch & Deployment Strategy
+# Branch and PR workflow
 
-## 1. Overview
-Currently, we operate with a **Single Database (`aim-page-dev`)** for all environments.
-This strategy optimizes for development speed but requires careful coordination to avoid data conflicts.
+Verified on 2026-09-13 for `AIM-kookmin/AIM_PAGE`:
 
-## 2. Environments
+| Purpose | Branch |
+| --- | --- |
+| Default / integration | `dev` |
+| Production release | `prod` |
+| Changes under review | `fix/*`, `feat/*`, `feature/*`, etc. |
 
-| Environment | Git Branch | Vercel Deployment | Database | Note |
-|-------------|------------|-------------------|----------|------|
-| **Production** | `main` | Production URL | `aim-page-dev` | User-facing (currently using dev DB) |
-| **Development** | `develop` | Preview URL | `aim-page-dev` | Integration testing |
-| **Feature** | `feature/*` | Preview URL | `aim-page-dev` | Individual task testing |
+There is no remote `main` or `develop`. Open ordinary change PRs against `dev`.
+Promotion from `dev` to `prod` is a separate release PR.
 
-## 3. Workflow
+## This checkout's remotes
 
-### Step 1: Feature Development
+- `origin`: fetches `JoonSimJoon/AIM_PAGE`; currently has push URLs for both the
+  personal and organization repositories.
+- `upstream`: `AIM-kookmin/AIM_PAGE`.
+
+Use the explicit remote you intend to update instead of relying on dual push:
+
 ```bash
-git checkout develop
-git pull origin develop
-git checkout -b feature/my-feature
-# ... work ...
+git fetch upstream
+git switch -c fix/example upstream/dev
+# Implement and verify changes.
+git push -u upstream fix/example
+gh pr create --repo AIM-kookmin/AIM_PAGE --base dev --head fix/example
 ```
 
-### Step 2: Local Testing
-- Develop against `localhost:3000`
-- **Warning**: You are connecting to the SHARED dev database.
-- Do NOT delete data needed by others.
-- Coordinate schema changes with the team.
+## Validation and deployment
 
-### Step 3: Pull Request (PR)
-- Push to `feature/my-feature`
-- Open PR to `develop`
-- Vercel automatically deploys a Preview URL.
-- Test on the Preview URL.
+CI runs lint, TypeScript, Jest, isolated PostgreSQL permission tests, and a Next.js
+build on PRs targeting `dev`, `prod`, or `main` if it is introduced later. Failed
+commands fail the workflow. The build job uses placeholder public Supabase values
+and does not need database credentials. Vercel deployment environment variables
+must contain the real values for the intended environment.
 
-### Step 4: Merge to Develop
-- Merge PR to `develop`.
-- This updates the Development environment.
-
-### Step 5: Release (Production)
-- Periodically merge `develop` into `main`.
-- This triggers Production deployment.
-
-## 4. Future Roadmap (Before Public Launch)
-1. Create `aim-page-prod` Supabase project.
-2. Configure Vercel Environment Variables:
-   - **Production Target**: `NEXT_PUBLIC_SUPABASE_URL` = Prod DB URL
-   - **Preview/Dev Target**: `NEXT_PUBLIC_SUPABASE_URL` = Dev DB URL
-3. Switch `main` branch to use Prod DB.
+Before release, verify the hosting project's production branch and its Supabase
+environment settings. Repository branch names alone do not prove which database
+a deployment uses. SQL changes are reviewed and applied separately; never replay
+the entire historical migration directory against an existing deployment.
