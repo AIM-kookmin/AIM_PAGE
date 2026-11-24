@@ -10,7 +10,7 @@ import StudyPreview from './components/StudyPreview'
 import MultiImageUpload from './components/MultiImageUpload'
 import MemberSelector from './components/MemberSelector'
 import StudyCard from './components/StudyCard'
-import Notification from './components/Notification'
+import Notification from '@/shared/ui/Notification'
 
 const STATUSES = [
   { value: 'recruiting', label: '모집중' },

@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { createClient } from '@/shared/api/supabase/server'
 import type { News } from '../model/types'
 

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getAdminDashboardStats, getRecentMembersAdmin } from '@/shared/api/supabase'
-import { APP_NAME } from '@/lib/config'
+import { APP_NAME } from '@/shared/config/app'
 import type { MemberProfile } from '@/types/supabase'
 
 interface DashboardStats {

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@/shared/api/supabase/server'
 import { z } from 'zod'
 import { getSupabaseAdmin } from '@/shared/api/supabase/admin'
-import type { Database } from '@/types/supabase'
 
 const memberCreateSchema = z.object({
   email: z.string().email('올바른 이메일 형식이 아닙니다'),
@@ -22,33 +20,16 @@ const memberCreateSchema = z.object({
   })
 })
 
-async function getServerSupabase() {
-  const cookieStore = await cookies()
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options)
-          })
-        },
-      },
-    }
-  )
-}
-
 async function isCurrentUserAdmin(): Promise<boolean> {
-  const supabase = await getServerSupabase()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return false
   
-  const { data } = await supabase.rpc('is_admin')
-  return data === true
+  const [{ data, error }, { data: profile, error: profileError }] = await Promise.all([
+    supabase.rpc('is_admin'),
+    supabase.from('member_profiles').select('status').eq('user_id', user.id).maybeSingle(),
+  ])
+  return !error && !profileError && data === true && profile?.status === 'active'
 }
 
 export async function POST(request: NextRequest) {
@@ -127,7 +108,7 @@ export async function DELETE(request: NextRequest) {
       const { error: postsError } = await getSupabaseAdmin()
         .from('study_posts')
         .delete()
-        .eq('author_id', profile.id)
+        .eq('author_id', userId)
 
       if (postsError) {
         console.error('Study posts deletion failed:', postsError)

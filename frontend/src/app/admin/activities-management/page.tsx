@@ -9,7 +9,7 @@ import type { Activity } from '@/types/supabase'
 import ActivityPreview from './components/ActivityPreview'
 import ImageUploadZone from './components/ImageUploadZone'
 import ActivityCard from './components/ActivityCard'
-import Notification from './components/Notification'
+import Notification from '@/shared/ui/Notification'
 
 const CATEGORIES = [
   { value: 'competition', label: '대회' },

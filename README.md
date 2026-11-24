@@ -180,6 +180,8 @@ shared    → (no imports)
 
 자세한 내용: [FSD 구조 문서](./docs/architecture/FSD_STRUCTURE.md)
 
+현재 라우트 구성과 검토 결과: [프로젝트 구조 검토](./docs/reviews/2026-09-13-project-structure.md).
+
 ---
 
 ## 🚀 시작하기
@@ -198,6 +200,8 @@ cd AIM_PAGE
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://[PROJECT_ID].supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[ANON_KEY]
+# 관리자 계정 생성/삭제 API에서만 사용하는 서버 전용 키
+SUPABASE_SERVICE_ROLE_KEY=[SERVICE_ROLE_KEY]
 ```
 
 ### 3. 의존성 설치
@@ -228,6 +232,7 @@ npm start            # 프로덕션 서버
 npm run lint         # ESLint 체크
 npm run type-check   # TypeScript 타입 체크
 npm test             # Jest 테스트
+npm run test:db      # 격리된 PostgreSQL 프로필 권한 테스트 (실제 DB 연결 없음)
 npm run test:watch   # 테스트 감시 모드
 npm run test:coverage # 커버리지 리포트
 ```
@@ -267,26 +272,28 @@ npm run test:coverage # 커버리지 리포트
 ### 브랜치 전략
 
 ```
-origin/dev → fork/dev (Preview) → fork/prod (Production)
+작업 브랜치 → dev (통합 PR) → prod (별도 릴리스 PR)
 ```
 
 ### 리모트 구성
 
 - **origin**: `JoonSimJoon/AIM_PAGE` + `AIM-kookmin/AIM_PAGE` (dual push)
-- **fork**: `AIM-kookmin/AIM_PAGE` (Vercel 연결)
+- **upstream**: `AIM-kookmin/AIM_PAGE`
 
 ### 배포 프로세스
 
 #### 1. 개발 (Dev Branch)
 
 ```bash
-# 작업 완료 후
-git add .
-git commit -m "feat: 새 기능 추가"
-git push origin dev  # 양쪽 저장소에 push
+git fetch upstream
+git switch -c feat/my-feature upstream/dev
+# 구현, 검증, 커밋 후
+git push -u upstream feat/my-feature
+gh pr create --repo AIM-kookmin/AIM_PAGE --base dev --head feat/my-feature
 ```
 
-자동으로 Vercel Preview 배포 (fork/dev)
+CI 결과를 확인한 뒤 `dev` PR을 리뷰합니다. 브랜치 및 리모트 기준은
+[브랜치 전략](./docs/guides/BRANCH_STRATEGY.md)을 참고하세요.
 
 #### 2. 프로덕션 배포 (Prod Branch)
 

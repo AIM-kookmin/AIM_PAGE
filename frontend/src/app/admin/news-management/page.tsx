@@ -9,7 +9,7 @@ import type { News, NewsCategory } from '@/entities/news/model/types'
 import { NEWS_CATEGORIES } from '@/entities/news/model/types'
 import NewsPreview from './components/NewsPreview'
 import MultiImageUpload from './components/MultiImageUpload'
-import Notification from '../studies-management/components/Notification'
+import Notification from '@/shared/ui/Notification'
 
 interface ImageData {
   id: string

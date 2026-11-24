@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Button, Loading } from '@/shared/ui'
-import { APP_NAME } from '@/lib/config'
+import { APP_NAME } from '@/shared/config/app'
 import {
   getAllAboutSections, createAboutSection, updateAboutSection, deleteAboutSection,
   getAllAboutActivities, createAboutActivity, updateAboutActivity, deleteAboutActivity,
@@ -12,7 +12,7 @@ import {
 } from '@/shared/api/supabase'
 import type { AboutSection, AboutActivity, AboutHistory, AboutContact } from '@/types/supabase'
 import { EditContext, ViewMode, SectionFormData, AboutActivityFormData, HistoryFormData, ContactFormData } from './types'
-import Notification from './components/Notification'
+import Notification from '@/shared/ui/Notification'
 import HeroPreview from './components/HeroPreview'
 import PreviewSection from './components/PreviewSection'
 import SectionCard from './components/cards/SectionCard'

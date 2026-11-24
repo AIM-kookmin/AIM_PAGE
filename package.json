@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "cd frontend && npm run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm start",
     "lint": "cd frontend && npm run lint",
+    "type-check": "npm --prefix frontend run type-check",
+    "test": "npm --prefix frontend test",
+    "test:db": "npm --prefix frontend run test:db",
     "prepare": "cd frontend && husky || true"
   }
 }

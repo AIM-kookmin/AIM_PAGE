@@ -1,4 +1,8 @@
+import 'server-only'
+
+import { cache } from 'react'
 import { createClient } from './server'
+import { withStudyPostAuthors } from './study-posts'
 import type {
   AboutSection,
   AboutActivity,
@@ -113,45 +117,26 @@ export async function getPublishedStudyPosts(): Promise<StudyPostWithAuthor[]> {
     return []
   }
 
-  // Fetch author profiles separately
-  const authorIds = Array.from(new Set(posts.map(p => p.author_id).filter(Boolean)))
-  const { data: profiles, error: profilesError } = await supabase
-    .from('member_profiles')
-    .select('id, display_name, avatar_url, user_id')
-    .in('user_id', authorIds)
-
-  if (profilesError) throw profilesError
-
-  // Create a map of user_id to profile
-  const profileMap = new Map(
-    (profiles || []).map(p => [p.user_id, p])
-  )
-
-  // Combine the data
-  const data = posts.map(post => ({
-    ...post,
-    author: profileMap.get(post.author_id) || {
-      id: '',
-      display_name: 'Unknown',
-      avatar_url: null
-    }
-  }))
-
-  // Runtime validation for StudyPostWithAuthor structure
-  data.forEach((post, index) => {
-    if (!post || typeof post !== 'object') {
-      throw new Error(`getPublishedStudyPosts: Invalid post at index ${index}`)
-    }
-    if (!post.author || typeof post.author !== 'object' || !post.author.display_name) {
-      throw new Error(`getPublishedStudyPosts: Missing or invalid author data at index ${index}`)
-    }
-    if (!Array.isArray(post.tags)) {
-      throw new Error(`getPublishedStudyPosts: Missing or invalid tags array at index ${index}`)
-    }
-  })
-
-  return data as StudyPostWithAuthor[]
+  return withStudyPostAuthors(supabase, posts as Omit<StudyPostWithAuthor, 'author'>[])
 }
+
+/** Load a public post once per request for both metadata and page rendering. */
+export const getStudyPostById = cache(async (id: string): Promise<StudyPostWithAuthor | null> => {
+  if (!/^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i.test(id)) return null
+
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('study_posts')
+    .select('*, tags:study_post_tags(tag:tags(id, name))')
+    .eq('id', id)
+    .eq('status', 'published')
+    .maybeSingle()
+
+  if (error) throw error
+  if (!data) return null
+  const [post] = await withStudyPostAuthors(supabase, [data as Omit<StudyPostWithAuthor, 'author'>])
+  return post
+})
 
 /**
  * Fetches all published studies.

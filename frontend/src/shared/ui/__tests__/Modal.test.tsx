@@ -67,8 +67,8 @@ describe('Modal', () => {
 
       const modalDialog = screen.getByRole('dialog')
       expect(modalDialog).toHaveClass('flex', 'flex-col')
-      // Check max-height from Tailwind class
-      expect(modalDialog).toHaveClass('max-h-[90vh]')
+      // Keep the dialog inside the viewport at each supported breakpoint.
+      expect(modalDialog).toHaveClass('max-h-[98vh]', 'sm:max-h-[95vh]', 'md:max-h-[90vh]')
     })
   })
 
